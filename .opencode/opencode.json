@@ -1,0 +1,28 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "server-filesystem": {
+      "type": "local",
+	  "enabled": true,
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem"
+      ]
+    },
+	"context7": {
+      "type": "remote",
+	  "enabled": true,
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "firebase": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "npx",
+        "-y",
+        "firebase-mcp"
+      ]
+    }
+  }
+}

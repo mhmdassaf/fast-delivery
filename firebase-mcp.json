@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "fast-delivery": {
+      "firebase": {
+        "projectId": "fast-delivery-32739",
+        "serviceAccountPath": "assets\\keys\\fast-delivery-32739-firebase-adminsdk-fbsvc-3c38112789.json"
+      },
+      "firestore": {
+        "rules": {
+          "allow": ["**"],
+          "deny": []
+        }
+      }
+    }
+  }
+}

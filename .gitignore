@@ -1,0 +1,47 @@
+# Flutter
+.dart_tool/
+.flutter-plugins*
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+flutter_*.png
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+**/xcuserdata/
+
+# Android
+.android/
+.gradle/
+**/build/
+
+# Firebase
+assets/keys/*.json
+!assets/keys/fast-delivery-32739-firebase-adminsdk-fbsvc-3c38112789.json
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+*.env
+
+# Test
+coverage/
+
+# Misc
+*.lock
+pubspec.lock
