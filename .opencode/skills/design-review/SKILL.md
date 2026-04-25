@@ -4,7 +4,7 @@ description: Review architecture decisions and validate Clean Architecture patte
 license: MIT
 compatibility: opencode
 metadata:
-  audience: architects
+  audience: architects and developers
   workflow: flutter
 ---
 

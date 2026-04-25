@@ -22,11 +22,11 @@ Shared code goes in separate packages to avoid coupling.
 
 ## Agent Configuration
 Agents are defined in `.opencode/agents/`:
-- `architect.md` - Design full system structure(use for planning)
-- `flutter.md` - Build Flutter features
-- `firebase.md` - Firestore schema & Cloud Functions (Backend)
-- `refactor.md` - Optimize existing code
-- `designer.md` - UI/UX suggestions only
+- `Architect.md` - Design full system structure(use for planning)
+- `Flutter-developer.md` - Build Flutter features
+- `Firebase-developer.md` - Firestore schema & Cloud Functions (Backend)
+- `Code-reviewer.md` - Optimize existing code
+- `Designer.md` - UI/UX suggestions only
 
 ## Key Conventions
 - Business logic must stay out of UI

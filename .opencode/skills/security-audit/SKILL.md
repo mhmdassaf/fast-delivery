@@ -4,7 +4,7 @@ description: Check for security vulnerabilities and Firebase best practices
 license: MIT
 compatibility: opencode
 metadata:
-  audience: reviewers
+  audience: code-reviewer and firebase-developer
   workflow: firebase
 ---
 

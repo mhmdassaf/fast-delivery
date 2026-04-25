@@ -4,7 +4,7 @@ description: Generate Flutter project structure, features, and MVVM + Riverpod c
 license: MIT
 compatibility: opencode
 metadata:
-  audience: developers
+  audience: flutter-developer
   workflow: flutter
 ---
 

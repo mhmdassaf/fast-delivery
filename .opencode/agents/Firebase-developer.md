@@ -43,3 +43,6 @@ Skills to invoke when needed:
 - For security audit → use `skill` tool with `security-audit`
 
 When designing database or functions, assess if a skill should be invoked first.
+
+## Important Notes
+- Use `firebase` mcp tool when needed.

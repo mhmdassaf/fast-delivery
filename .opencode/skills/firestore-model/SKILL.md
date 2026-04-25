@@ -4,7 +4,7 @@ description: Design Firestore schema, generate data models, and write security r
 license: MIT
 compatibility: opencode
 metadata:
-  audience: backend-developers
+  audience: firebase-developer
   workflow: firebase
 ---
 
