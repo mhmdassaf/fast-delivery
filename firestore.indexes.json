@@ -1,0 +1,110 @@
+{
+  "indexes": [
+    // Orders indexes
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ascending" },
+        { "fieldPath": "createdAt", "order": "descending" }
+      ]
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "riderId", "order": "ascending" },
+        { "fieldPath": "status", "order": "ascending" }
+      ]
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerId", "order": "ascending" },
+        { "fieldPath": "createdAt", "order": "descending" }
+      ]
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ascending" },
+        { "fieldPath": "createdAt", "order": "descending" }
+      ]
+    },
+    
+    // Items indexes
+    {
+      "collectionGroup": "items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerId", "order": "ascending" },
+        { "fieldPath": "category", "order": "ascending" }
+      ]
+    },
+    {
+      "collectionGroup": "items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerId", "order": "ascending" },
+        { "fieldPath": "isAvailable", "order": "ascending" }
+      ]
+    },
+    
+    // Reviews indexes
+    {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerId", "order": "ascending" },
+        { "fieldPath": "createdAt", "order": "descending" }
+      ]
+    },
+    {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "itemId", "order": "ascending" },
+        { "fieldPath": "createdAt", "order": "descending" }
+      ]
+    },
+    
+    // Chats indexes
+    {
+      "collectionGroup": "chats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "participantIds", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "lastMessageAt", "order": "descending" }
+      ]
+    },
+    
+    // Notifications indexes
+    {
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ascending" },
+        { "fieldPath": "createdAt", "order": "descending" }
+      ]
+    },
+    {
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ascending" },
+        { "fieldPath": "isRead", "order": "ascending" }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "users",
+      "fieldPath": "fcmTokens",
+      "indexes": [
+        { "order": "CONTAINS" }
+      ]
+    }
+  ]
+}

@@ -3,7 +3,7 @@
     "fast-delivery": {
       "firebase": {
         "projectId": "fast-delivery-32739",
-        "serviceAccountPath": "assets\\keys\\fast-delivery-32739-firebase-adminsdk-fbsvc-3c38112789.json"
+        "serviceAccountPath": "assets/keys/fast-delivery-32739-firebase-adminsdk-fbsvc-0547c726e6.json"
       },
       "firestore": {
         "rules": {

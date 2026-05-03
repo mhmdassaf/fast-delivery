@@ -25,7 +25,13 @@ ios/.symlinks/
 
 # Firebase
 assets/keys/*.json
-!assets/keys/fast-delivery-32739-firebase-adminsdk-fbsvc-3c38112789.json
+!assets/keys/template.json
+
+# Android Firebase Config
+**/google-services.json
+
+# iOS Firebase Config
+**/GoogleService-Info.plist
 
 # Logs
 *.log
@@ -41,6 +47,10 @@ Thumbs.db
 
 # Test
 coverage/
+
+# Node.js
+node_modules/
+package-lock.json
 
 # Misc
 *.lock

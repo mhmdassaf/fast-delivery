@@ -1,0 +1,65 @@
+/// Base failure class for error handling
+sealed class Failure {
+  final String message;
+  final String? code;
+
+  const Failure({required this.message, this.code});
+
+  @override
+  String toString() => 'Failure(message: $message, code: $code)';
+}
+
+/// Authentication related failures
+final class AuthFailure extends Failure {
+  const AuthFailure({required super.message, super.code});
+
+  factory AuthFailure.invalidEmail() =>
+      const AuthFailure(message: 'Please enter a valid email address');
+
+  factory AuthFailure.weakPassword() =>
+      const AuthFailure(message: 'Password must be at least 8 characters');
+
+  factory AuthFailure.emailAlreadyInUse() =>
+      const AuthFailure(message: 'This email is already registered');
+
+  factory AuthFailure.wrongPassword() =>
+      const AuthFailure(message: 'Incorrect password. Please try again');
+
+  factory AuthFailure.userNotFound() =>
+      const AuthFailure(message: 'No account found with this email');
+
+  factory AuthFailure.userDisabled() =>
+      const AuthFailure(message: 'This account has been disabled');
+
+  factory AuthFailure.tooManyRequests() =>
+      const AuthFailure(message: 'Too many attempts. Please try again later');
+
+  factory AuthFailure.networkError() =>
+      const AuthFailure(message: 'Network error. Please check your connection');
+
+  factory AuthFailure.unknown([String? message]) =>
+      AuthFailure(message: message ?? 'An unknown error occurred');
+
+  factory AuthFailure.invalidCredential() =>
+      const AuthFailure(message: 'Invalid credentials provided');
+}
+
+/// Validation failures
+final class ValidationFailure extends Failure {
+  const ValidationFailure({required super.message, super.code});
+}
+
+/// Network related failures
+final class NetworkFailure extends Failure {
+  const NetworkFailure({super.message = 'Network error occurred', super.code});
+}
+
+/// Server related failures
+final class ServerFailure extends Failure {
+  const ServerFailure({super.message = 'Server error occurred', super.code});
+}
+
+/// Cache related failures
+final class CacheFailure extends Failure {
+  const CacheFailure({super.message = 'Cache error occurred', super.code});
+}

@@ -1,4 +1,4 @@
-package com.fastdelivery.user_app
+package com.assafTech.user_app
 
 import io.flutter.embedding.android.FlutterActivity
 

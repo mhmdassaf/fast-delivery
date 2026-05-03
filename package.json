@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "googleapis": "^171.4.0"
+  },
+  "devDependencies": {
+    "firebase-admin": "^13.8.0"
+  }
+}
