@@ -11,25 +11,32 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   
-  # State Management
+  # Shared packages
+  fast_delivery_core:
+    path: ../../packages/core
+  fast_delivery_auth:
+    path: ../../packages/auth
+  
+  # State Management (already in core package, but needed for direct imports)
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
   
   # Networking
   dio: ^5.8.0
   
-  # Firebase
+  # Firebase (already in core package, but needed for direct imports)
   firebase_core: ^3.13.0
   firebase_auth: ^5.5.4
   cloud_firestore: ^5.6.7
   firebase_messaging: ^15.2.5
   firebase_storage: ^12.4.4
+  google_sign_in: ^6.2.1
   
-  # Models
+  # Models (already in core package)
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
   
-  # Utils
+  # Utils (already in core package)
   go_router: ^14.8.1
   shared_preferences: ^2.5.3
   intl: ^0.20.2

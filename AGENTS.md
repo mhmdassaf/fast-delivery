@@ -23,10 +23,25 @@ Shared code goes in separate packages to avoid coupling.
 ## Agent Configuration
 Agents are defined in `.opencode/agents/`:
 - `Architect.md` - Design full system structure(use for planning)
-- `Flutter-developer.md` - Build Flutter features
+- `Flutter-developer.md` - Build Flutter features (no device testing)
+- `Flutter-tester.md` - Build, run, and test on Android physical devices (unit, widget, integration tests)
+- `Git-agent.md` - Commit and push tested changes cleanly (manual trigger via /git-agent after Flutter-tester, auto-triggers feature-doc)
 - `Firebase-developer.md` - Firestore schema & Cloud Functions (Backend)
-- `Code-reviewer.md` - Optimize existing code
+- `Code-reviewer.md` - Optimize existing code (no longer handles git operations)
 - `Designer.md` - UI/UX suggestions only
+
+## Skill Configuration
+Skills are defined in `.opencode/skills/`:
+- `feature-doc` - Auto-create/update AI-readable feature documentation in docs/ folder (triggered automatically by Git-agent in Phase 2.5)
+
+## Workflow Order
+The recommended workflow for implementing features:
+1. **Flutter-developer** - Build features and screens
+2. **Code-reviewer** - Optimize existing code (no longer handles git operations)
+3. **Flutter-tester** - Build, run, and test on Android physical devices
+4. **Git-agent** (manual trigger via `/git-agent`) - Commit and push tested changes cleanly (auto-triggers feature-doc to update docs)
+
+Note: Git-agent replaces all git commit/push functionality previously in Code-reviewer. Git-agent now automatically triggers the `feature-doc` skill in Phase 2.5 to update feature documentation before staging files.
 
 ## Key Conventions
 - Business logic must stay out of UI

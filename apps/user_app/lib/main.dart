@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'core/firebase/firebase_options.dart';
-import 'core/theme/app_theme.dart';
-import 'features/auth/presentation/screens/login_screen.dart';
-import 'features/auth/presentation/screens/register_screen.dart';
-import 'features/auth/presentation/screens/auth_gate.dart';
+import 'package:fast_delivery_core/constants/app_constants.dart';
+import 'package:fast_delivery_core/firebase/firebase_options.dart';
+import 'package:fast_delivery_core/theme/app_theme.dart';
+import 'package:fast_delivery_auth/presentation/screens/login_screen.dart';
+import 'package:fast_delivery_auth/presentation/screens/register_screen.dart';
+import 'package:fast_delivery_auth/presentation/screens/auth_gate.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -70,7 +71,7 @@ final GoRouter _router = GoRouter(
           const Icon(
             Icons.error_outline,
             size: 64,
-            color: Colors.red,
+            color: AppColors.error,
           ),
           const SizedBox(height: 16),
           Text(

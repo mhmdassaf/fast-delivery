@@ -1,0 +1,36 @@
+name: fast_delivery_auth
+description: Shared auth feature for Fast Delivery apps
+version: 0.1.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Depend on core package
+  fast_delivery_core:
+    path: ../core
+    
+  # Firebase
+  firebase_auth: ^5.7.0
+  google_sign_in: ^6.3.0
+  
+  # State Management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+  
+  # Models
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.5.4
+  riverpod_generator: ^2.6.5
+  freezed: ^3.1.0
+  json_serializable: ^6.9.4
