@@ -6,9 +6,11 @@ import 'package:go_router/go_router.dart';
 import 'package:fast_delivery_core/constants/app_constants.dart';
 import 'package:fast_delivery_core/firebase/firebase_options.dart';
 import 'package:fast_delivery_core/theme/app_theme.dart';
+import 'package:fast_delivery_auth/domain/providers/auth_providers.dart';
 import 'package:fast_delivery_auth/presentation/screens/login_screen.dart';
 import 'package:fast_delivery_auth/presentation/screens/register_screen.dart';
-import 'package:fast_delivery_auth/presentation/screens/auth_gate.dart';
+
+import 'features/dashboard/presentation/pages/dashboard_screen.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -28,68 +30,149 @@ void main() async {
 }
 
 /// Main application widget
-class FastDeliveryApp extends StatelessWidget {
+class FastDeliveryApp extends ConsumerWidget {
   const FastDeliveryApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
     return MaterialApp.router(
       title: 'Fast Delivery',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
-      routerConfig: _router,
+      routerConfig: router,
     );
   }
 }
 
-/// GoRouter configuration
-final GoRouter _router = GoRouter(
-  initialLocation: '/',
-  routes: [
-    // Main route - AuthGate handles auth state routing
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const AuthGate(),
-    ),
-    // Explicit auth routes for navigation
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => const LoginScreen(),
-    ),
-    GoRoute(
-      path: '/register',
-      builder: (context, state) => const RegisterScreen(),
-    ),
-  ],
-  errorBuilder: (context, state) => Scaffold(
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.error_outline,
-            size: 64,
-            color: AppColors.error,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Page not found',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            state.uri.toString(),
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () => context.go('/'),
-            child: const Text('Go Home'),
-          ),
-        ],
+/// Provider-based GoRouter with authentication redirect.
+///
+/// Watches auth status and redirects accordingly:
+/// - Unauthenticated users → /login
+/// - Authenticated users on auth pages → /
+/// - Authenticated users → free navigation
+final routerProvider = Provider<GoRouter>((ref) {
+  final authStatus = ref.watch(authStatusProvider);
+
+  return GoRouter(
+    initialLocation: '/',
+    redirect: (context, state) {
+      final isAuthenticated = authStatus == AuthStatus.authenticated;
+      final isAuthPage = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register';
+
+      // Redirect unauthenticated users to login
+      if (!isAuthenticated && !isAuthPage && authStatus != AuthStatus.initial) {
+        return '/login';
+      }
+
+      // Redirect authenticated users away from auth pages
+      if (isAuthenticated && isAuthPage) {
+        return '/';
+      }
+
+      return null;
+    },
+    routes: [
+      // Main dashboard route
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const DashboardScreen(),
+      ),
+
+      // Auth routes
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
+
+      // Shop details route (placeholder - ready for integration)
+      GoRoute(
+        path: '/shop/:shopId',
+        builder: (context, state) {
+          final shopId = state.pathParameters['shopId'] ?? '';
+          return _ShopDetailsPlaceholder(shopId: shopId);
+        },
+      ),
+    ],
+    errorBuilder: (context, state) => Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              size: 64,
+              color: AppColors.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Page not found',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              state.uri.toString(),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go('/'),
+              child: const Text('Go Home'),
+            ),
+          ],
+        ),
       ),
     ),
-  ),
-);
+  );
+});
+
+/// Placeholder for shop details screen (to be implemented separately)
+class _ShopDetailsPlaceholder extends StatelessWidget {
+  final String shopId;
+
+  const _ShopDetailsPlaceholder({required this.shopId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Shop #$shopId'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.store_rounded,
+              size: 80,
+              color: AppColors.textHint,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Shop Details',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Shop ID: $shopId',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Shop details screen coming soon',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

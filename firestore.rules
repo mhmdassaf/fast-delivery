@@ -226,6 +226,45 @@ service cloud.firestore {
     }
     
     // =========================================================================
+    // SHOPS COLLECTION
+    // =========================================================================
+    match /shops/{shopId} {
+      /// Any authenticated user can read shops
+      allow read: if isAuthenticated();
+      
+      /// Only sellers (shop owners) can create/update their own shops
+      allow create: if hasRole('seller') && 
+        request.resource.data.sellerId == request.auth.uid;
+      
+      /// Sellers can update their own shop
+      allow update: if hasRole('seller') && 
+        resource.data.sellerId == request.auth.uid &&
+        request.resource.data.keys().hasAny(['name', 'description', 'logoUrl', 
+          'coverImageUrl', 'tags', 'deliveryTime', 'deliveryFee', 
+          'minOrderAmount', 'isOpen', 'updatedAt']);
+      
+      /// Admins can manage all shops
+      allow read, write: if isAdmin();
+      
+      /// No one can delete shops (soft-delete via isActive)
+      allow delete: if false;
+    }
+    
+    // =========================================================================
+    // CATEGORIES COLLECTION
+    // =========================================================================
+    match /categories/{categoryId} {
+      /// Any authenticated user can read categories
+      allow read: if isAuthenticated();
+      
+      /// Only admins can manage categories
+      allow write: if isAdmin();
+      
+      /// No one can delete categories (soft-delete via isActive)
+      allow delete: if false;
+    }
+    
+    // =========================================================================
     // REVIEWS COLLECTION
     // =========================================================================
     match /reviews/{reviewId} {

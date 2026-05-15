@@ -63,3 +63,14 @@ final class ServerFailure extends Failure {
 final class CacheFailure extends Failure {
   const CacheFailure({super.message = 'Cache error occurred', super.code});
 }
+
+/// Dashboard related failures
+final class DashboardFailure extends Failure {
+  const DashboardFailure({required super.message, super.code});
+
+  factory DashboardFailure.fetchFailed([String? message]) =>
+      DashboardFailure(message: message ?? 'Failed to load shops');
+
+  factory DashboardFailure.fetchCategoriesFailed([String? message]) =>
+      DashboardFailure(message: message ?? 'Failed to load categories');
+}

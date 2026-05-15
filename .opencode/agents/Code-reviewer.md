@@ -13,7 +13,7 @@ permission:
     "*": ask
     "git diff": allow
     "git diff --staged": allow
-	"git diff --cached": allow
+    "git diff --cached": allow
     "git log*": allow
     "grep *": allow
     "git status": allow

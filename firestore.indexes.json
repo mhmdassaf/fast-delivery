@@ -96,6 +96,62 @@
         { "fieldPath": "userId", "order": "ascending" },
         { "fieldPath": "isRead", "order": "ascending" }
       ]
+    },
+    
+    // --- Dashboard Feature Indexes ---
+    
+    // Categories: isActive + order (display order)
+    {
+      "collectionGroup": "categories",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive", "order": "ascending" },
+        { "fieldPath": "order", "order": "ascending" }
+      ]
+    },
+    
+    // Shops: isActive + createdAt (base query, no filters)
+    {
+      "collectionGroup": "shops",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive", "order": "ascending" },
+        { "fieldPath": "createdAt", "order": "descending" }
+      ]
+    },
+    
+    // Shops: isActive + categoryId + createdAt (category filter)
+    {
+      "collectionGroup": "shops",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive", "order": "ascending" },
+        { "fieldPath": "categoryId", "order": "ascending" },
+        { "fieldPath": "createdAt", "order": "descending" }
+      ]
+    },
+    
+    // Shops: isActive + isOpen + createdAt (open now filter)
+    {
+      "collectionGroup": "shops",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive", "order": "ascending" },
+        { "fieldPath": "isOpen", "order": "ascending" },
+        { "fieldPath": "createdAt", "order": "descending" }
+      ]
+    },
+    
+    // Shops: isActive + categoryId + isOpen + createdAt (category + open now)
+    {
+      "collectionGroup": "shops",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive", "order": "ascending" },
+        { "fieldPath": "categoryId", "order": "ascending" },
+        { "fieldPath": "isOpen", "order": "ascending" },
+        { "fieldPath": "createdAt", "order": "descending" }
+      ]
     }
   ],
   "fieldOverrides": [
