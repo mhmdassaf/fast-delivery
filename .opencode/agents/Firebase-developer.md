@@ -121,6 +121,44 @@ When permission errors block data seeding:
 - Use `adb logcat` with filters to capture Firestore errors
 - On-device testing agents should report FAILED_PRECONDITION errors back to this agent
 
+### 7. Rules API v1 does NOT support PATCH on releases — use DELETE+POST
+The Firebase Rules API v1 (`firebaserules.googleapis.com/v1`) does NOT support `PATCH` on releases. Attempting PATCH returns error `Unknown name "rulesetName"`. 
+
+**Working pattern (DELETE + POST):**
+1. `POST /v1/projects/{project}/rulesets` — create the new ruleset
+2. `DELETE /v1/projects/{project}/releases/cloud.firestore` — delete old release
+3. `POST /v1/projects/{project}/releases` with body `{"name": "projects/{project}/releases/cloud.firestore", "rulesetName": "projects/{project}/rulesets/{newId}"}` — create new release
+
+**Implementation:** `functions/deploy_real_rules.js`, `functions/deploy_dev_rules.js`
+
+### 8. Security rule bug: `resource.data` vs `request.resource.data` on `create`
+For Firestore security rules:
+- `resource` = the **existing** document (null on `create`)
+- `request.resource` = the **incoming** document being written
+
+**Bug pattern (WRONG):**
+```javascript
+allow create: if hasRole('seller') && request.auth.uid == resource.data.sellerId;
+// resource.data is EMPTY on create → always DENIED
+```
+
+**Fix (CORRECT):**
+```javascript
+allow create: if hasRole('seller') && request.auth.uid == request.resource.data.sellerId;
+allow update: if hasRole('seller') && request.auth.uid == resource.data.sellerId;
+```
+
+Always split `create` and `update` when checking document fields.
+
+### 9. Permissive rules remain deployed after seeding — must redeploy
+After using permissive dev rules for seeding, the old permissive ruleset often remains active. Always redeploy strict rules from `firestore.rules` using `deploy_real_rules.js` immediately after seeding is complete. Verify with the check above.
+
+### 10. Index management scripts
+- `functions/check_indexes.js` — lists all indexes with their states (READY/CREATING)
+- `functions/create_indexes.js` — creates missing indexes from `firestore.indexes.json`
+- Check index states after creation; they transition CREATING → READY in 1-5 minutes
+- Always verify with `check_indexes.js` before declaring done
+
 ## Important: Cross-Agent Communication
 When the Flutter-tester or Flutter-developer agent encounters Firebase-related errors:
 - **PERMISSION_DENIED**: Security rules are blocking the request — update rules

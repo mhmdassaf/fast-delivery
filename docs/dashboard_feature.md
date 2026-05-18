@@ -195,7 +195,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 | `/` | `DashboardScreen` | Main dashboard — shop listing |
 | `/login` | `LoginScreen` (from auth package) | Email/password login |
 | `/register` | `RegisterScreen` (from auth package) | New user registration |
-| `/shop/:shopId` | `_ShopDetailsPlaceholder` | Shop details (placeholder — future feature) |
+| `/shop/:shopId` | `ShopDetailsScreen` | Shop details & menu browsing (see `docs/shop_details_feature.md`) |
 
 ### Navigation Usage (in widgets)
 ```dart
@@ -462,11 +462,10 @@ In addition to the shops and categories rules above, the dashboard relies on:
 4. Run `build_runner` in `apps/user_app/`
 5. **Update this doc** with new sort
 
-### Adding a New Screen (e.g., Shop Details)
+### Adding a New Screen
 1. Create screen in `presentation/pages/` or `presentation/widgets/`
 2. Add route to `routerProvider` in `apps/user_app/lib/main.dart`
-3. Replace `_ShopDetailsPlaceholder` with the real screen
-4. **Update this doc** with new route
+3. **Update this doc** with new route
 
 ### Changing Shop/Category Model
 1. Update Freezed model in `data/models/shop_model.dart` or `category_model.dart`
@@ -597,7 +596,7 @@ Dashboard queries require these indexes to avoid `FAILED_PRECONDITION` errors:
 |---------|-------------|
 | **Auth** | `authStatusProvider` drives router redirect; `currentUserProvider` provides user name/photo for `DashboardAppBar` |
 | **Notifications** | `DashboardAppBar` notification bell ready for FCM integration (placeholder `onNotificationTap`) |
-| **Shop Details** | Route `/shop/:shopId` registered in router with `_ShopDetailsPlaceholder` — ready for future implementation |
+| **Shop Details** | Route `/shop/:shopId` navigates to `ShopDetailsScreen` — see `docs/shop_details_feature.md` |
 | **Firestore** | `DashboardDataSourceImpl` reads from `categories` and `shops` collections |
 
 ---

@@ -69,7 +69,7 @@ async function getUserIdToken(uid) {
   const customToken = await auth.createCustomToken(uid);
   
   // Exchange for ID token using Firebase Auth REST API via https
-  const apiKey = 'AIzaSyAPlmPufMDNBdpgtAfvhiuMVYR-cBAnP8U';
+  const apiKey = 'AIzaSyBQMojgcMa626RRFJCYJ7r1y9AZ9vn3jPs';
   const body = JSON.stringify({ token: customToken, returnSecureToken: true });
   
   return new Promise((resolve, reject) => {

@@ -37,7 +37,7 @@ async function run() {
     rulesetName: ruleset.name
   });
   console.log('Create release:', r.status);
-  if (r.status === 200) {
+  if (r.status === 200 || r.status === 201) {
     const rel = JSON.parse(r.body);
     console.log('Release:', rel.name, '->', rel.rulesetName);
   } else {

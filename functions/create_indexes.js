@@ -1,97 +1,110 @@
+/**
+ * Create missing Firestore composite indexes from firestore.indexes.json.
+ * 
+ * Usage: node functions/create_indexes.js
+ */
 const { GoogleAuth } = require('google-auth-library');
+const fs = require('fs');
+const path = require('path');
 const key = require('C:/Users/mhmd.assaf/source/repos/fast-delivery/assets/keys/fast-delivery-32739-firebase-adminsdk-fbsvc-0547c726e6.json');
 const https = require('https');
 const PROJECT = 'fast-delivery-32739';
 
-function call(method, urlPath, body) {
+const auth = new GoogleAuth({ credentials: key, scopes: ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/firebase'] });
+
+function call(method, host, pathStr, body) {
   return new Promise((resolve, reject) => {
-    const auth = new GoogleAuth({
-      credentials: key,
-      scopes: ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/datastore']
-    });
     auth.getAccessToken().then(token => {
-      const opts = {
-        hostname: 'firestore.googleapis.com',
-        path: '/v1/projects/' + PROJECT + '/databases/(default)' + urlPath,
-        method,
-        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
-      };
-      const req = https.request(opts, res => {
-        let d = '';
-        res.on('data', c => d += c);
-        res.on('end', () => resolve({ status: res.statusCode, body: d }));
-      });
-      req.on('error', reject);
-      if (body) req.write(JSON.stringify(body));
-      req.end();
-    }).catch(reject);
+      const opts = { hostname: host, path: pathStr, method, headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } };
+      const req = https.request(opts, res => { let d = ''; res.on('data', c => d += c); res.on('end', () => resolve({ status: res.statusCode, body: d })); });
+      req.on('error', reject); if (body) req.write(JSON.stringify(body)); req.end();
+    });
   });
 }
 
-const indexDefs = [
-  // 1. Categories: isActive ASC, order ASC
-  { collection: 'categories', body: { queryScope: 'COLLECTION', fields: [
-    { fieldPath: 'isActive', order: 'ASCENDING' },
-    { fieldPath: 'order', order: 'ASCENDING' }]
-  }},
-  // 2. Shops: isActive ASC, createdAt DESC (base)
-  { collection: 'shops', body: { queryScope: 'COLLECTION', fields: [
-    { fieldPath: 'isActive', order: 'ASCENDING' },
-    { fieldPath: 'createdAt', order: 'DESCENDING' }]
-  }},
-  // 3. Shops: isActive ASC, categoryId ASC, createdAt DESC (category filter)
-  { collection: 'shops', body: { queryScope: 'COLLECTION', fields: [
-    { fieldPath: 'isActive', order: 'ASCENDING' },
-    { fieldPath: 'categoryId', order: 'ASCENDING' },
-    { fieldPath: 'createdAt', order: 'DESCENDING' }]
-  }},
-  // 4. Shops: isActive ASC, isOpen ASC, createdAt DESC (open now filter)
-  { collection: 'shops', body: { queryScope: 'COLLECTION', fields: [
-    { fieldPath: 'isActive', order: 'ASCENDING' },
-    { fieldPath: 'isOpen', order: 'ASCENDING' },
-    { fieldPath: 'createdAt', order: 'DESCENDING' }]
-  }},
-  // 5. Shops: isActive ASC, categoryId ASC, isOpen ASC, createdAt DESC
-  { collection: 'shops', body: { queryScope: 'COLLECTION', fields: [
-    { fieldPath: 'isActive', order: 'ASCENDING' },
-    { fieldPath: 'categoryId', order: 'ASCENDING' },
-    { fieldPath: 'isOpen', order: 'ASCENDING' },
-    { fieldPath: 'createdAt', order: 'DESCENDING' }]
-  }}
-];
+/** Convert firestore.indexes.json field config to API format */
+function toApiField(f) {
+  if (f.arrayConfig) {
+    return { fieldPath: f.fieldPath, arrayConfig: f.arrayConfig };
+  }
+  return { fieldPath: f.fieldPath, order: f.order.toUpperCase() };
+}
 
-async function main() {
-  // List existing indexes
-  console.log('Listing existing indexes...');
-  const listRes = await call('GET', '/collectionGroups/-/indexes');
-  const list = JSON.parse(listRes.body);
-  const existingByName = {};
-  for (const idx of (list.indexes || [])) {
-    const sig = idx.fields.map(f => f.fieldPath + ':' + f.order).sort().join('|');
-    existingByName[sig] = idx;
-    console.log('  Existing:', idx.collectionGroup, 'state:', idx.state, 'sig:', sig);
+/** Create a unique key for comparing indexes */
+function indexKey(idx) {
+  const fields = idx.fields.map(f => f.fieldPath + ':' + (f.order || f.arrayConfig || '?')).join(';');
+  return idx.collectionGroup + '|' + queryScope + '|' + fields;
+}
+
+async function run() {
+  // Read index definitions from firestore.indexes.json
+  const indexPath = path.resolve(__dirname, '../firestore.indexes.json');
+  const config = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+  const desired = config.indexes || [];
+  console.log(`Desired indexes from firestore.indexes.json: ${desired.length}`);
+
+  // Get existing indexes
+  const r = await call('GET', 'firestore.googleapis.com', '/v1/projects/' + PROJECT + '/databases/(default)/collectionGroups/-/indexes');
+  if (r.status !== 200) {
+    console.error('Failed to list indexes:', r.body.substring(0, 200));
+    process.exit(1);
+  }
+  const existing = JSON.parse(r.body).indexes || [];
+  console.log(`Existing indexes in Firestore: ${existing.length}\n`);
+
+  /** Extract collectionGroup from the index name field */
+  function extractCollectionGroup(name) {
+    const match = name.match(/collectionGroups\/([^/]+)/);
+    return match ? match[1] : '?';
   }
 
-  for (const def of indexDefs) {
-    const sig = def.body.fields.map(f => f.fieldPath + ':' + f.order).sort().join('|');
-    
-    if (existingByName[sig]) {
-      console.log('  SKIP (exists):', def.collection, '->', sig);
+  // Build a set of existing index keys
+  const existingKeys = new Set();
+  for (const idx of existing) {
+    const cg = extractCollectionGroup(idx.name);
+    const fields = idx.fields
+      .filter(f => f.fieldPath !== '__name__')
+      .map(f => f.fieldPath + ':' + (f.order || f.arrayConfig || '?'))
+      .join(';');
+    existingKeys.add(cg + '|' + fields);
+  }
+
+  // Create missing indexes
+  let created = 0;
+  let skipped = 0;
+  for (const idx of desired) {
+    const apiFields = idx.fields.map(toApiField);
+    const fieldsStr = apiFields.map(f => f.fieldPath + ':' + (f.order || f.arrayConfig || '?')).join(';');
+    const key = idx.collectionGroup + '|' + fieldsStr;
+
+    if (existingKeys.has(key)) {
+      console.log(`  ✓ EXISTS: ${idx.collectionGroup} | ${fieldsStr}`);
+      skipped++;
       continue;
     }
 
-    console.log('  Creating:', def.collection, '->', sig);
-    const createRes = await call('POST', '/collectionGroups/' + def.collection + '/indexes', def.body);
-    if (createRes.status === 200) {
-      const data = JSON.parse(createRes.body);
-      console.log('    OK:', data.name, 'state:', data.state);
+    // Body must have ONLY fields and queryScope
+    const body = {
+      fields: apiFields,
+      queryScope: idx.queryScope || 'COLLECTION',
+    };
+
+    const res = await call('POST', 'firestore.googleapis.com',
+      `/v1/projects/${PROJECT}/databases/(default)/collectionGroups/${idx.collectionGroup}/indexes`, body);
+
+    if (res.status === 200) {
+      const name = JSON.parse(res.body).name;
+      console.log(`  ✅ CREATED: ${idx.collectionGroup} | ${fieldsStr} → ${name.split('/').pop()}`);
+      created++;
+    } else if (res.status === 409) {
+      console.log(`  ⚠️  CONFLICT (exists): ${idx.collectionGroup} | ${fieldsStr}`);
+      skipped++;
     } else {
-      console.log('    ERR:', createRes.body.substring(0, 300));
+      console.log(`  ❌ ERROR: ${idx.collectionGroup} | ${fieldsStr}: ${res.status} ${res.body.substring(0, 150)}`);
     }
   }
 
-  console.log('\nDone! Indexes that are CREATING will take a few minutes to build.');
-  console.log('The app will automatically use them once ready.');
+  console.log(`\nSummary: ${created} created, ${skipped} skipped, ${desired.length - created - skipped} failed`);
 }
 
-main().catch(e => { console.error('Error:', e.message); process.exit(1); });
+run().catch(e => { console.error('Fatal:', e.message); process.exit(1); });
