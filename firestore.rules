@@ -174,8 +174,12 @@ service cloud.firestore {
       /// Anyone authenticated can read menu items
       allow read: if isAuthenticated();
       
-      /// Sellers can manage their own items
-      allow create, update: if hasRole('seller') && 
+      /// Sellers can create their own items
+      allow create: if hasRole('seller') && 
+        request.auth.uid == request.resource.data.sellerId;
+      
+      /// Sellers can update their own items
+      allow update: if hasRole('seller') && 
         request.auth.uid == resource.data.sellerId;
       
       /// Sellers can delete their own items
@@ -248,6 +252,27 @@ service cloud.firestore {
       
       /// No one can delete shops (soft-delete via isActive)
       allow delete: if false;
+
+      // ── Menu Items (subcollection) ────────────────────────────────
+      match /menu_items/{itemId} {
+        /// Any authenticated user can read menu items
+        allow read: if isAuthenticated();
+
+        /// Sellers can create/update items in their own shop
+        allow create: if hasRole('seller') && 
+          get(/databases/$(database)/documents/shops/$(shopId)).data.sellerId == request.auth.uid;
+
+        allow update: if hasRole('seller') && 
+          get(/databases/$(database)/documents/shops/$(shopId)).data.sellerId == request.auth.uid &&
+          request.resource.data.keys().hasAny(['name', 'description', 'imageUrl',
+            'price', 'category', 'isAvailable', 'order', 'isPopular', 'updatedAt']);
+
+        /// Admins can manage all menu items
+        allow read, write: if isAdmin();
+
+        /// No one can delete menu items (soft-delete via isActive)
+        allow delete: if false;
+      }
     }
     
     // =========================================================================

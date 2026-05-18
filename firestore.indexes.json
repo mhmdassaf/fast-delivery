@@ -70,6 +70,16 @@
       ]
     },
     
+    // Menu Items indexes (subcollection: shops/{shopId}/menu_items)
+    {
+      "collectionGroup": "menu_items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive", "order": "ascending" },
+        { "fieldPath": "order", "order": "ascending" }
+      ]
+    },
+
     // Chats indexes
     {
       "collectionGroup": "chats",

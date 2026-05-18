@@ -11,6 +11,7 @@ import 'package:fast_delivery_auth/presentation/screens/login_screen.dart';
 import 'package:fast_delivery_auth/presentation/screens/register_screen.dart';
 
 import 'features/dashboard/presentation/pages/dashboard_screen.dart';
+import 'features/shop_details/presentation/pages/shop_details_screen.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -93,12 +94,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterScreen(),
       ),
 
-      // Shop details route (placeholder - ready for integration)
+      // Shop details route
       GoRoute(
         path: '/shop/:shopId',
         builder: (context, state) {
           final shopId = state.pathParameters['shopId'] ?? '';
-          return _ShopDetailsPlaceholder(shopId: shopId);
+          return ShopDetailsScreen(shopId: shopId);
         },
       ),
     ],
@@ -134,45 +135,4 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Placeholder for shop details screen (to be implemented separately)
-class _ShopDetailsPlaceholder extends StatelessWidget {
-  final String shopId;
 
-  const _ShopDetailsPlaceholder({required this.shopId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Shop #$shopId'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.store_rounded,
-              size: 80,
-              color: AppColors.textHint,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Shop Details',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Shop ID: $shopId',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Shop details screen coming soon',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

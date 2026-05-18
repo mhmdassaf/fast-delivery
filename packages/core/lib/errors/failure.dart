@@ -74,3 +74,14 @@ final class DashboardFailure extends Failure {
   factory DashboardFailure.fetchCategoriesFailed([String? message]) =>
       DashboardFailure(message: message ?? 'Failed to load categories');
 }
+
+/// Shop details related failures
+final class ShopDetailsFailure extends Failure {
+  const ShopDetailsFailure({required super.message, super.code});
+
+  factory ShopDetailsFailure.fetchShopFailed([String? message]) =>
+      ShopDetailsFailure(message: message ?? 'Failed to load shop details');
+
+  factory ShopDetailsFailure.fetchMenuFailed([String? message]) =>
+      ShopDetailsFailure(message: message ?? 'Failed to load menu items');
+}
