@@ -44,6 +44,10 @@ DashboardRepository dashboardRepository(Ref ref) {
 // Dashboard State
 // ============================================================================
 
+/// Sentinel for distinguishing "not provided" from "explicitly set to null"
+// in copyWith methods for nullable fields.
+const _Unset = Object();
+
 /// State class for the dashboard
 class DashboardState {
   /// List of loaded shops
@@ -109,27 +113,31 @@ class DashboardState {
   DashboardState copyWith({
     List<ShopModel>? shops,
     List<CategoryModel>? categories,
-    String? selectedCategoryId,
+    Object? selectedCategoryId = _Unset,
     String? searchQuery,
     bool? isLoading,
     bool? isLoadingMore,
     bool? isRefreshing,
     String? errorMessage,
     bool clearError = false,
-    DocumentSnapshot<Object?>? lastDocument,
+    Object? lastDocument = _Unset,
     bool? hasMoreData,
     ShopFilterModel? filter,
   }) {
     return DashboardState(
       shops: shops ?? this.shops,
       categories: categories ?? this.categories,
-      selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
+      selectedCategoryId: selectedCategoryId == _Unset
+          ? this.selectedCategoryId
+          : selectedCategoryId as String?,
       searchQuery: searchQuery ?? this.searchQuery,
       isLoading: isLoading ?? this.isLoading,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       isRefreshing: isRefreshing ?? this.isRefreshing,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-      lastDocument: lastDocument ?? this.lastDocument,
+      lastDocument: lastDocument == _Unset
+          ? this.lastDocument
+          : lastDocument as DocumentSnapshot<Object?>?,
       hasMoreData: hasMoreData ?? this.hasMoreData,
       filter: filter ?? this.filter,
     );
