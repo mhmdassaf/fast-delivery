@@ -52,15 +52,7 @@ Note: Git-agent replaces all git commit/push functionality previously in Code-re
 
 ## Feature Documentation (AI-Readable Specs)
 
-Each major feature must have an AI-readable specification in `/docs/` folder:
-- **Auth Feature:** `/docs/auth_feature.md` - Complete spec for authentication system
-  - Architecture (Clean Architecture + MVVM)
-  - Auth flows (login, register, Google Sign-In, password reset)
-  - State management (Riverpod providers)
-  - Navigation (GoRouter)
-  - Firebase integration details
-  - UI components and theming
-  - **Read this file before making any auth-related changes**
+All project specifications are in `/docs/` folder.
 
 **Rules for Feature Specs:**
 1. Specifications must be updated whenever the feature changes
@@ -70,49 +62,31 @@ Each major feature must have an AI-readable specification in `/docs/` folder:
 
 ---
 
-## Auth Rules (Enforced for Consistency)
+## Implementation Rules (Enforced for Consistency)
 
-**⚠️ CRITICAL: Read `/docs/auth_feature.md` before any auth changes**
+**⚠️ Read the relevant spec in `/docs/` before making changes**
 
 ### Mandatory Patterns (DO NOT DEVIATE)
 1. **Architecture:** Must follow Clean Architecture (data → domain → presentation)
-   - Data layer: `features/auth/data/`
-   - Domain layer: `features/auth/domain/` (providers/notifiers)
-   - Presentation layer: `features/auth/presentation/` (screens/widgets)
+   - Data layer: `features/{feature}/data/`
+   - Domain layer: `features/{feature}/domain/` (providers/notifiers)
+   - Presentation layer: `features/{feature}/presentation/` (screens/widgets)
 
-2. **State Management:** Use Riverpod with `AuthNotifier` pattern
-   - All auth state changes via `authNotifierProvider`
+2. **State Management:** Use Riverpod with notifier pattern
+   - All state changes via notifier providers
    - Never call Firebase directly from UI screens
    - Always handle `Result<T>` (success/failure) from notifier methods
 
-3. **Authentication Flows:** Follow documented flows in `docs/auth_feature.md`
-   - Email/Password: Via `AuthNotifier.signInWithEmailAndPassword()`
-   - Google Sign-In: Via `AuthNotifier.signInWithGoogle()`
-   - Registration: Via `AuthNotifier.signUpWithEmailAndPassword()`
-   - Password Reset: Via `AuthNotifier.sendPasswordResetEmail()`
+3. **Firebase Integration:**
+   - Use DataSource pattern for all Firebase operations
+   - Firestore documents follow the schema defined in `/docs/`
 
-4. **Firebase Integration:**
-   - User documents in Firestore: `users/{uid}`
-   - Required fields: `uid`, `email`, `role`, `createdAt`, `lastLoginAt`
-   - Update `lastLoginAt` on every login
-   - Use `AuthDataSourceImpl` for all Firebase operations
+4. **UI Components:** Use shared widgets from `lib/shared/widgets/`
 
-5. **UI Components:** Use shared widgets from `lib/shared/widgets/`
-   - `AuthTextField` for text inputs
-   - `PrimaryButton` for actions
-   - `LoadingOverlay` for async operations
-   - `AuthErrorMessage` for error display
+5. **Theming:** Use `AppColors` and `AppDimens` from `core/theme/app_theme.dart`
+   - No hardcoded colors or spacing values
 
-6. **Form Validation:** Use `Validators` class from `core/utils/validators.dart`
-   - Email validation: `Validators.email`
-   - Password validation: `Validators.password` (min 6 chars, uppercase, lowercase, digit)
-   - Required fields: `Validators.required`
-
-7. **Theming:** Use `AppColors` and `AppDimens` from `core/theme/app_theme.dart`
-   - No hardcoded colors (e.g., `Colors.red` → use `AppColors.error`)
-   - No hardcoded spacing (use `AppDimens.padding*`)
-
-8. **Error Handling:** Use `Result<T>` pattern
+6. **Error Handling:** Use `Result<T>` pattern
    ```dart
    final result = await _repository.someMethod();
    return result.fold(
@@ -121,28 +95,24 @@ Each major feature must have an AI-readable specification in `/docs/` folder:
    );
    ```
 
-9. **Navigation:** Use GoRouter with routes defined in `main.dart`
-   - Auth gate at `/` handles routing based on auth state
-   - Login: `/login`, Register: `/register`
-   - Use `context.go()` or `context.push()` for navigation
+7. **Navigation:** Use GoRouter with routes defined in `main.dart`
 
-10. **Code Generation:** After modifying providers or Freezed models
-    ```bash
-    flutter pub run build_runner build --delete-conflicting-outputs
-    ```
+8. **Code Generation:** After modifying providers or Freezed models
+   ```bash
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
 
-### Checklist Before Committing Auth Changes
-- [ ] Read `/docs/auth_feature.md` to understand current implementation
+### Checklist Before Committing Changes
+- [ ] Read relevant spec in `/docs/` to understand current implementation
 - [ ] Follow Clean Architecture layers (data/domain/presentation)
 - [ ] Use Riverpod providers (not direct Firebase calls in UI)
 - [ ] Handle errors with `Result<T>` pattern
-- [ ] Use shared widgets (`AuthTextField`, `PrimaryButton`, etc.)
-- [ ] Apply theming (`AppColors`, `AppDimens`)
-- [ ] Validate forms using `Validators` class
+- [ ] Use shared widgets from `lib/shared/widgets/`
+- [ ] Apply theming (`AppColors`, `AppDimens`) - no hardcoded values
 - [ ] Dispose controllers/focus nodes in `dispose()` method
 - [ ] Run `build_runner` if providers/models changed
-- [ ] Update `/docs/auth_feature.md` if adding new functionality
-- [ ] Test the auth flow (login, register, Google Sign-In)
+- [ ] Update spec in `/docs/` if adding new functionality
+- [ ] Test the feature flow thoroughly
 
 ---
 
