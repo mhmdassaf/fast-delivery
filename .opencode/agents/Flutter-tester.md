@@ -76,21 +76,14 @@ dart run build_runner build --delete-conflicting-outputs
 
 Skip otherwise.
 
-#### Step 4 — Fast Run
+#### Step 4 — Build & Run (Final Step)
 Warn the user if first build (Gradle download expected to take 5-15 minutes, subsequent builds faster). Run:
 ```bash
 flutter run -d <device-id>
 ```
 - Add `--release` for performance testing, `--verbose` only if build hangs
 - Enable Gradle build cache by passing `--android-project-arg=--build-cache` for faster subsequent builds
-
-#### Step 5 — Incremental Testing (Default)
-Run only tests affected by recent changes:
-```bash
-flutter test --run-changed --concurrency=8
-```
-- Skip coverage by default (add `--coverage` only on request)
-- For failures: re-run failed tests with `--reporter expanded`
+- **After the app launches on device, kill the task** — do not wait for further commands
 
 ---
 
@@ -106,7 +99,7 @@ flutter test --coverage --concurrency=8 test/ && flutter test --concurrency=8 te
 
 ---
 
-### Step 6 — ADB Reverse (if app calls local backend)
+### Step 5 — ADB Reverse (if app calls local backend)
 If the app connects to a local server (localhost/127.0.0.1), run:
 ```bash
 adb reverse tcp:<PORT> tcp:<PORT>
@@ -114,11 +107,21 @@ adb reverse tcp:<PORT> tcp:<PORT>
 
 ---
 
-### Step 7 — Confirm Running
-After the app launches, confirm:
+### Step 6 — Confirm Running (On Request Only)
+Only when explicitly asked to test/verify. After the app launches, confirm:
 - App is visible on device
 - Hot reload is working (`r` in terminal)
 - Hot restart is working (`R` in terminal)
+
+---
+
+### Step 7 — Incremental Testing (On Request Only)
+Only when explicitly asked to test. Run tests with parallel execution:
+```bash
+flutter test --concurrency=8
+```
+- Skip coverage by default (add `--coverage` only on request)
+- For failures: re-run failed tests with `--reporter expanded`
 
 ---
 
@@ -127,7 +130,7 @@ Default to fast, parallel, incremental testing:
 
 ### 1. Default: Incremental Parallel Tests
 ```bash
-flutter test --run-changed --concurrency=8
+flutter test --concurrency=8
 ```
 - Reports total tests passed/failed/skipped
 - Re-run failed tests with `--reporter expanded` for full stack traces
@@ -193,6 +196,8 @@ This creates a permanent knowledge base that prevents repeating past mistakes.
 | 14 | **Freezed v3**: Build fails with "missing implementations for these members" | Missing `abstract` or `sealed` keyword in `@freezed` classes | Add `abstract` before `class`: `abstract class UserModel with _$UserModel` | 2026-05-06 |
 | 15 | **Code generation**: Build runner produces "wrote 0 outputs" | Stale `.dart_tool` cache | Delete `.dart_tool` folder and re-run: `dart run build_runner build --delete-conflicting-outputs` | 2026-05-06 |
 | 16 | **ADB**: `device 'XXXX' not found` during install | Device disconnected (USB/timeout) | Check USB connection, unlock phone, re-run `adb devices` and retry | 2026-05-06 |
+| 17 | **Gradle**: `daemon has disappeared` on second build | Daemon killed due to memory/process conflict | Stop any previous Gradle processes (`gradlew --stop`), then re-run `flutter run` | 2026-05-21 |
+| 18 | **Flutter test**: `--run-changed` flag not recognized | Not a real Flutter CLI option | Use `flutter test --concurrency=8` instead (runs all tests) | 2026-05-21 |
 
 ---
 
@@ -213,21 +218,19 @@ For failures **NOT in the table above**:
 ---
 
 ## 📋 Before Reporting Completion
-Always verify (skip non-essential checks in Quick Mode):
-- [ ] App launches on device without crashes
-- [ ] Hot reload works
-- [ ] Hot restart works
-- [ ] Tests pass (incremental by default, full on request)
-- [ ] No critical errors in device logs (`adb logcat`) (only on request)
+Always verify:
+- [ ] App built and launched on device without build errors
+- [ ] APK was installed successfully
+- [ ] No missing imports or compilation errors
 
-If any check fails, report it clearly with the error details and suggested fix.
+If the build fails, report it clearly with the error details and suggested fix.
 
 ---
 
 ## ✅ Completion Report
-After all checks pass, report:
+After build succeeds, report:
 ```
-✅ All tests passed. App is running successfully on device.
+✅ App built and installed successfully on device.
 
-Run `/git-agent` to create/update feature documentation then commit and push these tested changes.
+Build successful. App is now running on device.
 ```

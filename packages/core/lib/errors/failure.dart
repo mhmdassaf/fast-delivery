@@ -85,3 +85,17 @@ final class ShopDetailsFailure extends Failure {
   factory ShopDetailsFailure.fetchMenuFailed([String? message]) =>
       ShopDetailsFailure(message: message ?? 'Failed to load menu items');
 }
+
+/// Cart related failures
+final class CartFailure extends Failure {
+  const CartFailure({required super.message, super.code});
+
+  factory CartFailure.emptyCart() =>
+      const CartFailure(message: 'Cart is empty');
+
+  factory CartFailure.addToCartFailed([String? message]) =>
+      CartFailure(message: message ?? 'Failed to add item to cart');
+
+  factory CartFailure.persistFailed() =>
+      const CartFailure(message: 'Failed to save cart data');
+}

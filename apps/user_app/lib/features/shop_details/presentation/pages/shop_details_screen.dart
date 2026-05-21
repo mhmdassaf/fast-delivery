@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:fast_delivery_core/constants/app_constants.dart';
 
+import '../../../../features/cart/data/models/item_detail_args.dart';
 import '../../domain/providers/shop_details_providers.dart';
 import '../widgets/menu_category_section.dart';
 import '../widgets/shop_details_error_state.dart';
@@ -94,7 +96,19 @@ class ShopDetailsScreen extends ConsumerWidget {
             SliverList(
               delegate: SliverChildListDelegate(
                 state.groupedMenuItems.map(
-                  (group) => MenuCategorySection(group: group),
+                  (group) => MenuCategorySection(
+                    group: group,
+                    onItemAddTap: (item) {
+                      context.push(
+                        '/item-details',
+                        extra: ItemDetailArgs(
+                          item: item,
+                          shopId: shopId,
+                          shopName: shop.name,
+                        ),
+                      );
+                    },
+                  ),
                 ).toList(),
               ),
             )
@@ -106,9 +120,9 @@ class ShopDetailsScreen extends ConsumerWidget {
               child: _EmptyMenuState(),
             ),
 
-          // Bottom padding
+          // Bottom padding (accounts for ViewCartBanner overlay)
           const SliverToBoxAdapter(
-            child: SizedBox(height: AppDimens.paddingXXL),
+            child: SizedBox(height: AppDimens.cartBannerBottomPadding),
           ),
         ],
       ),

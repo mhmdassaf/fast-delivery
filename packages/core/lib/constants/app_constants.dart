@@ -78,4 +78,8 @@ abstract final class AppDimens {
 
   // Touch Target (WCAG 2.1 AA compliance)
   static const double minTouchTarget = 48.0;
+
+  // ViewCartBanner bottom padding (ensures scrollable content is not hidden
+  // behind the floating cart banner overlay)
+  static const double cartBannerBottomPadding = 88.0;
 }

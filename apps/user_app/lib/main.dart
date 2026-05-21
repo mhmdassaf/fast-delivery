@@ -12,6 +12,9 @@ import 'package:fast_delivery_auth/presentation/screens/register_screen.dart';
 
 import 'features/dashboard/presentation/pages/dashboard_screen.dart';
 import 'features/shop_details/presentation/pages/shop_details_screen.dart';
+import 'features/cart/presentation/pages/item_details_screen.dart';
+import 'features/cart/presentation/pages/my_cart_screen.dart';
+import 'features/cart/presentation/widgets/view_cart_banner.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -78,13 +81,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      // Main dashboard route
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const DashboardScreen(),
-      ),
-
-      // Auth routes
+      // ── Auth routes (outside ShellRoute — no cart banner) ──────────
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
@@ -94,13 +91,45 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterScreen(),
       ),
 
-      // Shop details route
-      GoRoute(
-        path: '/shop/:shopId',
-        builder: (context, state) {
-          final shopId = state.pathParameters['shopId'] ?? '';
-          return ShopDetailsScreen(shopId: shopId);
-        },
+      // ── App routes (inside ShellRoute — includes ViewCartBanner) ───
+      ShellRoute(
+        builder: (context, state, child) => Stack(
+          children: [
+            child,
+            const Align(
+              alignment: Alignment.bottomCenter,
+              child: ViewCartBanner(),
+            ),
+          ],
+        ),
+        routes: [
+          // Main dashboard
+          GoRoute(
+            path: '/',
+            builder: (context, state) => const DashboardScreen(),
+          ),
+
+          // Shop details
+          GoRoute(
+            path: '/shop/:shopId',
+            builder: (context, state) {
+              final shopId = state.pathParameters['shopId'] ?? '';
+              return ShopDetailsScreen(shopId: shopId);
+            },
+          ),
+
+          // Item details (receives ItemDetailArgs via state.extra)
+          GoRoute(
+            path: '/item-details',
+            builder: (context, state) => const ItemDetailsScreen(),
+          ),
+
+          // My cart
+          GoRoute(
+            path: '/my-cart',
+            builder: (context, state) => const MyCartScreen(),
+          ),
+        ],
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

@@ -259,7 +259,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
               // ==============================================================
               // Loading More Indicator
-              // ==============================================================
               if (state.isLoadingMore && !state.isLoading)
                 const SliverToBoxAdapter(
                   child: Padding(
@@ -276,6 +275,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     ),
                   ),
                 ),
+
+              // Bottom padding (accounts for ViewCartBanner overlay)
+              const SliverToBoxAdapter(
+                child: SizedBox(height: AppDimens.cartBannerBottomPadding),
+              ),
             ],
           ),
         ),

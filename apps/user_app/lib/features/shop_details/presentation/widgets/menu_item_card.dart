@@ -18,8 +18,8 @@ import '../../data/models/menu_item_model.dart';
 /// └──────────────────────────────────────┘
 /// ```
 ///
-/// The add button is a visual placeholder (shows a SnackBar).
-/// Actual cart integration will be implemented in a future feature.
+/// Tapping [+] calls [onAddTap], which the parent (ShopDetailsScreen) uses to
+/// navigate to the [ItemDetailsScreen] with full item details and add-to-cart.
 class MenuItemCard extends StatelessWidget {
   final MenuItemModel item;
   final VoidCallback? onAddTap;
@@ -108,14 +108,12 @@ class MenuItemCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // Add button (visual placeholder)
+                      // Add button — navigates to item details screen
                       SizedBox(
                         width: 36,
                         height: 36,
                         child: IconButton(
-                          onPressed: () {
-                            _onAddPressed(context);
-                          },
+                          onPressed: () => onAddTap?.call(),
                           icon: const Icon(
                             Icons.add_circle_rounded,
                             color: AppColors.primary,
@@ -168,21 +166,4 @@ class MenuItemCard extends StatelessWidget {
     );
   }
 
-  void _onAddPressed(BuildContext context) {
-    // Visual placeholder: shows a SnackBar.
-    // Actual cart logic will be added in a future feature.
-    onAddTap?.call();
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${item.name} added to cart'),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(AppDimens.paddingM),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusM),
-        ),
-      ),
-    );
-  }
 }

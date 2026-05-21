@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fast_delivery_core/constants/app_constants.dart';
 
 import '../../data/models/menu_item_group.dart';
+import '../../data/models/menu_item_model.dart';
 import 'menu_item_card.dart';
 
 /// Displays a menu category header followed by its item cards.
@@ -20,7 +21,15 @@ import 'menu_item_card.dart';
 class MenuCategorySection extends StatelessWidget {
   final MenuItemGroup group;
 
-  const MenuCategorySection({super.key, required this.group});
+  /// Called when the [+] button on a menu item is tapped.
+  /// Receives the tapped [MenuItemModel] so the parent can navigate.
+  final void Function(MenuItemModel item)? onItemAddTap;
+
+  const MenuCategorySection({
+    super.key,
+    required this.group,
+    this.onItemAddTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +80,12 @@ class MenuCategorySection extends StatelessWidget {
 
         // ── Item Cards ──────────────────────────────────────────────
         ...group.items.map(
-          (item) => MenuItemCard(item: item),
+          (item) => MenuItemCard(
+            item: item,
+            onAddTap: onItemAddTap != null
+                ? () => onItemAddTap!(item)
+                : null,
+          ),
         ),
       ],
     );
