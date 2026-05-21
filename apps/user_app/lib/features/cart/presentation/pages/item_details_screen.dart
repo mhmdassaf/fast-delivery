@@ -215,7 +215,13 @@ class _ItemDetailsScreenState extends ConsumerState<ItemDetailsScreen> {
           content: Text('${args.item.name} ×$_quantity added to cart'),
           duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(AppDimens.paddingM),
+          margin: EdgeInsets.only(
+            left: AppDimens.paddingM,
+            right: AppDimens.paddingM,
+            top: AppDimens.paddingM,
+            // Clear the ViewCartBanner overlay
+            bottom: AppDimens.cartBannerBottomPadding + AppDimens.paddingM,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppDimens.radiusM),
           ),
@@ -331,7 +337,7 @@ class _BottomBar extends StatelessWidget {
         AppDimens.paddingM,
         AppDimens.paddingS,
         AppDimens.paddingM,
-        AppDimens.paddingL,
+        AppDimens.cartBannerBottomPadding,
       ),
       decoration: BoxDecoration(
         color: AppColors.background,
@@ -358,26 +364,29 @@ class _BottomBar extends StatelessWidget {
             Expanded(
               child: SizedBox(
                 height: AppDimens.buttonHeight,
-                child: ElevatedButton(
-                  onPressed: onAddToCart,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimens.radiusM),
+                  child: ElevatedButton(
+                    onPressed: onAddToCart,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.onPrimary,
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(AppDimens.radiusM),
+                      ),
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'Add to Cart  \$${total.toStringAsFixed(2)}',
+                        style: textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.onPrimary,
+                        ),
+                        maxLines: 1,
+                      ),
                     ),
                   ),
-                  child: Text(
-                    'Add to Cart  \$${total.toStringAsFixed(2)}',
-                    style: textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.onPrimary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
               ),
             ),
           ],

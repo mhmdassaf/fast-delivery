@@ -34,7 +34,7 @@ apps/user_app/lib/features/cart/
 └── presentation/
     ├── pages/
     │   ├── item_details_screen.dart       # Full-screen item detail view
-    │   └── my_cart_screen.dart            # Cart management screen
+    │   └── my_cart_screen.dart            # Cart items list + bottom action bar
     └── widgets/
         ├── quantity_selector.dart         # Reusable [-] / [+] widget
         └── view_cart_banner.dart          # Floating bottom banner
@@ -46,7 +46,7 @@ apps/user_app/lib/features/cart/
 |------|--------|
 | `packages/core/lib/constants/app_constants.dart` | Added `AppDimens.cartBannerBottomPadding = 88.0` |
 | `packages/core/lib/errors/failure.dart` | Added `CartFailure` class |
-| `apps/user_app/lib/main.dart` | ShellRoute wraps app routes with ViewCartBanner; new `/item-details` and `/my-cart` routes |
+| `apps/user_app/lib/main.dart` | ShellRoute wraps app routes with ViewCartBanner; `/my-cart` moved outside ShellRoute to avoid banner overlay on cart screen |
 | `apps/user_app/lib/features/dashboard/presentation/pages/dashboard_screen.dart` | Added 88px bottom padding for ViewCartBanner overlay |
 | `apps/user_app/lib/features/shop_details/presentation/pages/shop_details_screen.dart` | Added 88px bottom padding; [+] pushes to `/item-details` |
 | `apps/user_app/lib/features/shop_details/presentation/widgets/menu_category_section.dart` | Passes `onItemAddTap` callback |
@@ -132,7 +132,7 @@ When user tries to add an item from a different shop:
 | Provider | Type | Purpose |
 |----------|------|---------|
 | `cartNotifierProvider` | `@riverpod` Notifier | **Core state** - `CartNotifier` with `List<CartItemModel>` |
-| `cartItemCountProvider` | `@riverpod` | Total item count (sum of quantities) |
+| `cartItemCountProvider` | `@riverpod` | Distinct cart entry count (`cart.length`) |
 | `cartTotalProvider` | `@riverpod` | Total price of all items |
 | `cartShopIdProvider` | `@riverpod` | Shop ID of items in cart (null if empty) |
 | `cartShopNameProvider` | `@riverpod` | Shop name of items in cart (null if empty) |
@@ -173,7 +173,7 @@ When user tries to add an item from a different shop:
 /                 ← Dashboard (inside ShellRoute with ViewCartBanner)
 /shop/:shopId     ← Shop details (inside ShellRoute)
 /item-details     ← Item detail + add to cart (inside ShellRoute)
-/my-cart          ← Cart management (inside ShellRoute)
+/my-cart          ← Cart management (outside ShellRoute — no ViewCartBanner)
 ```
 
 ### ShellRoute
@@ -216,11 +216,10 @@ ShellRoute(
 | `_CircleButton` | `widgets/quantity_selector.dart` | Circular icon button for quantity controls |
 | `_ItemImage` | `pages/item_details_screen.dart` | Full-width item image with placeholder |
 | `_PlaceholderImage` | `pages/item_details_screen.dart` | Fallback when no image URL |
-| `_BottomBar` | `pages/item_details_screen.dart` | Fixed bottom bar with quantity + add-to-cart |
+| `_BottomBar` | `pages/item_details_screen.dart` | Fixed bottom bar with quantity + add-to-cart (uses `cartBannerBottomPadding`) |
 | `_CartItemCard` | `pages/my_cart_screen.dart` | Cart item row with image, name, instructions, price, quantity |
-| `_CartSummary` | `pages/my_cart_screen.dart` | Subtotal/delivery/total summary with actions |
+| `_CartBottomBar` | `pages/my_cart_screen.dart` | Bottom action bar with "Add Items" + "Checkout" buttons |
 | `_EmptyCart` | `pages/my_cart_screen.dart` | Empty cart illustration with "Browse Shops" CTA |
-| `_SummaryRow` | `pages/my_cart_screen.dart` | Single label/value row in summary |
 
 ### ViewCartBanner Animation
 - Uses `AnimationController` with `SlideTransition` (Offset from (0,1) to (0,0))

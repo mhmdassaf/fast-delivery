@@ -6,9 +6,9 @@ part of 'cart_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$cartItemCountHash() => r'e6b825429c3ed1cbd82583f0522c49b75cbe972e';
+String _$cartItemCountHash() => r'ac2af8f0a2c781cacf7cb85df7c92c08ca259dd2';
 
-/// Total number of items across all cart entries (sum of quantities).
+/// Number of distinct items in the cart (cart entry count).
 ///
 /// Copied from [cartItemCount].
 @ProviderFor(cartItemCount)
@@ -104,7 +104,7 @@ final hasCartItemsProvider = AutoDisposeProvider<bool>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef HasCartItemsRef = AutoDisposeProviderRef<bool>;
-String _$cartNotifierHash() => r'd2cafdfa1b2ee721b1b87d4eb877062759267ac9';
+String _$cartNotifierHash() => r'8669c3e5ed89ddd84e9cd765578e5fd8d8b4b2b2';
 
 /// Notifier for the user's shopping cart.
 ///

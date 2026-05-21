@@ -9,12 +9,9 @@ import '../../data/models/cart_item_model.dart';
 import '../../domain/providers/cart_providers.dart';
 import '../widgets/quantity_selector.dart';
 
-/// Displays the user's shopping cart contents with quantity controls, a clear
-/// all action, and a summary section showing subtotal, delivery fee, and total.
-///
-/// The bottom banner provides two actions: [Add Items] to continue shopping
-/// at the same shop, and [Check out] with the total amount displayed inside
-/// the button (navigates to checkout — placeholder for a future feature).
+/// Displays the user's shopping cart contents with quantity controls and a
+/// clear all action. The bottom bar provides [Add Items] to continue shopping
+/// and [Checkout] with the total amount displayed inside the button.
 class MyCartScreen extends ConsumerWidget {
   const MyCartScreen({super.key});
 
@@ -184,8 +181,6 @@ class _CartContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deliveryFee = _findDeliveryFee();
-
     return Column(
       children: [
         // Scrollable items list
@@ -206,23 +201,14 @@ class _CartContent extends StatelessWidget {
           ),
         ),
 
-        // Summary section
-        _CartSummary(
+        // Bottom action bar (Add Items + Checkout)
+        _CartBottomBar(
           subtotal: total,
-          deliveryFee: deliveryFee,
           onAddItems: onAddItems,
           onCheckout: onCheckout,
         ),
       ],
     );
-  }
-
-  double _findDeliveryFee() {
-    // If cart has items, try to get delivery fee from the shop. For now,
-    // we use a placeholder since the cart doesn't store the full ShopModel.
-    // This will be enhanced when checkout is implemented.
-    // Returning 0 for simplicity — the fee will come from ShopModel in future.
-    return 0.0;
   }
 }
 
@@ -390,27 +376,22 @@ class _CartItemCard extends StatelessWidget {
 }
 
 // ============================================================================
-// Cart Summary Bottom
+// Cart Bottom Action Bar
 // ============================================================================
 
-class _CartSummary extends StatelessWidget {
+class _CartBottomBar extends StatelessWidget {
   final double subtotal;
-  final double deliveryFee;
   final VoidCallback? onAddItems;
   final VoidCallback onCheckout;
 
-  const _CartSummary({
+  const _CartBottomBar({
     required this.subtotal,
-    required this.deliveryFee,
     this.onAddItems,
     required this.onCheckout,
   });
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final total = subtotal + deliveryFee;
-
     return Container(
       padding: const EdgeInsets.fromLTRB(
         AppDimens.paddingM,
@@ -433,62 +414,34 @@ class _CartSummary extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Subtotal
-            _SummaryRow(
-              label: 'Subtotal',
-              value: '\$${subtotal.toStringAsFixed(2)}',
-              textTheme: textTheme,
-            ),
-            const SizedBox(height: AppDimens.paddingXS),
-
-            // Delivery fee
-            _SummaryRow(
-              label: 'Delivery fee',
-              value: deliveryFee > 0
-                  ? '\$${deliveryFee.toStringAsFixed(2)}'
-                  : 'TBD at checkout',
-              textTheme: textTheme,
-              valueColor: deliveryFee > 0 ? null : AppColors.textHint,
-            ),
-            const SizedBox(height: AppDimens.paddingS),
-
-            const Divider(height: 1),
-            const SizedBox(height: AppDimens.paddingS),
-
-            // Total
-            _SummaryRow(
-              label: 'Total',
-              value: '\$${total.toStringAsFixed(2)}',
-              textTheme: textTheme,
-              isBold: true,
-              valueColor: AppColors.primary,
-            ),
-            const SizedBox(height: AppDimens.paddingM),
-
             // Bottom actions: Add Items + Checkout
             Row(
               children: [
                 // Add Items button
                 Expanded(
+                  flex: 2,
                   child: SizedBox(
                     height: AppDimens.buttonHeight,
-                    child: OutlinedButton.icon(
+                    child: OutlinedButton(
                       onPressed: onAddItems ?? () {},
-                      icon: const Icon(Icons.add_rounded),
-                      label: const Text(
-                        'Add Items',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.primary,
                         side: const BorderSide(color: AppColors.primary),
+                        padding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppDimens.radiusM),
+                        ),
+                        textStyle: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: const Text(
+                          'Add Items',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -498,25 +451,29 @@ class _CartSummary extends StatelessWidget {
 
                 // Checkout button with total amount
                 Expanded(
+                  flex: 3,
                   child: SizedBox(
                     height: AppDimens.buttonHeight,
-                    child: ElevatedButton.icon(
+                    child: ElevatedButton(
                       onPressed: onCheckout,
-                      icon: const Icon(Icons.shopping_cart_checkout_rounded),
-                      label: Text(
-                        'Check out \$${total.toStringAsFixed(2)}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: AppColors.onPrimary,
+                        padding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppDimens.radiusM),
+                        ),
+                        textStyle: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'Checkout \$${subtotal.toStringAsFixed(2)}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -531,46 +488,4 @@ class _CartSummary extends StatelessWidget {
   }
 }
 
-/// A single row in the cart summary (label | value).
-class _SummaryRow extends StatelessWidget {
-  final String label;
-  final String value;
-  final TextTheme textTheme;
-  final bool isBold;
-  final Color? valueColor;
 
-  const _SummaryRow({
-    required this.label,
-    required this.value,
-    required this.textTheme,
-    this.isBold = false,
-    this.valueColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          label,
-          style: textTheme.bodyMedium?.copyWith(
-            color: AppColors.textSecondary,
-            fontWeight: isBold ? FontWeight.w600 : null,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const Spacer(),
-        Text(
-          value,
-          style: textTheme.bodyMedium?.copyWith(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-            color: valueColor ?? AppColors.onSurface,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
-    );
-  }
-}

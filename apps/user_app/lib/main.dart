@@ -123,13 +123,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/item-details',
             builder: (context, state) => const ItemDetailsScreen(),
           ),
-
-          // My cart
-          GoRoute(
-            path: '/my-cart',
-            builder: (context, state) => const MyCartScreen(),
-          ),
         ],
+      ),
+
+      // My cart (outside ShellRoute — no ViewCartBanner overlay)
+      GoRoute(
+        path: '/my-cart',
+        builder: (context, state) => const MyCartScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

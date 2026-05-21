@@ -142,12 +142,11 @@ class CartNotifier extends _$CartNotifier {
 // Derived Providers
 // ============================================================================
 
-/// Total number of items across all cart entries (sum of quantities).
+/// Number of distinct items in the cart (cart entry count).
 @riverpod
 int cartItemCount(Ref ref) {
   final cart = ref.watch(cartNotifierProvider);
-  if (cart.isEmpty) return 0;
-  return cart.fold(0, (sum, item) => sum + item.quantity);
+  return cart.length;
 }
 
 /// Total price of all items in the cart.
