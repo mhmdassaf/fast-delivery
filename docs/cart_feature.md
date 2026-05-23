@@ -1,7 +1,7 @@
 # Cart Feature Specification
 
 > **AI-Readable Documentation for Cart Feature**  
-> **Last Updated:** 2026-05-21  
+> **Last Updated:** 2026-05-22  
 > **Feature Status:** ✅ Implemented  
 > **Commit:** `pending`  
 
@@ -116,7 +116,14 @@ lib/features/cart/
 3. State resets to `[]`; `shared_preferences` updated
 4. `ViewCartBanner` slides down
 
-### 4. Cross-Shop Guard
+### 4. Checkout (Navigate to Checkout Screen)
+**Entry Point:** `my_cart_screen.dart` → "Checkout" button
+1. User taps "Checkout" button in `_CartBottomBar`
+2. `onCheckout` callback triggers `context.push('/checkout')`
+3. `CheckoutScreen` is displayed (outside ShellRoute, no ViewCartBanner overlay)
+4. See `docs/checkout_feature.md` for full checkout flow details
+
+### 5. Cross-Shop Guard
 When user tries to add an item from a different shop:
 1. `ItemDetailsScreen._addToCart()` checks `cartShopIdProvider`
 2. If different shop → dialog: "Start a new cart?"
@@ -174,6 +181,7 @@ When user tries to add an item from a different shop:
 /shop/:shopId     ← Shop details (inside ShellRoute)
 /item-details     ← Item detail + add to cart (inside ShellRoute)
 /my-cart          ← Cart management (outside ShellRoute — no ViewCartBanner)
+/checkout         ← Checkout screen (outside ShellRoute — no ViewCartBanner)
 ```
 
 ### ShellRoute

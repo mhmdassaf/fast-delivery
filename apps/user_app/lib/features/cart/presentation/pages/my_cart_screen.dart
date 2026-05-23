@@ -41,14 +41,7 @@ class MyCartScreen extends ConsumerWidget {
               cart: cart,
               total: total,
               onAddItems: goToShop,
-              onCheckout: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Checkout coming soon!'),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              },
+              onCheckout: () => context.push('/checkout'),
               onRemoveItem: (id) =>
                   ref.read(cartNotifierProvider.notifier).removeItem(id),
               onUpdateQuantity: (id, quantity) =>

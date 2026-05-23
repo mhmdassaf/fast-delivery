@@ -15,6 +15,7 @@ import 'features/shop_details/presentation/pages/shop_details_screen.dart';
 import 'features/cart/presentation/pages/item_details_screen.dart';
 import 'features/cart/presentation/pages/my_cart_screen.dart';
 import 'features/cart/presentation/widgets/view_cart_banner.dart';
+import 'features/checkout/presentation/pages/checkout_screen.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -130,6 +131,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/my-cart',
         builder: (context, state) => const MyCartScreen(),
+      ),
+
+      // Checkout (outside ShellRoute — no ViewCartBanner overlay)
+      GoRoute(
+        path: '/checkout',
+        builder: (context, state) => const CheckoutScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

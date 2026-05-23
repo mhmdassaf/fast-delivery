@@ -99,3 +99,26 @@ final class CartFailure extends Failure {
   factory CartFailure.persistFailed() =>
       const CartFailure(message: 'Failed to save cart data');
 }
+
+/// Checkout / order related failures
+final class CheckoutFailure extends Failure {
+  const CheckoutFailure({required super.message, super.code});
+
+  factory CheckoutFailure.addressNotSet() =>
+      const CheckoutFailure(message: 'Please set your delivery address');
+
+  factory CheckoutFailure.phoneNumberRequired() =>
+      const CheckoutFailure(message: 'Please enter your phone number');
+
+  factory CheckoutFailure.createOrderFailed([String? message]) =>
+      CheckoutFailure(message: message ?? 'Failed to place order');
+
+  factory CheckoutFailure.locationFailed([String? message]) =>
+      CheckoutFailure(message: message ?? 'Failed to get your location');
+
+  factory CheckoutFailure.shopInfoFailed([String? message]) =>
+      CheckoutFailure(message: message ?? 'Failed to load shop information');
+
+  factory CheckoutFailure.phoneUpdateFailed([String? message]) =>
+      CheckoutFailure(message: message ?? 'Failed to update phone number');
+}

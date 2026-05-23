@@ -16,14 +16,26 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
-    /// Get user document data
-    function getUserData() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    /// Get user document (full snapshot)
+    function getUserDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
     }
     
-    /// Check if user has a specific role
+    /// Get user document data
+    function getUserData() {
+      return getUserDoc().data;
+    }
+    
+    /// Check if user has a specific role (handles missing documents)
     function hasRole(role) {
-      return isAuthenticated() && getUserData().role == role;
+      return isAuthenticated() && 
+        getUserDoc().exists &&
+        getUserData().role == role;
+    }
+    
+    /// Check if user document exists in Firestore
+    function userDocExists() {
+      return isAuthenticated() && getUserDoc().exists;
     }
     
     /// Check if user is admin
@@ -31,9 +43,11 @@ service cloud.firestore {
       return hasRole('admin');
     }
     
-    /// Check if user is active
+    /// Check if user is active (handles missing documents)
     function isUserActive() {
-      return isAuthenticated() && getUserData().isActive == true;
+      return isAuthenticated() && 
+        getUserDoc().exists &&
+        getUserData().isActive == true;
     }
     
     // =========================================================================
@@ -52,19 +66,14 @@ service cloud.firestore {
         request.resource.data.role == 'user' &&
         request.resource.data.keys().hasAll(['uid', 'email', 'role', 'createdAt']);
       
-      /// Users can only update their own profile (specific fields)
+      /// Users can update their own document (any fields except role/isActive)
+      /// Uses diff().affectedKeys() to check only the fields being changed,
+      /// not the merged document (which always has role/isActive from existing data).
       allow update: if isOwner(userId) && 
-        request.resource.data.keys().hasAll([
-          'displayName', 'phoneNumber', 'updatedAt'
-        ]);
-      
-      /// Users can update their own FCM tokens
-      allow update: if isOwner(userId) && 
-        request.resource.data.keys().hasOnly(['fcmTokens', 'updatedAt']);
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isActive']);
       
       /// Only admins can update roles and admin fields
-      allow update: if isAdmin() && 
-        request.resource.data.keys().hasAny(['role', 'isActive']);
+      allow update: if isAdmin();
       
       /// Only admins can delete users
       allow delete: if isAdmin();
@@ -126,8 +135,9 @@ service cloud.firestore {
     // =========================================================================
     match /orders/{orderId} {
       /// Users can read their own orders
+      /// Note: user data is nested under `user.Id` (capital I) — see OrderModel.toFirestore()
       allow read: if isAuthenticated() && 
-        resource.data.userId == request.auth.uid;
+        resource.data.user.Id == request.auth.uid;
       
       /// Riders can read orders assigned to them
       allow read: if hasRole('rider') && 
@@ -141,8 +151,7 @@ service cloud.firestore {
       allow read: if isAdmin();
       
       /// Users can create orders
-      allow create: if hasRole('user') && 
-        request.resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
       
       /// Riders can update assigned orders (status changes)
       allow update: if hasRole('rider') && 
@@ -157,10 +166,10 @@ service cloud.firestore {
       /// Admins can update any order
       allow update: if isAdmin();
       
-      /// Users can cancel their own pending orders
+      /// Users can cancel their own orders (only from 'Waiting Rider Confirmation' or 'pending')
       allow update: if hasRole('user') && 
-        isOwner(resource.data.userId) && 
-        resource.data.status == 'pending' &&
+        isOwner(resource.data.user.Id) && 
+        resource.data.status in ['Waiting Rider Confirmation', 'pending'] &&
         request.resource.data.status == 'cancelled';
       
       /// No one can delete orders (keep history)
