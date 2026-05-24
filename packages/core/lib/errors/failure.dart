@@ -122,3 +122,14 @@ final class CheckoutFailure extends Failure {
   factory CheckoutFailure.phoneUpdateFailed([String? message]) =>
       CheckoutFailure(message: message ?? 'Failed to update phone number');
 }
+
+/// Orders list related failures
+final class OrdersFailure extends Failure {
+  const OrdersFailure({required super.message, super.code});
+
+  factory OrdersFailure.fetchFailed([String? message]) =>
+      OrdersFailure(message: message ?? 'Failed to load orders');
+
+  factory OrdersFailure.roleNotDetermined() =>
+      const OrdersFailure(message: 'Could not determine user role');
+}

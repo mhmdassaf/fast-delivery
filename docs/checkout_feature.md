@@ -1,9 +1,8 @@
 # Checkout Feature Specification
 
 > **AI-Readable Documentation for Checkout Feature**  
-> **Last Updated:** 2026-05-23  
-> **Feature Status:** ✅ Implemented  
-> **Commit:** `pending` (see `firestore.rules` for order security rules)
+> **Last Updated:** 2026-05-24  
+> **Feature Status:** ✅ Implemented (OrderUserInfo removed, flat user fields)
 
 ---
 
@@ -29,12 +28,9 @@ apps/user_app/lib/features/checkout/
 │   │   ├── delivery_address_model.dart    # Freezed — address with lat/lng
 │   │   ├── delivery_address_model.freezed.dart
 │   │   ├── delivery_address_model.g.dart
-│   │   ├── order_model.dart               # Freezed — Firestore order document
+│   │   ├── order_model.dart               # Freezed — Firestore order document (flat user fields)
 │   │   ├── order_model.freezed.dart
-│   │   ├── order_model.g.dart
-│   │   ├── order_user_info.dart           # Freezed — nested user inside order
-│   │   ├── order_user_info.freezed.dart
-│   │   └── order_user_info.g.dart
+│   │   └── order_model.g.dart
 │   └── repositories/
 │       ├── checkout_repository.dart       # Wraps CheckoutDataSource
 │       └── location_repository.dart       # Wraps LocationDataSource
@@ -140,12 +136,10 @@ When the checkout screen loads, `CheckoutNotifier._loadInitialPhone()`:
 
 **Order Creation:**
 1. Set `isPlacingOrder = true` (button shows loading spinner, becomes disabled)
-2. Build `OrderModel`:
-   - `user` = `OrderUserInfo(id: userId, name: userName, email: userEmail, phone: fullPhone)`
-     - `userId` from `currentUserProvider.uid`
-     - `userName` from `currentUserProvider.displayName`
-     - `userEmail` from `currentUserProvider.email`
-     - `fullPhone` = `'+961$phone'` (entered phone with Lebanon country code)
+2. Build `OrderModel` (flat fields — no nested `user` object):
+   - `userId` from `currentUserProvider.uid`
+   - `userName` from `currentUserProvider.displayName`
+   - `userPhone` = `'+961$phone'` (entered phone with Lebanon country code)
    - `shopId`, `shopName` from cart providers
    - `items` snapshot from `cartNotifierProvider`
    - `subtotal` from `cartTotalProvider`
@@ -273,27 +267,17 @@ When the checkout screen loads, `CheckoutNotifier._loadInitialPhone()`:
 
 **Methods:** `fromMap()`, `toMap()`, `get geoPoint` (to `GeoPoint`)
 
-### OrderUserInfo (Freezed)
-**File:** `apps/user_app/lib/features/checkout/data/models/order_user_info.dart`
-
-Nested model embedded inside `OrderModel.user` with capital-letter Firestore keys.
-
-| Dart Field | Firestore Key | Type | Default | Description |
-|------------|---------------|------|---------|-------------|
-| `id` | `Id` | `String` | required | Auth user UID |
-| `name` | `Name` | `String` | `''` | User's display name (from auth profile) |
-| `email` | `Email` | `String` | `''` | User's email (from auth profile) |
-| `phone` | `Phone` | `String?` | `null` | User's phone (with country code, e.g. `+96170123456`) |
-
-**Methods:** `toFirestore()` (delegates to `toJson()` → capital-letter keys)
-
 ### OrderModel (Freezed)
 **File:** `apps/user_app/lib/features/checkout/data/models/order_model.dart`
+
+User details are now **top-level fields** (not nested) for efficient querying. The `OrderUserInfo` class was removed.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `id` | `String` | required | Firestore document ID |
-| `user` | `OrderUserInfo` | required | Nested user data (Id, Name, Email, Phone) |
+| `userId` | `String` | required | Auth user UID |
+| `userName` | `String` | required | User's display name (from auth profile) |
+| `userPhone` | `String` | required | User's phone (with country code, e.g. `+96170123456`) |
 | `shopId` | `String` | required | Shop being ordered from |
 | `shopName` | `String` | required | Shop display name |
 | `items` | `List<CartItemModel>` | required | Snapshot of cart items |
@@ -310,12 +294,9 @@ Nested model embedded inside `OrderModel.user` with capital-letter Firestore key
 ### Firestore Document Structure (`orders/{orderId}`)
 ```json
 {
-  "user": {
-    "Id": "abc123...",
-    "Name": "John Doe",
-    "Email": "john@example.com",
-    "Phone": "+96170123456"
-  },
+  "userId": "abc123...",
+  "userName": "John Doe",
+  "userPhone": "+96170123456",
   "shopId": "shop_xyz",
   "shopName": "Pizza Palace",
   "items": [
@@ -388,7 +369,7 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 ### Phone Number Flow Summary
 1. **On checkout load**: `CheckoutNotifier._loadInitialPhone()` fetches `phoneNumber` from Firestore `users/{uid}` and pre-fills the phone input
 2. **User input**: `PhoneNumberSection` widget strips non-digits, stores local number (e.g. `71234567`) in `state.phoneNumber`
-3. **On place order**: `OrderModel.user.phone` = `'$kLebanonCountryCode$phone'` = `'+96171234567'` (full number with country code from shared constant `kLebanonCountryCode`, stored under Firestore key `Phone`)
+3. **On place order**: `OrderModel.userPhone` = `'$kLebanonCountryCode$phone'` = `'+96171234567'` (full number with country code from shared constant `kLebanonCountryCode`)
 4. **After order created**: `updateUserPhone()` saves the full number back to Firestore `users/{uid}.phoneNumber` so it persists for future orders
 
 ---

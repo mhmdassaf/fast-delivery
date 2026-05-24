@@ -16,6 +16,8 @@ dependencies:
     path: ../../packages/core
   fast_delivery_auth:
     path: ../../packages/auth
+  fast_delivery_orders:
+    path: ../../packages/orders
   
   # State Management (already in core package, but needed for direct imports)
   flutter_riverpod: ^2.6.1

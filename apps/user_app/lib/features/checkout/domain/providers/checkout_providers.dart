@@ -12,7 +12,6 @@ import '../../data/datasources/checkout_datasource.dart';
 import '../../data/datasources/location_datasource.dart';
 import '../../data/models/delivery_address_model.dart';
 import '../../data/models/order_model.dart';
-import '../../data/models/order_user_info.dart';
 import '../../data/repositories/checkout_repository.dart';
 import '../../data/repositories/location_repository.dart';
 
@@ -290,7 +289,6 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     final authUser = ref.read(currentUserProvider);
     final userId = authUser?.uid ?? '';
     final userName = authUser?.displayName ?? '';
-    final userEmail = authUser?.email ?? '';
     // Use the phone number the user entered (with Lebanon country code)
     final fullPhone = '$kLebanonCountryCode$phone';
 
@@ -308,12 +306,9 @@ class CheckoutNotifier extends _$CheckoutNotifier {
 
     final order = OrderModel(
       id: '', // Will be assigned by Firestore
-      user: OrderUserInfo(
-        id: userId,
-        name: userName,
-        email: userEmail,
-        phone: fullPhone,
-      ),
+      userId: userId,
+      userName: userName,
+      userPhone: fullPhone,
       shopId: shopId,
       shopName: shopName ?? '',
       items: List.from(items),

@@ -3,20 +3,21 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../cart/data/models/cart_item_model.dart';
 import 'delivery_address_model.dart';
-import 'order_user_info.dart';
 
 part 'order_model.freezed.dart';
 part 'order_model.g.dart';
 
 /// Represents a customer order placed from the shopping cart.
 ///
-/// Stored in Firestore under `orders/{orderId}`. User data is nested under
-/// a `user` sub-object with capital-letter keys (Id, Name, Email, Phone).
+/// Stored in Firestore under `orders/{orderId}`. User details are stored as
+/// top-level fields (`userId`, `userName`, `userPhone`) for simple querying.
 @freezed
 abstract class OrderModel with _$OrderModel {
   const factory OrderModel({
     required String id,
-    required OrderUserInfo user,
+    required String userId,
+    required String userName,
+    required String userPhone,
     required String shopId,
     required String shopName,
     required List<CartItemModel> items,
@@ -37,11 +38,12 @@ abstract class OrderModel with _$OrderModel {
     final itemsData = List<Map<String, dynamic>>.from(data['items'] ?? []);
     final addressData =
         Map<String, dynamic>.from(data['deliveryAddress'] ?? {});
-    final userData = Map<String, dynamic>.from(data['user'] ?? {});
 
     return OrderModel(
       id: snapshot.id,
-      user: OrderUserInfo.fromJson(userData),
+      userId: data['userId'] as String? ?? '',
+      userName: data['userName'] as String? ?? '',
+      userPhone: data['userPhone'] as String? ?? '',
       shopId: data['shopId'] as String? ?? '',
       shopName: data['shopName'] as String? ?? '',
       items: itemsData.map((e) => CartItemModel.fromJson(e)).toList(),
@@ -58,7 +60,9 @@ abstract class OrderModel with _$OrderModel {
   /// Converts to a Firestore document.
   Map<String, dynamic> toFirestore() {
     return {
-      'user': user.toFirestore(),
+      'userId': userId,
+      'userName': userName,
+      'userPhone': userPhone,
       'shopId': shopId,
       'shopName': shopName,
       'items': items.map((e) => e.toJson()).toList(),

@@ -16,6 +16,7 @@ import 'features/cart/presentation/pages/item_details_screen.dart';
 import 'features/cart/presentation/pages/my_cart_screen.dart';
 import 'features/cart/presentation/widgets/view_cart_banner.dart';
 import 'features/checkout/presentation/pages/checkout_screen.dart';
+import 'package:fast_delivery_orders/presentation/pages/orders_list_screen.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -137,6 +138,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/checkout',
         builder: (context, state) => const CheckoutScreen(),
+      ),
+
+      // My Orders
+      GoRoute(
+        path: '/orders',
+        builder: (context, state) => const OrdersListScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
