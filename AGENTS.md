@@ -1,9 +1,11 @@
 # AGENTS.md - Fast Delivery Project
 
 ## Project Status
+
 Greenfield Flutter/Firebase multi-app system. No code written yet - this file guides future development.
 
 ## Architecture Decisions (Enforced)
+
 - **Pattern**: Clean Architecture (data, domain, presentation layers) + MVVM
 - **State Management**: Riverpod
 - **Networking**: Dio
@@ -12,7 +14,9 @@ Greenfield Flutter/Firebase multi-app system. No code written yet - this file gu
 - **Roles**: user, rider, seller, admin
 
 ## App Structure
+
 Four distinct apps under one repo (future monorepo):
+
 1. **User App** - Customer mobile app
 2. **Rider App** - Delivery driver mobile app
 3. **Seller App** - Restaurant owner mobile app
@@ -21,7 +25,9 @@ Four distinct apps under one repo (future monorepo):
 Shared code goes in separate packages to avoid coupling.
 
 ## Agent Configuration
+
 Agents are defined in `.opencode/agents/`:
+
 - `Architect.md` - Design full system structure(use for planning)
 - `Flutter-developer.md` - Build Flutter features (no device testing)
 - `Flutter-tester.md` - Build, run, and test on Android physical devices (unit, widget, integration tests)
@@ -30,12 +36,22 @@ Agents are defined in `.opencode/agents/`:
 - `Code-reviewer.md` - Optimize existing code (no longer handles git operations)
 - `Designer.md` - UI/UX suggestions only
 
+## Command Configuration
+
+Commands are defined in `.opencode/commands/`:
+
+- `plan` - `/plan` Scan all existing docs in `docs/`, summarize existing features, then produce a well-informed implementation plan for a new feature
+
 ## Skill Configuration
+
 Skills are defined in `.opencode/skills/`:
+
 - `feature-doc` - Auto-create/update AI-readable feature documentation in docs/ folder (triggered automatically by Git-agent in Phase 2.5)
 
 ## Workflow Order
+
 The recommended workflow for implementing features:
+
 1. **Flutter-developer** - Build features and screens
 2. **Code-reviewer** - Optimize existing code (no longer handles git operations)
 3. **Flutter-tester** - Build, run, and test on Android physical devices
@@ -44,6 +60,7 @@ The recommended workflow for implementing features:
 Note: Git-agent replaces all git commit/push functionality previously in Code-reviewer. Git-agent now automatically triggers the `feature-doc` skill in Phase 2.5 to update feature documentation before staging files.
 
 ## Key Conventions
+
 - Business logic must stay out of UI
 - No hardcoded values
 - Use null safety and strong typing
@@ -55,6 +72,7 @@ Note: Git-agent replaces all git commit/push functionality previously in Code-re
 All project specifications are in `/docs/` folder.
 
 **Rules for Feature Specs:**
+
 1. Specifications must be updated whenever the feature changes
 2. AI agents must read the spec before modifying the feature
 3. All new code must follow the patterns documented in the spec
@@ -67,6 +85,7 @@ All project specifications are in `/docs/` folder.
 **⚠️ Read the relevant spec in `/docs/` before making changes**
 
 ### Mandatory Patterns (DO NOT DEVIATE)
+
 1. **Architecture:** Must follow Clean Architecture (data → domain → presentation)
    - Data layer: `features/{feature}/data/`
    - Domain layer: `features/{feature}/domain/` (providers/notifiers)
@@ -87,6 +106,7 @@ All project specifications are in `/docs/` folder.
    - No hardcoded colors or spacing values
 
 6. **Error Handling:** Use `Result<T>` pattern
+
    ```dart
    final result = await _repository.someMethod();
    return result.fold(
@@ -103,6 +123,7 @@ All project specifications are in `/docs/` folder.
    ```
 
 ### Checklist Before Committing Changes
+
 - [ ] Read relevant spec in `/docs/` to understand current implementation
 - [ ] Follow Clean Architecture layers (data/domain/presentation)
 - [ ] Use Riverpod providers (not direct Firebase calls in UI)
@@ -117,6 +138,7 @@ All project specifications are in `/docs/` folder.
 ---
 
 ## Important Notes
+
 - Do not generate quick or hacky solutions
 - Always prefer scalable solutions
 - Keep consistency across all apps
