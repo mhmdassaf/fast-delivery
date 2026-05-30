@@ -192,10 +192,25 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 | Route | Screen | Purpose |
 |-------|--------|---------|
-| `/` | `DashboardScreen` | Main dashboard — shop listing |
+| `/` | `DashboardScreen` (Home tab) | Main dashboard — shop listing |
+| `/orders` | `OrdersListScreen` (Orders tab) | Role-based order listing (see `docs/orders_feature.md`) |
+| `/account` | (placeholder — no-op) | Account tab — future use |
 | `/login` | `LoginScreen` (from auth package) | Email/password login |
 | `/register` | `RegisterScreen` (from auth package) | New user registration |
 | `/shop/:shopId` | `ShopDetailsScreen` | Shop details & menu browsing (see `docs/shop_details_feature.md`) |
+| `/item-details` | `ItemDetailsScreen` | Item detail & add to cart |
+| `/my-cart` | `MyCartScreen` | Cart management |
+| `/checkout` | `CheckoutScreen` | Order checkout |
+
+### Route Structure
+
+All four apps use a **shared bottom navigation shell** (`MainShell` in `packages/core/lib/widgets/main_shell.dart`) with `StatefulShellRoute.indexedStack`:
+
+- **Branch 0 (Home):** `/` → app-specific dashboard (DashboardScreen, RiderDashboardScreen, etc.)
+- **Branch 1 (Orders):** `/orders` → shared `OrdersListScreen` from `fast_delivery_orders`
+- **Branch 2 (Account):** `/account` → placeholder (no-op; Account tab tappable but does not navigate)
+
+`ViewCartBanner` is conditionally rendered only on the Home tab in the User App (via `MainShell.overlayWidget`).
 
 ### Navigation Usage (in widgets)
 ```dart
@@ -310,7 +325,7 @@ match /categories/{categoryId} {
 ┌──────────────────────────────────┐
 │ DashboardAppBar                  │  ← Greeting + location + notifications + avatar
 ├──────────────────────────────────┤
-│ SearchBarWidget     [Filter] btn │  ← Debounced search + filter toggle
+│ SearchBarWidget  [Filter] btn    │  ← Debounced search + filter toggle
 ├──────────────────────────────────┤
 │ CategoriesBar                     │  ← Horizontal category chips (scrollable)
 ├──────────────────────────────────┤
@@ -597,6 +612,9 @@ Dashboard queries require these indexes to avoid `FAILED_PRECONDITION` errors:
 | **Auth** | `authStatusProvider` drives router redirect; `currentUserProvider` provides user name/photo for `DashboardAppBar` |
 | **Notifications** | `DashboardAppBar` notification bell ready for FCM integration (placeholder `onNotificationTap`) |
 | **Shop Details** | Route `/shop/:shopId` navigates to `ShopDetailsScreen` — see `docs/shop_details_feature.md` |
+| **Orders** | Orders tab in bottom nav replaces the former "My Orders" button beside the search field; navigates to `/orders` → shared `OrdersListScreen` |
+| **Cart** | `ViewCartBanner` rendered conditionally via `MainShell.overlayWidget` — only on the Home tab (see `packages/core/lib/widgets/main_shell.dart`) |
+| **MainShell (shared)** | All 4 apps use `StatefulShellRoute.indexedStack` with shared `MainShell` — `packages/core/lib/widgets/main_shell.dart` |
 | **Firestore** | `DashboardDataSourceImpl` reads from `categories` and `shops` collections |
 
 ---

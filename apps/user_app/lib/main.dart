@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:fast_delivery_core/constants/app_constants.dart';
 import 'package:fast_delivery_core/firebase/firebase_options.dart';
 import 'package:fast_delivery_core/theme/app_theme.dart';
+import 'package:fast_delivery_core/widgets/main_shell.dart';
+import 'package:fast_delivery_core/widgets/not_found_page.dart';
 import 'package:fast_delivery_auth/domain/providers/auth_providers.dart';
 import 'package:fast_delivery_auth/presentation/screens/login_screen.dart';
 import 'package:fast_delivery_auth/presentation/screens/register_screen.dart';
+import 'package:fast_delivery_orders/presentation/pages/orders_list_screen.dart';
 
 import 'features/dashboard/presentation/pages/dashboard_screen.dart';
 import 'features/shop_details/presentation/pages/shop_details_screen.dart';
@@ -16,7 +18,6 @@ import 'features/cart/presentation/pages/item_details_screen.dart';
 import 'features/cart/presentation/pages/my_cart_screen.dart';
 import 'features/cart/presentation/widgets/view_cart_banner.dart';
 import 'features/checkout/presentation/pages/checkout_screen.dart';
-import 'package:fast_delivery_orders/presentation/pages/orders_list_screen.dart';
 
 void main() async {
   // Ensure Flutter is initialized
@@ -83,7 +84,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      // ── Auth routes (outside ShellRoute — no cart banner) ──────────
+      // ── Auth routes (no bottom nav, no cart banner) ─────────────────
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
@@ -93,7 +94,47 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterScreen(),
       ),
 
-      // ── App routes (inside ShellRoute — includes ViewCartBanner) ───
+      // ── Main shell with bottom navigation (Home / Orders / Account) ─
+      // ViewCartBanner overlay renders only on the Home tab (index 0).
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) => MainShell(
+          navigationShell: navigationShell,
+          overlayWidget: const ViewCartBanner(),
+        ),
+        branches: [
+          // Home tab — Dashboard
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (context, state) => const DashboardScreen(),
+              ),
+            ],
+          ),
+
+          // Orders tab — shared OrdersListScreen
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/orders',
+                builder: (context, state) => const OrdersListScreen(),
+              ),
+            ],
+          ),
+
+          // Account tab — placeholder (never navigated to; tap is no-op)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/account',
+                builder: (context, state) => const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        ],
+      ),
+
+      // ── Shop Details & Item Details (no bottom nav, with ViewCartBanner) ──
       ShellRoute(
         builder: (context, state, child) => Stack(
           children: [
@@ -105,13 +146,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           ],
         ),
         routes: [
-          // Main dashboard
-          GoRoute(
-            path: '/',
-            builder: (context, state) => const DashboardScreen(),
-          ),
-
-          // Shop details
           GoRoute(
             path: '/shop/:shopId',
             builder: (context, state) {
@@ -119,8 +153,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               return ShopDetailsScreen(shopId: shopId);
             },
           ),
-
-          // Item details (receives ItemDetailArgs via state.extra)
           GoRoute(
             path: '/item-details',
             builder: (context, state) => const ItemDetailsScreen(),
@@ -128,53 +160,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
-      // My cart (outside ShellRoute — no ViewCartBanner overlay)
+      // ── My Cart (no bottom nav, no banner) ─────────────────────────
       GoRoute(
         path: '/my-cart',
         builder: (context, state) => const MyCartScreen(),
       ),
 
-      // Checkout (outside ShellRoute — no ViewCartBanner overlay)
+      // ── Checkout (no bottom nav, no banner) ────────────────────────
       GoRoute(
         path: '/checkout',
         builder: (context, state) => const CheckoutScreen(),
       ),
-
-      // My Orders
-      GoRoute(
-        path: '/orders',
-        builder: (context, state) => const OrdersListScreen(),
-      ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Page not found',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              state.uri.toString(),
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => context.go('/'),
-              child: const Text('Go Home'),
-            ),
-          ],
-        ),
-      ),
-    ),
+    errorBuilder: (context, state) => NotFoundPage(state: state),
   );
 });
 

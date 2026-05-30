@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:fast_delivery_core/constants/app_constants.dart';
 import 'package:fast_delivery_core/firebase/firebase_options.dart';
 import 'package:fast_delivery_core/theme/app_theme.dart';
+import 'package:fast_delivery_core/widgets/main_shell.dart';
+import 'package:fast_delivery_core/widgets/not_found_page.dart';
 import 'package:fast_delivery_auth/domain/providers/auth_providers.dart';
 import 'package:fast_delivery_auth/presentation/screens/login_screen.dart';
 import 'package:fast_delivery_auth/presentation/screens/register_screen.dart';
@@ -71,7 +72,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      // Auth routes
+      // Auth routes (no bottom nav)
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
@@ -81,44 +82,44 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterScreen(),
       ),
 
-      // App routes
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const RiderDashboardScreen(),
-      ),
-      GoRoute(
-        path: '/orders',
-        builder: (context, state) => const OrdersListScreen(),
+      // Main shell with bottom navigation (Home / Orders / Account)
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) => MainShell(
+          navigationShell: navigationShell,
+        ),
+        branches: [
+          // Home tab — Rider Dashboard
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (context, state) => const RiderDashboardScreen(),
+              ),
+            ],
+          ),
+
+          // Orders tab — shared OrdersListScreen
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/orders',
+                builder: (context, state) => const OrdersListScreen(),
+              ),
+            ],
+          ),
+
+          // Account tab — placeholder (no-op for future use)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/account',
+                builder: (context, state) => const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Page not found',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              state.uri.toString(),
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => context.go('/'),
-              child: const Text('Go Home'),
-            ),
-          ],
-        ),
-      ),
-    ),
+    errorBuilder: (context, state) => NotFoundPage(state: state),
   );
 });

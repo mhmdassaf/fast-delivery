@@ -1,6 +1,5 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:fast_delivery_auth/domain/providers/auth_providers.dart';
 import 'package:fast_delivery_core/constants/app_constants.dart';
@@ -84,7 +83,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
 
               // ==============================================================
-              // Search Bar Section + My Orders
+              // Search Bar Section
               // ==============================================================
               SliverToBoxAdapter(
                 child: Padding(
@@ -109,32 +108,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 .read(dashboardNotifierProvider.notifier)
                                 .clearSearch();
                           },
-                        ),
-                      ),
-                      const SizedBox(width: AppDimens.paddingS),
-                      // My Orders button
-                      Material(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(AppDimens.radiusL),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(AppDimens.radiusL),
-                          onTap: () => context.push('/orders'),
-                          child: Container(
-                            width: AppDimens.buttonHeight,
-                            height: AppDimens.buttonHeight,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(AppDimens.radiusL),
-                              border: Border.all(
-                                color: AppColors.surfaceVariant,
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.receipt_long_rounded,
-                              size: 20,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
                         ),
                       ),
                       const SizedBox(width: AppDimens.paddingS),

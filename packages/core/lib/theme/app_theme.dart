@@ -115,6 +115,29 @@ abstract final class AppTheme {
         thickness: 1,
         space: AppDimens.paddingL,
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        indicatorColor: AppColors.primaryLight.withValues(alpha: 0.25),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: AppColors.primary, size: 24);
+          }
+          return const IconThemeData(color: AppColors.textSecondary, size: 24);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+            );
+          }
+          return const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textSecondary,
+          );
+        }),
+      ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(
           fontSize: 57,
@@ -282,6 +305,30 @@ abstract final class AppTheme {
         color: AppColors.darkSurfaceVariant,
         thickness: 1,
         space: AppDimens.paddingL,
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.darkBackground,
+        indicatorColor: AppColors.primaryLight.withValues(alpha: 0.25),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: AppColors.primary, size: 24);
+          }
+          return const IconThemeData(color: AppColors.darkOnSurface, size: 24);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+            );
+          }
+          return const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.darkOnSurface,
+          );
+        }),
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(

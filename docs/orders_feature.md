@@ -154,21 +154,25 @@ The role is derived from `currentUserProvider` → `user?.role.name`.
 
 ### Routes Added Per App
 
-| App | Route | Screen |
-|-----|-------|--------|
-| **user_app** | `/orders` | `OrdersListScreen` |
-| **rider_app** | `/` | `RiderDashboardScreen` (new) |
-| **rider_app** | `/orders` | `OrdersListScreen` |
-| **seller_app** | `/` | `SellerDashboardScreen` (new) |
-| **seller_app** | `/orders` | `OrdersListScreen` |
-| **admin_panel** | `/` | `AdminDashboardScreen` (new) |
-| **admin_panel** | `/orders` | `OrdersListScreen` |
-| **All apps** | `/login` | `LoginScreen` (unchanged) |
-| **All apps** | `/register` | `RegisterScreen` (unchanged) |
+All apps use `StatefulShellRoute.indexedStack` (via `MainShell`) with 3 branches:
+
+| App | Tab | Route | Screen |
+|-----|-----|-------|--------|
+| **user_app** | Home | `/` | `DashboardScreen` |
+| **user_app** | Orders | `/orders` | `OrdersListScreen` |
+| **rider_app** | Home | `/` | `RiderDashboardScreen` |
+| **rider_app** | Orders | `/orders` | `OrdersListScreen` |
+| **seller_app** | Home | `/` | `SellerDashboardScreen` |
+| **seller_app** | Orders | `/orders` | `OrdersListScreen` |
+| **admin_panel** | Home | `/` | `AdminDashboardScreen` |
+| **admin_panel** | Orders | `/orders` | `OrdersListScreen` |
+| **All apps** | Account | `/account` | Placeholder (no-op) |
+| **All apps** | — | `/login` | `LoginScreen` (outside shell) |
+| **All apps** | — | `/register` | `RegisterScreen` (outside shell) |
 
 ### Auth Redirect Logic
 
-Each app now has a proper `routerProvider` (instead of static `_router`) with redirect logic:
+Each app has a `routerProvider` with redirect logic:
 - Unauthenticated → `/login`
 - Authenticated on `/login` or `/register` → `/`
 - Authenticated → free navigation
@@ -331,9 +335,10 @@ The `OrderModel` in `apps/user_app/features/checkout/data/models/order_model.dar
 - Removed `userEmail` (not needed)
 - Updated `CheckoutNotifier.placeOrder()` to use flat fields
 
-### Dashboard Integration
-- **user_app**: "My Orders" icon button added to the search bar row in `DashboardScreen` (navigates to `/orders`)
-- **rider_app/seller_app/admin_panel**: New dashboard screens with "View Orders" / "All Orders" button
+### Bottom Navigation Integration
+- **All apps**: Orders tab added to shared `MainShell` bottom navigation bar (see `packages/core/lib/widgets/main_shell.dart`)
+- **user_app**: "My Orders" icon button removed from search bar row in `DashboardScreen` — replaced by the bottom nav Orders tab
+- **rider_app/seller_app/admin_panel**: Flat `/orders` route replaced by bottom nav Orders tab via `StatefulShellRoute.indexedStack`
 
 ---
 
