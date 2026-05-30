@@ -117,7 +117,7 @@ class AuthDataSourceImpl implements AuthDataSource {
           email: email,
           displayName: credential.user!.displayName ?? '',
           photoURL: credential.user!.photoURL,
-          role: UserRole.user,
+          role: UserRole.customer,
           isEmailVerified: credential.user!.emailVerified,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
@@ -213,7 +213,7 @@ class AuthDataSourceImpl implements AuthDataSource {
           email: email,
           displayName: displayName ?? '',
           photoURL: null,
-          role: UserRole.user,
+          role: UserRole.customer,
           isEmailVerified: credential.user!.emailVerified,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
@@ -384,7 +384,7 @@ class AuthDataSourceImpl implements AuthDataSource {
       displayName: user.displayName ?? '',
       phoneNumber: user.phoneNumber,
       photoURL: user.photoURL,
-      role: UserRole.user, // Default - will be updated from Firestore
+      role: UserRole.customer, // Default - will be updated from Firestore
       isEmailVerified: user.emailVerified,
       createdAt: user.metadata.creationTime ?? DateTime.now(),
       lastLoginAt: isNew ? DateTime.now() : user.metadata.lastSignInTime,
@@ -438,8 +438,10 @@ class AuthDataSourceImpl implements AuthDataSource {
 
   /// Parse role from Firestore
   UserRole _parseRole(dynamic roleStr) {
-    if (roleStr == null) return UserRole.user;
+    if (roleStr == null) return UserRole.customer;
     switch (roleStr.toString()) {
+      case 'customer':
+        return UserRole.customer;
       case 'rider':
         return UserRole.rider;
       case 'seller':
@@ -447,7 +449,7 @@ class AuthDataSourceImpl implements AuthDataSource {
       case 'admin':
         return UserRole.admin;
       default:
-        return UserRole.user;
+        return UserRole.customer;
     }
   }
 

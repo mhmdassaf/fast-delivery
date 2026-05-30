@@ -3,15 +3,15 @@
 > **AI-Readable Documentation for Auth Feature**  
 > **Last Updated:** 2026-05-06  
 > **Feature Status:** ✅ Implemented  
-> **Commit:** `b556f35` - refactor(user_app): restructure app with Clean Architecture and Firebase authentication
+> **Commit:** `b556f35` - refactor(customer_app): restructure app with Clean Architecture and Firebase authentication
 
 ---
 
 ## 📋 Feature Overview
 
-**Purpose:** Authentication system for ALL Fast Delivery apps (User, Seller, Rider, Admin)  
+**Purpose:** Authentication system for ALL Fast Delivery apps (Customer, Seller, Rider, Admin)  
 **Scope:** Login, Registration, Password Reset, Google Sign-In, Auth State Management  
-**Roles Supported:** `user` (default), `rider`, `seller`, `admin`  
+**Roles Supported:** `customer` (default), `rider`, `seller`, `admin`  
 **Platform:** Flutter (iOS, Android, Web)  
 **Architecture:** Shared packages (no code duplication)
 
@@ -57,7 +57,7 @@ packages/
     │   │   └── widgets/
     │   │       ├── auth_header.dart
     │   │       └── password_strength_indicator.dart
-    │   └── shared/               # Shared widgets (from user_app)
+    │   └── shared/               # Shared widgets (from customer_app)
     │       └── widgets/
     │           ├── auth_error_message.dart
     │           ├── auth_text_field.dart
@@ -74,7 +74,7 @@ packages/
 ### Apps Using Shared Packages:
 ```
 apps/
-├── user_app/          → uses fast_delivery_core + fast_delivery_auth
+├── customer_app/      → uses fast_delivery_core + fast_delivery_auth
 ├── seller_app/        → uses fast_delivery_core + fast_delivery_auth
 ├── rider_app/         → uses fast_delivery_core + fast_delivery_auth
 └── admin_panel/       → uses fast_delivery_core + fast_delivery_auth
@@ -251,7 +251,7 @@ class AuthState {
 
 ## 🧭 Navigation (GoRouter)
 
-**Router Config:** Defined in each app's `main.dart` (e.g., `apps/user_app/lib/main.dart`) → `_router`
+**Router Config:** Defined in each app's `main.dart` (e.g., `apps/customer_app/lib/main.dart`) → `_router`
 
 **Import from package:**
 ```dart
@@ -302,7 +302,7 @@ if (authStatus == AuthStatus.authenticated) {
 | `displayName` | String | User's display name |
 | `phoneNumber` | String? | Optional phone number |
 | `photoURL` | String? | Profile photo URL |
-| `role` | String | `user`, `rider`, `seller`, `admin` |
+| `role` | String | `customer`, `rider`, `seller`, `admin` |
 | `isEmailVerified` | bool | Email verification status |
 | `createdAt` | Timestamp | Account creation time |
 | `updatedAt` | Timestamp | Last profile update |
@@ -313,7 +313,7 @@ if (authStatus == AuthStatus.authenticated) {
 ### Cloud Function (Expected)
 **Trigger:** `onCreate` user document creation
 - Creates user document in Firestore after Firebase Auth registration
-- Sets default role to `user`
+- Sets default role to `customer`
 - Initializes timestamps
 
 ---
@@ -363,7 +363,7 @@ Located in `packages/auth/lib/presentation/widgets/`:
 - `AppDimens` - Spacing, padding, border radius values
 - `AppColors` - Color palette (should be used instead of hardcoded colors)
 
-**Example fix in `apps/user_app/lib/main.dart`:**
+**Example fix in `apps/customer_app/lib/main.dart`:**
 ```dart
 // Before (hardcoded):
 color: Colors.red,
@@ -457,7 +457,7 @@ match /users/{userId} {
 
 ### Adding a New Screen (e.g., Forgot Password Screen)
 1. Create screen in `packages/auth/lib/presentation/screens/`
-2. Add route to `_router` in each app's `main.dart` (e.g., `apps/user_app/lib/main.dart`)
+2. Add route to `_router` in each app's `main.dart` (e.g., `apps/customer_app/lib/main.dart`)
 3. Use existing shared widgets from `packages/core/lib/widgets/` and `packages/auth/lib/presentation/widgets/`
 4. Call appropriate `AuthNotifier` method
 5. **Update this doc** with new route
@@ -479,7 +479,7 @@ match /users/{userId} {
 - Unit tests for `AuthDataSourceImpl` (in `packages/auth/`)
 - Widget tests for `LoginScreen`, `RegisterScreen` (in `packages/auth/`)
 - Integration tests for auth flows
-- Tests should be added to each app's test directory (e.g., `apps/user_app/test/`)
+- Tests should be added to each app's test directory (e.g., `apps/customer_app/test/`)
 
 ---
 
@@ -544,7 +544,7 @@ dependencies:
 - `packages/auth/lib/presentation/screens/login_screen.dart` - Login UI
 - `packages/core/lib/theme/app_theme.dart` - Theming (AppColors, AppDimens)
 - `packages/core/lib/utils/validators.dart` - Form validation
-- Each app's `main.dart` (e.g., `apps/user_app/lib/main.dart`) - Router configuration
+- Each app's `main.dart` (e.g., `apps/customer_app/lib/main.dart`) - Router configuration
 
 **Common Pitfalls:**
 - Forgetting to run `build_runner` in `packages/auth/` after provider changes
@@ -579,7 +579,7 @@ fast-delivery/
 │       └── pubspec.yaml
 │
 ├── apps/
-│   ├── user_app/          → uses fast_delivery_core + fast_delivery_auth
+│   ├── customer_app/      → uses fast_delivery_core + fast_delivery_auth
 │   ├── seller_app/        → uses fast_delivery_core + fast_delivery_auth
 │   ├── rider_app/         → uses fast_delivery_core + fast_delivery_auth
 │   └── admin_panel/       → uses fast_delivery_core + fast_delivery_auth

@@ -45,7 +45,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAPlmPufMDNBdpgtAfvhiuMVYR-cBAnP8U',
-    appId: '1:130528704034:android:34d87b3d6c1956b8947c7b',
+    appId: '1:130528704034:android:e83318c397b8f82e947c7b',
     messagingSenderId: '130528704034',
     projectId: 'fast-delivery-32739',
     storageBucket: 'fast-delivery-32739.firebasestorage.app',
@@ -53,12 +53,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyABn5ikJWbNA-NjO6mD5ICd1m9M6BENgU8',
-    appId: '1:130528704034:ios:dc37bb0f04e42689947c7b',
+    appId: '1:130528704034:ios:027101810424670f947c7b',
     messagingSenderId: '130528704034',
     projectId: 'fast-delivery-32739',
     authDomain: 'fast-delivery-32739.firebaseapp.com',
     storageBucket: 'fast-delivery-32739.appspot.com',
-    iosBundleId: 'com.example.userApp',
+    iosBundleId: 'com.example.customerApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -68,6 +68,6 @@ class DefaultFirebaseOptions {
     projectId: 'fast-delivery-32739',
     authDomain: 'fast-delivery-32739.firebaseapp.com',
     storageBucket: 'fast-delivery-32739.appspot.com',
-    iosBundleId: 'com.example.userApp.RunnerTests',
+    iosBundleId: 'com.example.customerApp.RunnerTests',
   );
 }

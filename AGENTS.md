@@ -11,13 +11,13 @@ Greenfield Flutter/Firebase multi-app system. No code written yet - this file gu
 - **Networking**: Dio
 - **Models**: Freezed
 - **Backend**: Firebase (Auth, Firestore, Cloud Functions, FCM)
-- **Roles**: user, rider, seller, admin
+- **Roles**: customer, rider, seller, admin
 
 ## App Structure
 
 Four distinct apps under one repo (future monorepo):
 
-1. **User App** - Customer mobile app
+1. **Customer App** - Customer mobile app
 2. **Rider App** - Delivery driver mobile app
 3. **Seller App** - Restaurant owner mobile app
 4. **Admin Panel** - Web admin dashboard

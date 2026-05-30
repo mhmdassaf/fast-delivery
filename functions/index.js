@@ -33,7 +33,7 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
       email: user.email || "",
       displayName: user.displayName || "",
       photoURL: user.photoURL || null,
-      role: "user", // Default role
+      role: "customer", // Default role
       emailVerified: user.emailVerified || false,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -110,11 +110,11 @@ exports.setUserRole = functions.https.onCall(async (data, context) => {
   }
 
   // Validate role
-  const validRoles = ["user", "rider", "seller", "admin"];
+  const validRoles = ["customer", "rider", "seller", "admin"];
   if (!validRoles.includes(role)) {
     throw new functions.https.HttpsError(
       "invalid-argument",
-      "Invalid role. Must be one of: user, rider, seller, admin"
+      "Invalid role. Must be one of: customer, rider, seller, admin"
     );
   }
 

@@ -11,7 +11,7 @@
 
 **Purpose:** Display shop details and menu when a user taps a shop card on the dashboard  
 **Scope:** Shop info (cover, logo, rating, delivery), menu items organized by category, full cart flow (item details → add to cart → view cart → my cart screen)  
-**Roles Supported:** `user`, `rider`, `seller`, `admin`  
+**Roles Supported:** `customer`, `rider`, `seller`, `admin`  
 **Platform:** Flutter (iOS, Android, Web)  
 **Architecture:** App-local feature (uses shared `fast_delivery_core` package)
 
@@ -20,7 +20,7 @@
 ## 📦 Feature Structure
 
 ```
-apps/user_app/lib/features/
+apps/customer_app/lib/features/
 ├── shop_details/                               # Shop details & menu browsing
 │   ├── data/
 │   │   ├── datasources/
@@ -78,7 +78,7 @@ apps/user_app/lib/features/
 ### Layer Structure
 
 ```
-apps/user_app/lib/features/shop_details/
+apps/customer_app/lib/features/shop_details/
 ├── data/
 │   ├── datasources/
 │   │   └── shop_details_datasource.dart       # Firestore queries for shop + menu_items subcollection
@@ -159,7 +159,7 @@ class ShopDetailsState {
 
 ## 🧭 Navigation (GoRouter)
 
-**Router Config:** Defined in `apps/user_app/lib/main.dart` via `routerProvider`
+**Router Config:** Defined in `apps/customer_app/lib/main.dart` via `routerProvider`
 
 ### ShellRoute Structure
 
@@ -469,7 +469,7 @@ In addition to the menu_items rules above, this feature relies on:
 ### Adding a New Menu Item Field
 1. Add field to `MenuItemModel` Freezed in `data/models/menu_item_model.dart`
 2. Update `fromFirestore()` and `toFirestore()` mappings
-3. Run `build_runner` in `apps/user_app/`
+3. Run `build_runner` in `apps/customer_app/`
 4. Update this doc with new field
 5. Update Firestore security rules if needed
 
@@ -527,16 +527,16 @@ No new dependencies were added.
 4. Handle errors with `Result<T>` pattern from `packages/core/lib/errors/`
 5. Use `AppColors` and `AppDimens` from `packages/core/lib/constants/`
 6. Update this doc after making changes
-7. Run `flutter pub run build_runner build --delete-conflicting-outputs` in `apps/user_app/`
-8. Run `flutter analyze` in `apps/user_app/` to catch issues
+7. Run `flutter pub run build_runner build --delete-conflicting-outputs` in `apps/customer_app/`
+8. Run `flutter analyze` in `apps/customer_app/` to catch issues
 
 **Key Files to Review:**
-- `apps/user_app/lib/features/shop_details/domain/providers/shop_details_providers.dart` — State management
-- `apps/user_app/lib/features/shop_details/data/datasources/shop_details_datasource.dart` — Firestore queries
-- `apps/user_app/lib/features/shop_details/data/models/menu_item_model.dart` — Menu item model
-- `apps/user_app/lib/features/shop_details/presentation/pages/shop_details_screen.dart` — Main screen
-- `apps/user_app/lib/features/shop_details/presentation/widgets/menu_item_card.dart` — Menu item card
-- `apps/user_app/lib/main.dart` — Router configuration with `/shop/:shopId`
+- `apps/customer_app/lib/features/shop_details/domain/providers/shop_details_providers.dart` — State management
+- `apps/customer_app/lib/features/shop_details/data/datasources/shop_details_datasource.dart` — Firestore queries
+- `apps/customer_app/lib/features/shop_details/data/models/menu_item_model.dart` — Menu item model
+- `apps/customer_app/lib/features/shop_details/presentation/pages/shop_details_screen.dart` — Main screen
+- `apps/customer_app/lib/features/shop_details/presentation/widgets/menu_item_card.dart` — Menu item card
+- `apps/customer_app/lib/main.dart` — Router configuration with `/shop/:shopId`
 - `firestore.rules` — Security rules for menu_items subcollection
 - `firestore.indexes.json` — Composite indexes
 - `packages/core/lib/errors/failure.dart` — Failure types

@@ -1,4 +1,4 @@
-name: user_app
+name: customer_app
 description: "Fast Delivery - Customer mobile app"
 publish_to: 'none'
 version: 1.0.0+1

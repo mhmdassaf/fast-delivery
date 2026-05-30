@@ -8,18 +8,18 @@
 
 ## 📋 Feature Overview
 
-**Purpose:** Order checkout flow for the Fast Delivery User App  
+**Purpose:** Order checkout flow for the Fast Delivery Customer App  
 **Scope:** Delivery address selection, order summary, place order to Firestore  
 **Persistent Storage:** Orders saved to Firestore `orders` collection  
 **Platform:** Flutter (Android, iOS)  
-**Architecture:** App-specific feature (`apps/user_app/lib/features/checkout/`)
+**Architecture:** App-specific feature (`apps/customer_app/lib/features/checkout/`)
 
 ---
 
 ## 📁 Files & Structure
 
 ```
-apps/user_app/lib/features/checkout/
+apps/customer_app/lib/features/checkout/
 ├── data/
 │   ├── datasources/
 │   │   ├── checkout_datasource.dart       # Firestore: create order, get shop delivery info
@@ -52,16 +52,16 @@ apps/user_app/lib/features/checkout/
 
 | File | Change |
 |------|--------|
-| `apps/user_app/lib/main.dart` | Added `/checkout` route (outside ShellRoute) |
-| `apps/user_app/lib/features/cart/presentation/pages/my_cart_screen.dart` | Replaced SnackBar placeholder with `context.push('/checkout')` |
+| `apps/customer_app/lib/main.dart` | Added `/checkout` route (outside ShellRoute) |
+| `apps/customer_app/lib/features/cart/presentation/pages/my_cart_screen.dart` | Replaced SnackBar placeholder with `context.push('/checkout')` |
 | `packages/core/lib/errors/failure.dart` | Added `CheckoutFailure` class |
-| `apps/user_app/pubspec.yaml` | Added `geolocator: ^13.0.2`, `geocoding: ^3.0.0` |
+| `apps/customer_app/pubspec.yaml` | Added `geolocator: ^13.0.2`, `geocoding: ^3.0.0` |
 
 ---
 
 ## 🏗️ Architecture (Clean Architecture + MVVM)
 
-### Layer Structure (in `apps/user_app/lib/features/checkout/`)
+### Layer Structure (in `apps/customer_app/lib/features/checkout/`)
 
 ```
 lib/features/checkout/
@@ -164,7 +164,7 @@ When the checkout screen loads, `CheckoutNotifier._loadInitialPhone()`:
 
 ## 📊 State Management (Riverpod)
 
-### Providers (in `apps/user_app/lib/features/checkout/domain/providers/checkout_providers.dart`)
+### Providers (in `apps/customer_app/lib/features/checkout/domain/providers/checkout_providers.dart`)
 
 | Provider | Type | Purpose |
 |----------|------|---------|
@@ -203,7 +203,7 @@ When the checkout screen loads, `CheckoutNotifier._loadInitialPhone()`:
 
 ## 🧭 Navigation (GoRouter)
 
-**Router Config:** `apps/user_app/lib/main.dart` → `routerProvider`
+**Router Config:** `apps/customer_app/lib/main.dart` → `routerProvider`
 
 ### Route Structure
 ```
@@ -258,7 +258,7 @@ When the checkout screen loads, `CheckoutNotifier._loadInitialPhone()`:
 ## 💾 Data Models
 
 ### DeliveryAddressModel (Freezed)
-**File:** `apps/user_app/lib/features/checkout/data/models/delivery_address_model.dart`
+**File:** `apps/customer_app/lib/features/checkout/data/models/delivery_address_model.dart`
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -270,7 +270,7 @@ When the checkout screen loads, `CheckoutNotifier._loadInitialPhone()`:
 **Methods:** `fromMap()`, `toMap()`, `get geoPoint` (to `GeoPoint`)
 
 ### OrderModel (Freezed)
-**File:** `apps/user_app/lib/features/checkout/data/models/order_model.dart`
+**File:** `apps/customer_app/lib/features/checkout/data/models/order_model.dart`
 
 User details are now **top-level fields** (not nested) for efficient querying. The `OrderUserInfo` class was removed.
 
@@ -384,7 +384,7 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 
 ---
 
-## 📦 Dependencies (in `apps/user_app/pubspec.yaml`)
+## 📦 Dependencies (in `apps/customer_app/pubspec.yaml`)
 
 ### Packages used by Checkout Feature
 | Package | Version | Purpose |
@@ -415,7 +415,7 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 ### Adding a New Field to OrderModel
 1. Add field to `OrderModel` in `data/models/order_model.dart`
 2. Update `fromFirestore()` and `toFirestore()` methods
-3. Run `dart run build_runner build --delete-conflicting-outputs` in `apps/user_app/`
+3. Run `dart run build_runner build --delete-conflicting-outputs` in `apps/customer_app/`
 4. Update **this doc** with new field
 
 ### Adding a New Checkout Step
@@ -486,7 +486,7 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 8. **Handle loading states** — disable buttons, show progress indicators
 9. **Generate code** after changing providers/models:
    ```bash
-   cd apps/user_app
+   cd apps/customer_app
    dart run build_runner build --delete-conflicting-outputs
    ```
 
@@ -514,14 +514,14 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 9. Update **this doc** after making changes
 
 **Key Files to Review:**
-- `apps/user_app/lib/features/checkout/domain/providers/checkout_providers.dart` — State management
-- `apps/user_app/lib/features/checkout/data/models/order_model.dart` — Order data model
-- `apps/user_app/lib/features/checkout/data/models/delivery_address_model.dart` — Address model
-- `apps/user_app/lib/features/checkout/data/datasources/checkout_datasource.dart` — Firestore ops
-- `apps/user_app/lib/features/checkout/data/datasources/location_datasource.dart` — GPS ops
-- `apps/user_app/lib/features/checkout/presentation/pages/checkout_screen.dart` — Checkout UI
-- `apps/user_app/lib/features/checkout/presentation/widgets/place_order_banner.dart` — Bottom banner
-- `apps/user_app/lib/main.dart` — Route registration
+- `apps/customer_app/lib/features/checkout/domain/providers/checkout_providers.dart` — State management
+- `apps/customer_app/lib/features/checkout/data/models/order_model.dart` — Order data model
+- `apps/customer_app/lib/features/checkout/data/models/delivery_address_model.dart` — Address model
+- `apps/customer_app/lib/features/checkout/data/datasources/checkout_datasource.dart` — Firestore ops
+- `apps/customer_app/lib/features/checkout/data/datasources/location_datasource.dart` — GPS ops
+- `apps/customer_app/lib/features/checkout/presentation/pages/checkout_screen.dart` — Checkout UI
+- `apps/customer_app/lib/features/checkout/presentation/widgets/place_order_banner.dart` — Bottom banner
+- `apps/customer_app/lib/main.dart` — Route registration
 - `packages/core/lib/errors/failure.dart` — CheckoutFailure definitions
 
 **Common Pitfalls:**

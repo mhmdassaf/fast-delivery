@@ -7,7 +7,7 @@ Flutter/Firebase multi-app delivery system.
 ```
 fast-delivery/
 ├── apps/
-│   ├── user_app/        - Customer mobile app
+│   ├── customer_app/   - Customer mobile app
 │   ├── rider_app/       - Delivery rider mobile app
 │   ├── seller_app/      - Restaurant seller mobile app
 │   └── admin_panel/    - Admin web dashboard
@@ -30,7 +30,7 @@ fast-delivery/
 
 1. Install dependencies per app:
    ```bash
-   cd apps/user_app && flutter pub get
+   cd apps/customer_app && flutter pub get
    cd apps/rider_app && flutter pub get
    cd apps/seller_app && flutter pub get
    cd apps/admin_panel && flutter pub get
@@ -38,21 +38,21 @@ fast-delivery/
 
 2. Run an app:
    ```bash
-   cd apps/user_app && flutter run
+   cd apps/customer_app && flutter run
    ```
 
 ## Apps
 
 | App | Platform | Description |
 |-----|----------|-------------|
-| user_app | iOS/Android | Customer ordering |
+| customer_app | iOS/Android | Customer ordering |
 | rider_app | iOS/Android | Delivery driver |
 | seller_app | iOS/Android | Restaurant management |
 | admin_panel | Web | Admin dashboard |
 
 ## Roles
 
-- **user**: Customer placing orders
+- **customer**: Customer placing orders
 - **rider**: Delivery driver
 - **seller**: Restaurant owner
 - **admin**: System administrator

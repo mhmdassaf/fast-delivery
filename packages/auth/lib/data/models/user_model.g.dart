@@ -12,8 +12,8 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
       displayName: json['displayName'] as String? ?? '',
       phoneNumber: json['phoneNumber'] as String?,
       photoURL: json['photoURL'] as String?,
-      role:
-          $enumDecodeNullable(_$UserRoleEnumMap, json['role']) ?? UserRole.user,
+      role: $enumDecodeNullable(_$UserRoleEnumMap, json['role']) ??
+          UserRole.customer,
       isEmailVerified: json['isEmailVerified'] as bool? ?? false,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] == null
@@ -46,7 +46,7 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
     };
 
 const _$UserRoleEnumMap = {
-  UserRole.user: 'user',
+  UserRole.customer: 'customer',
   UserRole.rider: 'rider',
   UserRole.seller: 'seller',
   UserRole.admin: 'admin',

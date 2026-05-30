@@ -426,7 +426,7 @@ class _UserModel implements UserModel {
       this.displayName = '',
       this.phoneNumber,
       this.photoURL,
-      this.role = UserRole.user,
+      this.role = UserRole.customer,
       this.isEmailVerified = false,
       required this.createdAt,
       this.updatedAt,

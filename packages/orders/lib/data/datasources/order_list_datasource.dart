@@ -22,10 +22,10 @@ class OrdersQueryResult {
 /// Data source for fetching orders from Firestore.
 ///
 /// Queries are role-aware:
-/// - user   → filter by `userId`
-/// - rider  → filter by `riderId`
-/// - seller → filter by `sellerId`
-/// - admin  → no filter (all orders)
+/// - customer → filter by `userId`
+/// - rider    → filter by `riderId`
+/// - seller   → filter by `sellerId`
+/// - admin    → no filter (all orders)
 abstract class OrderListDataSource {
   /// Fetch orders with optional status list filtering and cursor pagination.
   Future<Result<OrdersQueryResult>> getOrders({
@@ -55,14 +55,14 @@ class OrderListDataSourceImpl implements OrderListDataSource {
 
   /// Applies the role-based Firestore filter to [query].
   ///
-  /// - `user` → `userId == uid`
-  /// - `rider` → `riderId == uid`
-  /// - `seller` → `sellerId == uid`
-  /// - `admin` → no filter (all orders)
-  /// - unknown → falls back to `userId == uid`
+  /// - `customer` → `userId == uid`
+  /// - `rider`    → `riderId == uid`
+  /// - `seller`   → `sellerId == uid`
+  /// - `admin`    → no filter (all orders)
+  /// - unknown    → falls back to `userId == uid`
   Query _applyRoleFilter(Query query, String role, String uid) {
     switch (role) {
-      case 'user':
+      case 'customer':
         return query.where('userId', isEqualTo: uid);
       case 'rider':
         return query.where('riderId', isEqualTo: uid);

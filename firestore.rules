@@ -63,7 +63,7 @@ service cloud.firestore {
       /// Users can only create their own document
       allow create: if isOwner(userId) && 
         request.resource.data.uid == request.auth.uid &&
-        request.resource.data.role == 'user' &&
+        request.resource.data.role == 'customer' &&
         request.resource.data.keys().hasAll(['uid', 'email', 'role', 'createdAt']);
       
       /// Users can update their own document (any fields except role/isActive)
@@ -166,7 +166,7 @@ service cloud.firestore {
       allow update: if isAdmin();
       
       /// Users can cancel their own orders (only from 'Waiting Rider Confirmation' or 'pending')
-      allow update: if hasRole('user') && 
+      allow update: if hasRole('customer') && 
         isOwner(resource.data.userId) && 
         resource.data.status in ['Waiting Rider Confirmation', 'pending'] &&
         request.resource.data.status == 'cancelled';
@@ -305,7 +305,7 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       
       /// Users can create reviews for completed orders
-      allow create: if hasRole('user') && 
+      allow create: if hasRole('customer') && 
         request.resource.data.userId == request.auth.uid;
       
       /// Users can update their own reviews

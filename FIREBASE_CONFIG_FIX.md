@@ -1,17 +1,21 @@
 # Firebase API Key Configuration Fix
 
 ## Issue
+
 Error: `An internal error has occurred. [API key not valid. Please pass a valid API key]`
 
 ## Root Cause
+
 The `firebase_options.dart` file contained placeholder values (`YOUR_WEB_API_KEY`, `YOUR_ANDROID_API_KEY`, etc.) instead of real Firebase configuration values.
 
 ## What Was Fixed ✅
 
 ### 1. Android Configuration - FIXED
-Updated `apps/user_app/lib/core/firebase/firebase_options.dart` with real values from `google-services.json`:
+
+Updated `apps/customer_app/lib/core/firebase/firebase_options.dart` with real values from `google-services.json`:
+
 - **API Key**: `AIzaSyAPlmPufMDNBdpgtAfvhiuMVYR-cBAnP8U`
-- **App ID**: `1:130528704034:android:34d87b3d6c1956b8947c7b`
+- **App ID**: `1:130528704034:android:e83318c397b8f82e947c7b`
 - **Messaging Sender ID**: `130528704034`
 - **Storage Bucket**: Updated to `fast-delivery-32739.firebasestorage.app`
 
@@ -25,7 +29,7 @@ Updated `apps/user_app/lib/core/firebase/firebase_options.dart` with real values
 4. Scroll to **"Your apps"** section
 5. **If no Web app exists**:
    - Click the **`</>` (Web)** icon to add a web app
-   - Register app with nickname "user_app_web"
+   - Register app with nickname "customer_app_web"
    - Copy the configuration
 6. **If Web app already exists**:
    - Click on the Web app icon
@@ -33,9 +37,10 @@ Updated `apps/user_app/lib/core/firebase/firebase_options.dart` with real values
 
 ### Update `firebase_options.dart`:
 
-Edit: `apps/user_app/lib/core/firebase/firebase_options.dart`
+Edit: `apps/customer_app/lib/core/firebase/firebase_options.dart`
 
 Replace these lines (around line 37-44):
+
 ```dart
 static const FirebaseOptions web = FirebaseOptions(
   apiKey: 'AIzaSyAPlmPufMDNBdpgtAfvhiuMVYR-cBAnP8U', // Replace with your actual Web API Key
@@ -48,6 +53,7 @@ static const FirebaseOptions web = FirebaseOptions(
 ```
 
 With the real values from Firebase Console:
+
 ```dart
 static const FirebaseOptions web = FirebaseOptions(
   apiKey: 'REPLACE_WITH_REAL_WEB_API_KEY',
@@ -88,6 +94,7 @@ After updating the Web API key:
 ## Verification
 
 The error should disappear once:
+
 - ✅ Android API key is valid (DONE)
 - ⏳ Web API key is valid (NEEDS YOUR ACTION)
 - ⏳ iOS configuration is set up (if testing on iOS)
@@ -95,14 +102,17 @@ The error should disappear once:
 ## Quick Test
 
 Run the app on Android:
+
 ```bash
-cd apps/user_app
+cd apps/customer_app
 flutter run
 ```
 
 If testing on Chrome:
+
 ```bash
-cd apps/user_app
+cd apps/customer_app
 flutter run -d chrome
 ```
+
 (Only after updating the Web API key)

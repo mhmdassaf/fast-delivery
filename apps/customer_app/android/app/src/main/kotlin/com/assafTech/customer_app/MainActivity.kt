@@ -1,4 +1,4 @@
-package com.assafTech.user_app
+package com.assafTech.customer_app
 
 import io.flutter.embedding.android.FlutterActivity
 

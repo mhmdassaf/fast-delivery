@@ -10,7 +10,7 @@
 
 **Purpose:** Shared orders list screen visible across all Fast Delivery apps  
 **Scope:** Role-based order listing, status filtering, pagination, pull-to-refresh  
-**Roles Supported:** `user`, `rider`, `seller`, `admin`  
+**Roles Supported:** `customer`, `rider`, `seller`, `admin`  
 **Platform:** Flutter (iOS, Android, Web)  
 **Architecture:** Shared package (`packages/orders/`)
 
@@ -56,7 +56,7 @@ packages/orders/
 
 ### Apps Using This Package:
 ```
-apps/user_app/       → uses fast_delivery_orders → /orders route
+apps/customer_app/   → uses fast_delivery_orders → /orders route
 apps/rider_app/      → uses fast_delivery_orders → /orders route
 apps/seller_app/     → uses fast_delivery_orders → /orders route
 apps/admin_panel/    → uses fast_delivery_orders → /orders route
@@ -120,7 +120,7 @@ User sees UI ← Widget rebuild ← State update ← OrderListNotifier ← Order
 
 | Role | Firestore Filter | Source |
 |------|-----------------|--------|
-| `user` | `.where('userId', isEqualTo: uid)` | Current user's own orders |
+| `customer` | `.where('userId', isEqualTo: uid)` | Current user's own orders |
 | `rider` | `.where('riderId', isEqualTo: uid)` | Orders assigned to rider |
 | `seller` | `.where('sellerId', isEqualTo: uid)` | Orders for seller's shop |
 | `admin` | No filter (all orders) | Full access |
@@ -205,8 +205,8 @@ All apps use `StatefulShellRoute.indexedStack` (via `MainShell`) with 3 branches
 
 | App | Tab | Route | Screen |
 |-----|-----|-------|--------|
-| **user_app** | Home | `/` | `DashboardScreen` |
-| **user_app** | Orders | `/orders` | `OrdersListScreen` |
+| **customer_app** | Home | `/` | `DashboardScreen` |
+| **customer_app** | Orders | `/orders` | `OrdersListScreen` |
 | **rider_app** | Home | `/` | `RiderDashboardScreen` |
 | **rider_app** | Orders | `/orders` | `OrdersListScreen` |
 | **seller_app** | Home | `/` | `SellerDashboardScreen` |
@@ -460,7 +460,7 @@ Indexes 5 and 6 were added for the `activeOrdersCountProvider` which uses Firest
 ## 🚀 Cross-Feature Integration
 
 ### Checkout Feature Integration
-The `OrderModel` in `apps/user_app/features/checkout/data/models/order_model.dart` was refactored:
+The `OrderModel` in `apps/customer_app/features/checkout/data/models/order_model.dart` was refactored:
 - Removed nested `user` object (`OrderUserInfo`)
 - Added top-level fields: `userId`, `userName`, `userPhone`
 - Removed `userEmail` (not needed)
@@ -468,7 +468,7 @@ The `OrderModel` in `apps/user_app/features/checkout/data/models/order_model.dar
 
 ### Bottom Navigation Integration
 - **All apps**: Orders tab added to shared `MainShell` bottom navigation bar (see `packages/core/lib/widgets/main_shell.dart`)
-- **user_app**: "My Orders" icon button removed from search bar row in `DashboardScreen` — replaced by the bottom nav Orders tab
+- **customer_app**: "My Orders" icon button removed from search bar row in `DashboardScreen` — replaced by the bottom nav Orders tab
 - **rider_app/seller_app/admin_panel**: Flat `/orders` route replaced by bottom nav Orders tab via `StatefulShellRoute.indexedStack`
 
 ### Active Orders Badge (MainShell)

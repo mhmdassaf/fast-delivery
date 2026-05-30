@@ -3,15 +3,15 @@
 > **AI-Readable Documentation for Dashboard Feature**  
 > **Last Updated:** 2026-05-15  
 > **Feature Status:** ✅ Implemented  
-> **Commit:** `HEAD` - feat(user_app): implement dashboard with shop listing, categories, search, and filters
+> **Commit:** `HEAD` - feat(customer_app): implement dashboard with shop listing, categories, search, and filters
 
 ---
 
 ## 📋 Feature Overview
 
-**Purpose:** Main landing screen for the User App — shop discovery and browsing  
+**Purpose:** Main landing screen for the Customer App — shop discovery and browsing  
 **Scope:** Shop listing, Category browsing, Search, Filtering, Pagination, Pull-to-refresh  
-**Roles Supported:** `user`, `rider`, `seller`, `admin`  
+**Roles Supported:** `customer`, `rider`, `seller`, `admin`  
 **Platform:** Flutter (iOS, Android, Web)  
 **Architecture:** App-local feature (uses shared `fast_delivery_core` package)
 
@@ -19,10 +19,10 @@
 
 ## 📦 Feature Structure
 
-The dashboard is an **app-local feature** (not a shared package) since it's specific to the User App:
+The dashboard is an **app-local feature** (not a shared package) since it's specific to the Customer App:
 
 ```
-apps/user_app/lib/features/dashboard/
+apps/customer_app/lib/features/dashboard/
 ├── data/
 │   ├── datasources/
 │   │   └── dashboard_datasource.dart        # Firebase Firestore operations
@@ -66,12 +66,12 @@ apps/user_app/lib/features/dashboard/
 
 ## 🏗️ Architecture (Clean Architecture + MVVM)
 
-### Layer Structure (in `apps/user_app/lib/features/dashboard/`)
+### Layer Structure (in `apps/customer_app/lib/features/dashboard/`)
 
-The dashboard follows Clean Architecture within the User App:
+The dashboard follows Clean Architecture within the Customer App:
 
 ```
-apps/user_app/lib/features/dashboard/
+apps/customer_app/lib/features/dashboard/
 ├── data/
 │   ├── datasources/
 │   │   └── dashboard_datasource.dart       # Firestore queries for shops + categories
@@ -171,7 +171,7 @@ class DashboardState {
 
 ## 🧭 Navigation (GoRouter)
 
-**Router Config:** Defined in `apps/user_app/lib/main.dart` via `routerProvider`
+**Router Config:** Defined in `apps/customer_app/lib/main.dart` via `routerProvider`
 
 ```dart
 final routerProvider = Provider<GoRouter>((ref) {
@@ -436,7 +436,7 @@ In addition to the shops and categories rules above, the dashboard relies on:
 ## 📝 Conventions for Future Changes
 
 ### ✅ DO:
-1. **Add new providers** using `@riverpod` annotation → run `build_runner` in `apps/user_app/`
+1. **Add new providers** using `@riverpod` annotation → run `build_runner` in `apps/customer_app/`
 2. **Add new data** to models → update Freezed model + `fromFirestore()` + `toFirestore()`
 3. **Handle errors** using `Result<T>` pattern from `packages/core/`
 4. **Use `AppColors`** and `AppDimens` from `packages/core/lib/constants/`
@@ -467,25 +467,25 @@ In addition to the shops and categories rules above, the dashboard relies on:
 3. Add filter UI in `FilterBottomSheet` in `presentation/widgets/filter_bottom_sheet.dart`
 4. Add active filter chip in `DashboardScreen._ActiveFilterChips` if needed
 5. Add remove method in `DashboardNotifier` if needed
-6. Run `build_runner` in `apps/user_app/`
+6. Run `build_runner` in `apps/customer_app/`
 7. **Update this doc** with new filter
 
 ### Adding a New Sorting Option
 1. Add value to `SortOption` enum in `shop_filter_model.dart`
 2. Add sort case in `DashboardDataSourceImpl.getShops()`
 3. Add chip label in `FilterBottomSheet._SortSelector`
-4. Run `build_runner` in `apps/user_app/`
+4. Run `build_runner` in `apps/customer_app/`
 5. **Update this doc** with new sort
 
 ### Adding a New Screen
 1. Create screen in `presentation/pages/` or `presentation/widgets/`
-2. Add route to `routerProvider` in `apps/user_app/lib/main.dart`
+2. Add route to `routerProvider` in `apps/customer_app/lib/main.dart`
 3. **Update this doc** with new route
 
 ### Changing Shop/Category Model
 1. Update Freezed model in `data/models/shop_model.dart` or `category_model.dart`
 2. Update `fromFirestore()` and `toFirestore()` mappings
-3. Run `build_runner` in `apps/user_app/`
+3. Run `build_runner` in `apps/customer_app/`
 4. Update Firestore security rules if needed
 5. Update seed scripts if needed
 6. **Update this doc** with new fields
@@ -494,7 +494,7 @@ In addition to the shops and categories rules above, the dashboard relies on:
 
 ## 🧪 Testing
 
-### Current Tests (in `apps/user_app/test/widget_test.dart`)
+### Current Tests (in `apps/customer_app/test/widget_test.dart`)
 - `FastDeliveryApp can be instantiated without throwing` — Verifies app widget creation
 - `FastDeliveryApp is a ConsumerWidget` — Verifies widget type (requires Riverpod `ProviderScope`)
 
@@ -510,7 +510,7 @@ In addition to the shops and categories rules above, the dashboard relies on:
 
 ## 📦 Dependencies (Added for Dashboard)
 
-### User App (`apps/user_app/pubspec.yaml`) — New Dependencies
+### Customer App (`apps/customer_app/pubspec.yaml`) — New Dependencies
 
 | Package | Version | Purpose |
 |---------|---------|---------|
@@ -538,14 +538,14 @@ In addition to the shops and categories rules above, the dashboard relies on:
 4. Handle errors with `Result<T>` pattern from `packages/core/lib/errors/`
 5. Use `AppColors` and `AppDimens` from `packages/core/lib/constants/`
 6. Update this doc after making changes
-7. Run `flutter pub run build_runner build --delete-conflicting-outputs` in `apps/user_app/`
-8. Run `flutter test --concurrency=8` in `apps/user_app/`
+7. Run `flutter pub run build_runner build --delete-conflicting-outputs` in `apps/customer_app/`
+8. Run `flutter test --concurrency=8` in `apps/customer_app/`
 
 **Key Files to Review:**
-- `apps/user_app/lib/features/dashboard/domain/providers/dashboard_providers.dart` — State management
-- `apps/user_app/lib/features/dashboard/data/datasources/dashboard_datasource.dart` — Firestore queries
-- `apps/user_app/lib/features/dashboard/presentation/pages/dashboard_screen.dart` — Main screen
-- `apps/user_app/lib/main.dart` — Router configuration
+- `apps/customer_app/lib/features/dashboard/domain/providers/dashboard_providers.dart` — State management
+- `apps/customer_app/lib/features/dashboard/data/datasources/dashboard_datasource.dart` — Firestore queries
+- `apps/customer_app/lib/features/dashboard/presentation/pages/dashboard_screen.dart` — Main screen
+- `apps/customer_app/lib/main.dart` — Router configuration
 - `firestore.rules` — Security rules
 - `firestore.indexes.json` — Composite indexes
 - `packages/core/lib/errors/failure.dart` — Failure types

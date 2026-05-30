@@ -18,16 +18,16 @@ This guide walks you through the Firebase configuration steps for the Fast Deliv
 2. Navigate to **Project Settings** (gear icon)
 3. Scroll down to **Your apps** section
 4. Click **Add app** → Select **Android**
-5. Enter package name: `com.example.user_app`
+5. Enter package name: `com.example.customer_app`
 6. Download `google-services.json`
-7. Place it in: `apps/user_app/android/app/google-services.json`
+7. Place it in: `apps/customer_app/android/app/google-services.json`
 
 ### iOS (for future)
 
 1. In Firebase Console, add iOS app
-2. Enter bundle ID: `com.example.userApp`
+2. Enter bundle ID: `com.example.customerApp`
 3. Download `GoogleService-Info.plist`
-4. Place it in: `apps/user_app/ios/Runner/GoogleService-Info.plist`
+4. Place it in: `apps/customer_app/ios/Runner/GoogleService-Info.plist`
 
 ---
 
@@ -75,7 +75,7 @@ firebase deploy --only firestore:indexes
 Run the FlutterFire CLI to generate updated Firebase configuration:
 
 ```bash
-cd apps/user_app
+cd apps/customer_app
 
 # Configure Firebase for this project
 flutterfire configure --project=fast-delivery-32739
@@ -108,7 +108,7 @@ firebase deploy --only functions
 
 1. Run the app:
    ```bash
-   cd apps/user_app
+cd apps/customer_app
    flutter run
    ```
 

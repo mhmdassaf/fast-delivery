@@ -40,7 +40,7 @@ Rules:
 - Use indexes where needed
 
 Security:
-- Assume role-based system (user, rider, seller, admin)
+- Assume role-based system (customer, rider, seller, admin)
 
 Output:
 - Firestore collections

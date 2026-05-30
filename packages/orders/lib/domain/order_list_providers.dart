@@ -220,7 +220,7 @@ class OrderListNotifier extends _$OrderListNotifier {
     ).statuses;
 
     final result = await _repository.getOrders(
-      role: user?.role.name ?? 'user',
+      role: user?.role.name ?? 'customer',
       uid: uid,
       statuses: statuses,
       cursor: cursor,

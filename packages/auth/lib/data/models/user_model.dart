@@ -7,8 +7,8 @@ part 'user_model.g.dart';
 /// User role enumeration
 @JsonEnum()
 enum UserRole {
-  @JsonValue('user')
-  user,
+  @JsonValue('customer')
+  customer,
   @JsonValue('rider')
   rider,
   @JsonValue('seller')
@@ -26,7 +26,7 @@ abstract class UserModel with _$UserModel {
     @Default('') String displayName,
     String? phoneNumber,
     String? photoURL,
-    @Default(UserRole.user) UserRole role,
+    @Default(UserRole.customer) UserRole role,
     @Default(false) bool isEmailVerified,
     required DateTime createdAt,
     DateTime? updatedAt,
@@ -52,7 +52,7 @@ abstract class UserModel with _$UserModel {
       email: email,
       displayName: displayName ?? '',
       photoURL: photoURL,
-      role: UserRole.user, // Default role
+      role: UserRole.customer, // Default role
       isEmailVerified: emailVerified,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),

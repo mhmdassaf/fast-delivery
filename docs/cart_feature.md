@@ -9,18 +9,18 @@
 
 ## 📋 Feature Overview
 
-**Purpose:** Shopping cart system for the Fast Delivery User App  
+**Purpose:** Shopping cart system for the Fast Delivery Customer App  
 **Scope:** Add items to cart, manage quantities, special instructions, persistent cart storage, floating cart banner  
 **Persistent Storage:** `shared_preferences` (cart survives app restarts)  
 **Platform:** Flutter (Android, iOS)  
-**Architecture:** App-specific feature (`apps/user_app/lib/features/cart/`)
+**Architecture:** App-specific feature (`apps/customer_app/lib/features/cart/`)
 
 ---
 
 ## 📁 Files & Structure
 
 ```
-apps/user_app/lib/features/cart/
+apps/customer_app/lib/features/cart/
 ├── data/
 │   └── models/
 │       ├── cart_item_model.dart           # Freezed data model
@@ -46,18 +46,18 @@ apps/user_app/lib/features/cart/
 |------|--------|
 | `packages/core/lib/constants/app_constants.dart` | Added `AppDimens.cartBannerBottomPadding = 88.0` |
 | `packages/core/lib/errors/failure.dart` | Added `CartFailure` class |
-| `apps/user_app/lib/main.dart` | ShellRoute wraps app routes with ViewCartBanner; `/my-cart` moved outside ShellRoute to avoid banner overlay on cart screen |
-| `apps/user_app/lib/features/dashboard/presentation/pages/dashboard_screen.dart` | Added 88px bottom padding for ViewCartBanner overlay |
-| `apps/user_app/lib/features/shop_details/presentation/pages/shop_details_screen.dart` | Added 88px bottom padding; [+] pushes to `/item-details` |
-| `apps/user_app/lib/features/shop_details/presentation/widgets/menu_category_section.dart` | Passes `onItemAddTap` callback |
-| `apps/user_app/lib/features/shop_details/presentation/widgets/menu_item_card.dart` | Simplified; removed SnackBar placeholder |
+| `apps/customer_app/lib/main.dart` | ShellRoute wraps app routes with ViewCartBanner; `/my-cart` moved outside ShellRoute to avoid banner overlay on cart screen |
+| `apps/customer_app/lib/features/dashboard/presentation/pages/dashboard_screen.dart` | Added 88px bottom padding for ViewCartBanner overlay |
+| `apps/customer_app/lib/features/shop_details/presentation/pages/shop_details_screen.dart` | Added 88px bottom padding; [+] pushes to `/item-details` |
+| `apps/customer_app/lib/features/shop_details/presentation/widgets/menu_category_section.dart` | Passes `onItemAddTap` callback |
+| `apps/customer_app/lib/features/shop_details/presentation/widgets/menu_item_card.dart` | Simplified; removed SnackBar placeholder |
 | `docs/shop_details_feature.md` | Updated with cart integration details |
 
 ---
 
 ## 🏗️ Architecture (Clean Architecture + MVVM)
 
-### Layer Structure (in `apps/user_app/lib/features/cart/`)
+### Layer Structure (in `apps/customer_app/lib/features/cart/`)
 
 ```
 lib/features/cart/
@@ -134,7 +134,7 @@ When user tries to add an item from a different shop:
 
 ## 📊 State Management (Riverpod)
 
-### Providers (in `apps/user_app/lib/features/cart/domain/providers/cart_providers.dart`)
+### Providers (in `apps/customer_app/lib/features/cart/domain/providers/cart_providers.dart`)
 
 | Provider | Type | Purpose |
 |----------|------|---------|
@@ -171,7 +171,7 @@ When user tries to add an item from a different shop:
 
 ## 🧭 Navigation (GoRouter)
 
-**Router Config:** `apps/user_app/lib/main.dart` → `routerProvider`
+**Router Config:** `apps/customer_app/lib/main.dart` → `routerProvider`
 
 ### Route Structure
 ```
@@ -245,7 +245,7 @@ ShellRoute(
 ## 💾 Data Models
 
 ### CartItemModel (Freezed)
-**File:** `apps/user_app/lib/features/cart/data/models/cart_item_model.dart`
+**File:** `apps/customer_app/lib/features/cart/data/models/cart_item_model.dart`
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -261,7 +261,7 @@ ShellRoute(
 **Computed property:** `totalPrice` → `price * quantity`
 
 ### ItemDetailArgs
-**File:** `apps/user_app/lib/features/cart/data/models/item_detail_args.dart`
+**File:** `apps/customer_app/lib/features/cart/data/models/item_detail_args.dart`
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -289,7 +289,7 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 
 ---
 
-## 📦 Dependencies (in `apps/user_app/pubspec.yaml`)
+## 📦 Dependencies (in `apps/customer_app/pubspec.yaml`)
 
 ### Packages used by Cart Feature
 | Package | Version | Purpose |
@@ -316,7 +316,7 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 
 ### Adding a New Field to CartItemModel
 1. Add field to `CartItemModel` in `data/models/cart_item_model.dart`
-2. Run `dart run build_runner build --delete-conflicting-outputs` in `apps/user_app/`
+2. Run `dart run build_runner build --delete-conflicting-outputs` in `apps/customer_app/`
 3. Update `CartNotifier` if the field needs special handling
 4. Update **this doc** with new field
 
@@ -328,7 +328,7 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 
 ### Adding a New Derived Provider
 1. Add `@riverpod` annotated function in `domain/providers/cart_providers.dart`
-2. Run `dart run build_runner build --delete-conflicting-outputs` in `apps/user_app/`
+2. Run `dart run build_runner build --delete-conflicting-outputs` in `apps/customer_app/`
 3. Use in UI via `ref.watch(yourProvider)`
 4. Update **this doc**
 
@@ -374,7 +374,7 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 6. **Track animation state** with instance fields (avoid side-effects in `build()`)
 7. **Generate code** after changing providers/models:
    ```bash
-   cd apps/user_app
+   cd apps/customer_app
    dart run build_runner build --delete-conflicting-outputs
    ```
 
@@ -401,12 +401,12 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 8. Update **this doc** after making changes
 
 **Key Files to Review:**
-- `apps/user_app/lib/features/cart/domain/providers/cart_providers.dart` - State management
-- `apps/user_app/lib/features/cart/data/models/cart_item_model.dart` - Data model
-- `apps/user_app/lib/features/cart/presentation/pages/item_details_screen.dart` - Item detail UI
-- `apps/user_app/lib/features/cart/presentation/pages/my_cart_screen.dart` - Cart management UI
-- `apps/user_app/lib/features/cart/presentation/widgets/view_cart_banner.dart` - Banner widget
-- `apps/user_app/lib/main.dart` - Router configuration
+- `apps/customer_app/lib/features/cart/domain/providers/cart_providers.dart` - State management
+- `apps/customer_app/lib/features/cart/data/models/cart_item_model.dart` - Data model
+- `apps/customer_app/lib/features/cart/presentation/pages/item_details_screen.dart` - Item detail UI
+- `apps/customer_app/lib/features/cart/presentation/pages/my_cart_screen.dart` - Cart management UI
+- `apps/customer_app/lib/features/cart/presentation/widgets/view_cart_banner.dart` - Banner widget
+- `apps/customer_app/lib/main.dart` - Router configuration
 - `packages/core/lib/constants/app_constants.dart` - AppDimens
 - `packages/core/lib/errors/failure.dart` - CartFailure
 

@@ -31,7 +31,7 @@ Rules:
 4. Run `git branch --show-current` to get current branch name
 
 ### Phase2 — Detect & Document
-1. Infer feature scope from local changes (e.g., `user_app/lib/features/auth` → scope `auth`)
+1. Infer feature scope from local changes (e.g., `customer_app/lib/features/auth` → scope `auth`)
 2. Group modified files by directory to identify feature-related files:
    - Include shared/core files only if they support the current feature
    - Exclude unrelated files (e.g., build artifacts, temp files)
