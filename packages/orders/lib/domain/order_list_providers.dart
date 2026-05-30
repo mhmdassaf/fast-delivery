@@ -133,20 +133,21 @@ const _Unset = Object();
 
 /// Available status filter options.
 enum StatusFilterOption {
-  all('All', null),
-  active('Active', [
+  all('All', Icons.all_inclusive_rounded, null),
+  active('Active', Icons.bolt_rounded, [
     OrderStatus.waitingRiderConfirmation,
     OrderStatus.confirmed,
     OrderStatus.preparing,
     OrderStatus.outForDelivery,
   ]),
-  completed('Completed', [OrderStatus.delivered]),
-  cancelled('Cancelled', [OrderStatus.cancelled]);
+  completed('Completed', Icons.check_circle_rounded, [OrderStatus.delivered]),
+  cancelled('Cancelled', Icons.cancel_rounded, [OrderStatus.cancelled]);
 
   final String label;
+  final IconData icon;
   final List<OrderStatus>? statuses;
 
-  const StatusFilterOption(this.label, this.statuses);
+  const StatusFilterOption(this.label, this.icon, this.statuses);
 
   /// The Firestore status group key (null for "All").
   String? get filterValue =>

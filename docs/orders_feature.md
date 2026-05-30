@@ -2,7 +2,7 @@
 
 > **AI-Readable Documentation for Orders List Feature**  
 > **Last Updated:** 2026-05-30  
-> **Feature Status:** ✅ Implemented
+> **Feature Status:** ✅ Implemented (Filters redesigned to match Dashboard's CategoriesBar visual style)
 
 ---
 
@@ -143,19 +143,23 @@ The role is derived from `currentUserProvider` → `user?.role.name`.
 
 ### StatusFilterOption Enum
 
-Each option carries its own `List<OrderStatus>? statuses` for direct Firestore querying:
+Each option carries its `IconData`, and `List<OrderStatus>? statuses` for direct Firestore querying:
 
-| Value | Label | Filter Value | Included Statuses |
-|-------|-------|-------------|-------------------|
-| `all` | "All" | `null` | All statuses |
-| `active` | "Active" | `'Active'` | `waitingRiderConfirmation`, `confirmed`, `preparing`, `outForDelivery` |
-| `completed` | "Completed" | `'Completed'` | `delivered` |
-| `cancelled` | "Cancelled" | `'Cancelled'` | `cancelled` |
+| Value | Label | Icon | Filter Value | Included Statuses |
+|-------|-------|------|-------------|-------------------|
+| `all` | "All" | `Icons.all_inclusive_rounded` | `null` | All statuses |
+| `active` | "Active" | `Icons.bolt_rounded` | `'Active'` | `waitingRiderConfirmation`, `confirmed`, `preparing`, `outForDelivery` |
+| `completed` | "Completed" | `Icons.check_circle_rounded` | `'Completed'` | `delivered` |
+| `cancelled` | "Cancelled" | `Icons.cancel_rounded` | `'Cancelled'` | `cancelled` |
+
+**Fields:**
+- `String label` — Human-readable display name
+- `IconData icon` — Icon rendered alongside the label in the filter chip
+- `List<OrderStatus>? statuses` — Statuses in this group (used by `OrderListDataSource.getOrders()`)
 
 **Key Methods:**
 - `String? get filterValue` — Returns `null` for "All", otherwise returns the label
 - `static StatusFilterOption fromFilterValue(String?)` — Reverse-lookup from filter value to enum (returns `StatusFilterOption.all` for unknown values)
-- `List<OrderStatus>? statuses` — The statuses in this group, used directly by `OrderListDataSource.getOrders()`
 
 The `statuses` list is converted to `List<int>` via `toFirestore()` for Firestore `whereIn` queries.
 
@@ -197,8 +201,8 @@ Each app has a `routerProvider` with redirect logic:
 ┌──────────────────────────────────┐
 │ AppBar: "My Orders"              │
 ├──────────────────────────────────┤
-│ StatusFilterBar: All | Active |   │
-│   Completed | Cancelled           │
+│ [icon] All | [icon] Active |      │
+│   [icon] Completed | [icon] Cancel│
 ├──────────────────────────────────┤
 │ ┌──────────────────────────────┐ │
 │ │ OrderCard                    │ │  ← Shop name, address, items, total, status, time
@@ -217,7 +221,7 @@ Each app has a `routerProvider` with redirect logic:
 | `OrdersListScreen` | Main screen | Pull-to-refresh, pagination via scroll listener, loading/error/empty states |
 | `OrderCard` | Order list item | Shop name, delivery address, item count, total price, status badge, relative time |
 | `OrderStatusBadge` | Status indicator | Accepts `OrderStatus` enum; shows resolved description text; color-coded: Amber=Active, Green=Delivered, Red=Cancelled |
-| `OrderStatusFilterBar` | Filter chips | Horizontal scrollable, `FilterChip` with selected state |
+| `OrderStatusFilterBar` | Filter chips | Horizontal scrollable, custom `AnimatedContainer` design matching Dashboard's `CategoriesBar` — `AppColors.primary` selected bg, `AppColors.surface` unselected bg, icon + label, 200ms animation |
 | `OrderListLoading` | Skeleton | 4 shimmer cards matching `OrderCard` layout |
 | `OrderListEmptyState` | Empty state | Context-specific message (no orders vs no matching filters) |
 
