@@ -37,9 +37,12 @@ function indexKey(idx) {
 }
 
 async function run() {
-  // Read index definitions from firestore.indexes.json
+  // Read index definitions from firestore.indexes.json (strip comments first)
   const indexPath = path.resolve(__dirname, '../firestore.indexes.json');
-  const config = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+  const raw = fs.readFileSync(indexPath, 'utf-8')
+    .replace(/\/\/.*$/gm, '')     // strip // line comments
+    .replace(/\/\*[\s\S]*?\*\//g, ''); // strip /* */ block comments
+  const config = JSON.parse(raw);
   const desired = config.indexes || [];
   console.log(`Desired indexes from firestore.indexes.json: ${desired.length}`);
 

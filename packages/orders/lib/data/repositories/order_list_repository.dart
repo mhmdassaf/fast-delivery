@@ -15,6 +15,13 @@ abstract class OrderListRepository {
     DocumentSnapshot<Object?>? cursor,
     int limit = 15,
   });
+
+  /// Returns the number of active orders for the given role.
+  Future<Result<int>> getActiveOrderCount({
+    required String role,
+    required String uid,
+    required List<OrderStatus> statuses,
+  });
 }
 
 /// Implementation of [OrderListRepository].
@@ -38,6 +45,19 @@ class OrderListRepositoryImpl implements OrderListRepository {
       statuses: statuses,
       cursor: cursor,
       limit: limit,
+    );
+  }
+
+  @override
+  Future<Result<int>> getActiveOrderCount({
+    required String role,
+    required String uid,
+    required List<OrderStatus> statuses,
+  }) {
+    return _dataSource.getActiveOrderCount(
+      role: role,
+      uid: uid,
+      statuses: statuses,
     );
   }
 }

@@ -49,6 +49,29 @@ Future<Map<String, String>> orderStatusDescriptionOverrides(Ref ref) async {
   return {};
 }
 
+/// Returns the number of active orders for the currently logged-in user/role.
+///
+/// Uses Firestore's `count()` aggregation — no documents are fetched.
+/// Returns `0` when the user is unauthenticated or when the query fails silently.
+/// Invalidate this provider (e.g. when switching to the Home tab) to refresh.
+@riverpod
+Future<int> activeOrdersCount(Ref ref) async {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return 0;
+
+  final repo = ref.watch(ordersRepositoryProvider);
+  final result = await repo.getActiveOrderCount(
+    role: user.role.name,
+    uid: user.uid,
+    statuses: StatusFilterOption.active.statuses!,
+  );
+
+  return result.fold(
+    onSuccess: (count) => count,
+    onFailure: (_) => 0,
+  );
+}
+
 // ============================================================================
 // OrderListState
 // ============================================================================

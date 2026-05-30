@@ -10,6 +10,7 @@ import 'package:fast_delivery_core/widgets/not_found_page.dart';
 import 'package:fast_delivery_auth/domain/providers/auth_providers.dart';
 import 'package:fast_delivery_auth/presentation/screens/login_screen.dart';
 import 'package:fast_delivery_auth/presentation/screens/register_screen.dart';
+import 'package:fast_delivery_orders/domain/order_list_providers.dart';
 import 'package:fast_delivery_orders/presentation/pages/orders_list_screen.dart';
 
 import 'presentation/pages/rider_dashboard_screen.dart';
@@ -84,8 +85,15 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Main shell with bottom navigation (Home / Orders / Account)
       StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) => MainShell(
-          navigationShell: navigationShell,
+        builder: (context, state, navigationShell) => Consumer(
+          builder: (context, ref, _) {
+            final activeCount =
+                ref.watch(activeOrdersCountProvider).valueOrNull ?? 0;
+            return MainShell(
+              navigationShell: navigationShell,
+              activeOrdersCount: activeCount,
+            );
+          },
         ),
         branches: [
           // Home tab — Rider Dashboard

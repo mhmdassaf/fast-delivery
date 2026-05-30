@@ -117,6 +117,7 @@ The role is derived from `currentUserProvider` → `user?.role.name`.
 | `ordersRepositoryProvider` | `@riverpod` | Creates `OrderListRepositoryImpl` |
 | `orderStatusDescriptionOverridesProvider` | `@riverpod` Future | Fetches `config/orderStatuses` for dynamic badge descriptions |
 | `orderListNotifierProvider` | `@riverpod` Notifier | **Main state manager** — `OrderListNotifier` |
+| `activeOrdersCountProvider` | `@riverpod` Future | Returns the **count of active orders** for the current user/role using Firestore `count()` aggregation. Returns `0` when unauthenticated or on query failure. Watched by each app and passed to `MainShell` via the `activeOrdersCount` parameter. |
 
 ### OrderListState Fields
 
@@ -140,6 +141,14 @@ The role is derived from `currentUserProvider` → `user?.role.name`.
 | `refresh()` | Pull-to-refresh |
 | `setStatusFilter(String?)` | Filter by status group (null = "All") |
 | `clearError()` | Dismiss error |
+
+### Data Source & Repository (new method for badge)
+
+| Layer | Method | Purpose |
+|-------|--------|---------|
+| `OrderListDataSource` | `getActiveOrderCount(role, uid, statuses)` | Role-based Firestore `count()` query filtered by active statuses |
+| `OrderListRepository` | `getActiveOrderCount(role, uid, statuses)` | Wraps data source count method |
+| `order_list_providers.dart` | `activeOrdersCountProvider` | `@riverpod Future<int>` — reads current user + role, calls repository, returns count or 0 |
 
 ### StatusFilterOption Enum
 
@@ -224,6 +233,17 @@ Each app has a `routerProvider` with redirect logic:
 | `OrderStatusFilterBar` | Filter chips | Horizontal scrollable, custom `AnimatedContainer` design matching Dashboard's `CategoriesBar` — `AppColors.primary` selected bg, `AppColors.surface` unselected bg, icon + label, 200ms animation |
 | `OrderListLoading` | Skeleton | 4 shimmer cards matching `OrderCard` layout |
 | `OrderListEmptyState` | Empty state | Context-specific message (no orders vs no matching filters) |
+
+### Active Orders Badge on Bottom Nav
+
+All four apps show a **count badge** on the Orders tab in the bottom navigation bar (`MainShell` in `packages/core/lib/widgets/main_shell.dart`):
+
+- **What:** A Material `Badge` widget wrapping the Orders `NavigationDestination` icon
+- **Count:** Number of active orders (statuses matching the "Active" filter group), fetched via `activeOrdersCountProvider`
+- **How:** Each app's `routerProvider` watches `activeOrdersCountProvider` and passes the count to `MainShell` via the `activeOrdersCount` parameter. This avoids a circular dependency between `packages/core` and `packages/orders`.
+- **Refresh:** The provider auto-refetches when its dependencies change (e.g., user login/logout). For real-time updates, apps can manually invalidate the provider.
+- **Error/Empty:** Shows no badge (count = 0) when unauthenticated, on query failure, or when there are no active orders
+- **Unauthenticated:** Provider returns `0` since `currentUserProvider` is null
 
 ### Dashboard Screens
 
@@ -324,6 +344,21 @@ Descriptions can be overridden at runtime without app updates by creating a Fire
 
 The `orderStatusDescriptionOverridesProvider` (`@riverpod Future`) in `order_list_providers.dart` fetches this document. The `OrderStatusBadge` widget watches this provider and resolves descriptions accordingly.
 
+### Active Orders Count Provider
+
+**Provider:** `activeOrdersCountProvider` (`@riverpod Future<int>`)
+
+Returns the number of active orders (statuses: `waitingRiderConfirmation`, `confirmed`, `preparing`, `outForDelivery`) for the current user using Firestore's `count()` aggregation — no documents are fetched.
+
+| Scenario | Return Value |
+|----------|-------------|
+| Authenticated, has active orders | Count (e.g. `2`) |
+| Authenticated, no active orders | `0` |
+| Unauthenticated (`currentUserProvider` = null) | `0` |
+| Firestore query fails | `0` (silent fallback) |
+
+This provider is watched by `MainShell` in `packages/core` to display a count badge on the Orders bottom navigation tab.
+
 ### Data Flow for Status Filtering
 
 ```
@@ -389,11 +424,13 @@ The existing orders indexes are used:
 | Index | Fields | Used For |
 |-------|--------|----------|
 | 1 | `userId ASC`, `createdAt DESC` | User role query + default ordering |
-| 2 | `riderId ASC`, `status ASC` | Rider role query |
+| 2 | `riderId ASC`, `status ASC` | Rider role query + active order count |
 | 3 | `sellerId ASC`, `createdAt DESC` | Seller role query |
 | 4 | `status ASC`, `createdAt DESC` | Admin with status filter |
+| 5 | `userId ASC`, `status ASC` | **User role active order count** (`whereIn` on active statuses) |
+| 6 | `sellerId ASC`, `status ASC` | **Seller role active order count** (`whereIn` on active statuses) |
 
-No new indexes were needed — the flattened `userId` field now matches the existing index.
+Indexes 5 and 6 were added for the `activeOrdersCountProvider` which uses Firestore's `count()` aggregation with `whereIn` on statuses `[0,1,2,3]`. Index 2 already covers the rider role.
 
 ---
 
@@ -410,6 +447,17 @@ The `OrderModel` in `apps/user_app/features/checkout/data/models/order_model.dar
 - **All apps**: Orders tab added to shared `MainShell` bottom navigation bar (see `packages/core/lib/widgets/main_shell.dart`)
 - **user_app**: "My Orders" icon button removed from search bar row in `DashboardScreen` — replaced by the bottom nav Orders tab
 - **rider_app/seller_app/admin_panel**: Flat `/orders` route replaced by bottom nav Orders tab via `StatefulShellRoute.indexedStack`
+
+### Active Orders Badge (MainShell)
+- **All apps**: The Orders tab now shows a Material `Badge` with the count of active orders, fetched via `activeOrdersCountProvider`
+- The badge refreshes when the user returns to the Home tab (invalidates the `activeOrdersCountProvider`)
+- Each app's `routerProvider` watches `activeOrdersCountProvider` and passes the count to `MainShell` via the `activeOrdersCount` parameter — avoiding a circular dependency between `packages/core` and `packages/orders`
+
+Now let me also verify the docs still accurately reflect the refresh behavior. Since the provider invalidation on Home tab was removed from MainShell, I should update the refresh note.
+
+Actually, the refresh behavior via `didUpdateWidget` was unreliable (it depended on `StatefulShellRoute` rebuilding the shell widget, which is not guaranteed). Since `activeOrdersCountProvider` is a `FutureProvider` that automatically refetches when its dependencies change (e.g., on login/logout), this is sufficient for the MVP. The apps can add manual invalidation later if needed.
+
+Let me update the docs accordingly.
 
 ---
 

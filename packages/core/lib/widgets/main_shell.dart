@@ -8,6 +8,9 @@ import 'package:go_router/go_router.dart';
 /// - **Orders** — `OrdersListScreen` from `fast_delivery_orders` (Branch 1)
 /// - **Account** — placeholder, tappable but no-op (Branch 2)
 ///
+/// The Orders tab shows a count [Badge] with [activeOrdersCount] when > 0.
+/// Each app is responsible for watching the provider and passing the count.
+///
 /// The [overlayWidget] parameter allows each app to render an optional
 /// floating widget (e.g. `ViewCartBanner` in the User App) over the
 /// active branch. The overlay only appears when the **Home** tab is
@@ -22,16 +25,25 @@ class MainShell extends StatelessWidget {
   /// Use this for app-specific overlays such as [ViewCartBanner].
   final Widget? overlayWidget;
 
+  /// Number of active orders to display as a badge on the Orders tab.
+  ///
+  /// Pass `0` (default) to hide the badge. Each app watches
+  /// `activeOrdersCountProvider` from `fast_delivery_orders` and passes
+  /// the value here.
+  final int activeOrdersCount;
+
   const MainShell({
     super.key,
     required this.navigationShell,
     this.overlayWidget,
+    this.activeOrdersCount = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     final overlay = overlayWidget;
-    final showOverlay = overlay != null && navigationShell.currentIndex == 0;
+    final showOverlay =
+        overlay != null && navigationShell.currentIndex == 0;
 
     return Scaffold(
       body: Stack(
@@ -51,16 +63,24 @@ class MainShell extends StatelessWidget {
           if (index == 2) return;
           navigationShell.goBranch(index);
         },
-        destinations: const [
-          NavigationDestination(
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.home_rounded),
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.receipt_long_rounded),
+            icon: Badge(
+              isLabelVisible: activeOrdersCount > 0,
+              label: Text(
+                '$activeOrdersCount',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              child: const Icon(Icons.receipt_long_rounded),
+            ),
             label: 'Orders',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.person_outline_rounded),
             label: 'Account',
           ),

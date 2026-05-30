@@ -85,6 +85,29 @@ final orderStatusDescriptionOverridesProvider =
 // ignore: unused_element
 typedef OrderStatusDescriptionOverridesRef
     = AutoDisposeFutureProviderRef<Map<String, String>>;
+String _$activeOrdersCountHash() => r'1a7994f9ec63c7b6772c2fded51109c6daa2de0c';
+
+/// Returns the number of active orders for the currently logged-in user/role.
+///
+/// Uses Firestore's `count()` aggregation — no documents are fetched.
+/// Returns `0` when the user is unauthenticated or when the query fails silently.
+/// Invalidate this provider (e.g. when switching to the Home tab) to refresh.
+///
+/// Copied from [activeOrdersCount].
+@ProviderFor(activeOrdersCount)
+final activeOrdersCountProvider = AutoDisposeFutureProvider<int>.internal(
+  activeOrdersCount,
+  name: r'activeOrdersCountProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$activeOrdersCountHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ActiveOrdersCountRef = AutoDisposeFutureProviderRef<int>;
 String _$orderListNotifierHash() => r'8cad4c6e5dd4fc77b8ff5be3cec6bc533c8a2545';
 
 /// Notifier managing the orders list state.

@@ -10,6 +10,7 @@ import 'package:fast_delivery_core/widgets/not_found_page.dart';
 import 'package:fast_delivery_auth/domain/providers/auth_providers.dart';
 import 'package:fast_delivery_auth/presentation/screens/login_screen.dart';
 import 'package:fast_delivery_auth/presentation/screens/register_screen.dart';
+import 'package:fast_delivery_orders/domain/order_list_providers.dart';
 import 'package:fast_delivery_orders/presentation/pages/orders_list_screen.dart';
 
 import 'features/dashboard/presentation/pages/dashboard_screen.dart';
@@ -96,10 +97,10 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // ── Main shell with bottom navigation (Home / Orders / Account) ─
       // ViewCartBanner overlay renders only on the Home tab (index 0).
+      // Active orders badge is refreshed on every visit to Home or Orders tab.
       StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) => MainShell(
+        builder: (context, state, navigationShell) => _MainShellWithBadge(
           navigationShell: navigationShell,
-          overlayWidget: const ViewCartBanner(),
         ),
         branches: [
           // Home tab — Dashboard
@@ -175,5 +176,56 @@ final routerProvider = Provider<GoRouter>((ref) {
     errorBuilder: (context, state) => NotFoundPage(state: state),
   );
 });
+
+/// Wraps [MainShell] with badge-count refresh logic.
+///
+/// Detects tab changes (Home → Orders → Account) and invalidates
+/// [activeOrdersCountProvider] whenever the user lands on the Home tab
+/// (index 0) or the Orders tab (index 1), ensuring the badge count is
+/// always up-to-date.
+///
+/// This is necessary because [StatefulShellRoute.indexedStack] keeps all
+/// branches alive, so screen-level [initState] only fires once.
+class _MainShellWithBadge extends ConsumerStatefulWidget {
+  final StatefulNavigationShell navigationShell;
+
+  const _MainShellWithBadge({required this.navigationShell});
+
+  @override
+  ConsumerState<_MainShellWithBadge> createState() =>
+      _MainShellWithBadgeState();
+}
+
+class _MainShellWithBadgeState extends ConsumerState<_MainShellWithBadge> {
+  int _previousTabIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final currentIndex = widget.navigationShell.currentIndex;
+
+    // Detect tab change → invalidate badge count when visiting Home or Orders
+    if (currentIndex != _previousTabIndex) {
+      _previousTabIndex = currentIndex;
+      if (currentIndex == 0 || currentIndex == 1) {
+        // Schedule invalidation after current build cycle to avoid
+        // "dependencies changed during build" warnings.
+        Future.microtask(() {
+          if (mounted) {
+            ref.invalidate(activeOrdersCountProvider);
+          }
+        });
+      }
+    }
+
+    final activeCount =
+        ref.watch(activeOrdersCountProvider).valueOrNull ?? 0;
+
+    return MainShell(
+      navigationShell: widget.navigationShell,
+      activeOrdersCount: activeCount,
+      overlayWidget: const ViewCartBanner(),
+    );
+  }
+}
 
 

@@ -33,6 +33,24 @@
         { "fieldPath": "createdAt", "order": "descending" }
       ]
     },
+    // Orders: userId + status (active order count — user role)
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ascending" },
+        { "fieldPath": "status", "order": "ascending" }
+      ]
+    },
+    // Orders: sellerId + status (active order count — seller role)
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerId", "order": "ascending" },
+        { "fieldPath": "status", "order": "ascending" }
+      ]
+    },
     
     // Items indexes
     {
