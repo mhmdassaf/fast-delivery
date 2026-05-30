@@ -289,7 +289,7 @@ Status is stored as an integer (`0`–`5`) mapped via the `OrderStatus` enum in 
 
 | Enum Value | Firestore Int | Label | Default Description |
 |------------|--------------|-------|-------------------|
-| `waitingRiderConfirmation` | `0` | Pending | Waiting for a rider to accept your order |
+| `waitingRiderConfirmation` | `0` | Pending | Searching For Rider |
 | `confirmed` | `1` | Confirmed | Your order has been confirmed |
 | `preparing` | `2` | Preparing | Your order is being prepared |
 | `outForDelivery` | `3` | Out for Delivery | Your order is on the way! |

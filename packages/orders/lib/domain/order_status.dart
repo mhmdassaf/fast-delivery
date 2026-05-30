@@ -2,7 +2,7 @@ enum OrderStatus {
   waitingRiderConfirmation(
     0,
     'Pending',
-    'Waiting for a rider to accept your order',
+    'Searching For Rider',
   ),
   confirmed(
     1,
