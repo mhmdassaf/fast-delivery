@@ -154,6 +154,7 @@ When the checkout screen loads, `CheckoutNotifier._loadInitialPhone()`:
    - **Update user's phone** in `users/{uid}` via `CheckoutRepository.updateUserPhone(userId, fullPhone)`
    - Clear cart via `CartNotifier.clearCart()`
    - Set `state.createdOrderId`
+   - **Invalidate `activeOrdersCountProvider`** — so the Orders tab badge refetches the count when the shell rebuilds (handled in `CheckoutScreen._onOrderPlaced()`)
    - Navigate to `/` (Dashboard) with success SnackBar
 5. On failure:
    - Set `isPlacingOrder = false`

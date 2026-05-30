@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:fast_delivery_core/constants/app_constants.dart';
+import 'package:fast_delivery_orders/domain/order_list_providers.dart';
 
 import '../../../cart/domain/providers/cart_providers.dart';
 import '../../data/models/delivery_address_model.dart';
@@ -28,6 +29,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   void _onOrderPlaced(String orderId) {
     _lastHandledOrderId = orderId;
     if (!mounted) return;
+
+    // Invalidate the active orders badge so it fetches the updated count
+    // when the shell rebuilds on navigation to the Dashboard.
+    ref.invalidate(activeOrdersCountProvider);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Order placed successfully!'),

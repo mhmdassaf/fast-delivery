@@ -472,15 +472,10 @@ The `OrderModel` in `apps/user_app/features/checkout/data/models/order_model.dar
 - **rider_app/seller_app/admin_panel**: Flat `/orders` route replaced by bottom nav Orders tab via `StatefulShellRoute.indexedStack`
 
 ### Active Orders Badge (MainShell)
-- **All apps**: The Orders tab now shows a Material `Badge` with the count of active orders, fetched via `activeOrdersCountProvider`
-- The badge refreshes when the user returns to the Home tab (invalidates the `activeOrdersCountProvider`)
+- **All apps**: The Orders tab shows a Material `Badge` with the count of active orders, fetched via `activeOrdersCountProvider`
+- The badge refreshes when the user switches to the Home or Orders tab in the bottom navigation — `_MainShellWithBadge` in each app's `main.dart` detects tab changes and invalidates the provider via `Future.microtask`
+- The badge also refreshes immediately after a successful order placement — `CheckoutScreen._onOrderPlaced()` in the user app invalidates `activeOrdersCountProvider` before navigating to the Dashboard
 - Each app's `routerProvider` watches `activeOrdersCountProvider` and passes the count to `MainShell` via the `activeOrdersCount` parameter — avoiding a circular dependency between `packages/core` and `packages/orders`
-
-Now let me also verify the docs still accurately reflect the refresh behavior. Since the provider invalidation on Home tab was removed from MainShell, I should update the refresh note.
-
-Actually, the refresh behavior via `didUpdateWidget` was unreliable (it depended on `StatefulShellRoute` rebuilding the shell widget, which is not guaranteed). Since `activeOrdersCountProvider` is a `FutureProvider` that automatically refetches when its dependencies change (e.g., on login/logout), this is sufficient for the MVP. The apps can add manual invalidation later if needed.
-
-Let me update the docs accordingly.
 
 ---
 
