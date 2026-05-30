@@ -1,37 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:fast_delivery_core/constants/app_constants.dart';
 
-/// A colored badge showing the order status.
+import '../../domain/order_list_providers.dart';
+import '../../domain/order_status.dart';
+
+/// A colored badge showing the order status description.
 ///
 /// Color mapping:
-/// - Active statuses (Waiting, Confirmed, Preparing, Out for Delivery) → Amber/Orange
+/// - Active statuses → Amber/Orange
 /// - Delivered → Green
 /// - Cancelled → Red
-class OrderStatusBadge extends StatelessWidget {
-  final String status;
+class OrderStatusBadge extends ConsumerWidget {
+  final OrderStatus status;
 
   const OrderStatusBadge({super.key, required this.status});
 
-  /// Returns the display color for a given status.
-  static Color _colorForStatus(String status) {
+  static Color _colorForStatus(OrderStatus status) {
     switch (status) {
-      case 'Delivered':
+      case OrderStatus.delivered:
         return AppColors.success;
-      case 'Cancelled':
+      case OrderStatus.cancelled:
         return AppColors.error;
       default:
-        // All active/pending statuses
         return AppColors.warning;
     }
   }
 
-  /// Returns a lighter background color for the badge.
-  static Color _bgForStatus(String status) {
+  static Color _bgForStatus(OrderStatus status) {
     switch (status) {
-      case 'Delivered':
+      case OrderStatus.delivered:
         return AppColors.successLight;
-      case 'Cancelled':
+      case OrderStatus.cancelled:
         return AppColors.errorLight;
       default:
         return AppColors.warningLight;
@@ -39,7 +40,14 @@ class OrderStatusBadge extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final overrides = ref.watch(orderStatusDescriptionOverridesProvider);
+    final description = overrides.when(
+      data: (data) => status.resolveDescription(data),
+      loading: () => status.description,
+      error: (_, __) => status.description,
+    );
+
     final bgColor = _bgForStatus(status);
     final fgColor = _colorForStatus(status);
 
@@ -53,7 +61,7 @@ class OrderStatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimens.radiusRound),
       ),
       child: Text(
-        status,
+        description,
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fast_delivery_core/errors/failure.dart';
 import 'package:fast_delivery_core/errors/result.dart';
 
+import '../../domain/order_status.dart';
 import '../models/order_list_item_model.dart';
 
 /// Result wrapper for paginated order queries.
@@ -26,11 +27,11 @@ class OrdersQueryResult {
 /// - seller → filter by `sellerId`
 /// - admin  → no filter (all orders)
 abstract class OrderListDataSource {
-  /// Fetch orders with optional status group filtering and cursor pagination.
+  /// Fetch orders with optional status list filtering and cursor pagination.
   Future<Result<OrdersQueryResult>> getOrders({
     required String role,
     required String uid,
-    String? statusFilter,
+    List<OrderStatus>? statuses,
     DocumentSnapshot<Object?>? cursor,
     int limit = 15,
   });
@@ -43,32 +44,11 @@ class OrderListDataSourceImpl implements OrderListDataSource {
   OrderListDataSourceImpl({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  /// Maps a status filter group to the actual Firestore status strings.
-  ///
-  /// Returns `null` for "All" (no status filter).
-  List<String>? _statusesForFilter(String? filter) {
-    switch (filter) {
-      case 'Active':
-        return [
-          'Waiting Rider Confirmation',
-          'Confirmed',
-          'Preparing',
-          'Out for Delivery',
-        ];
-      case 'Completed':
-        return ['Delivered'];
-      case 'Cancelled':
-        return ['Cancelled'];
-      default:
-        return null; // "All" — no status filter
-    }
-  }
-
   @override
   Future<Result<OrdersQueryResult>> getOrders({
     required String role,
     required String uid,
-    String? statusFilter,
+    List<OrderStatus>? statuses,
     DocumentSnapshot<Object?>? cursor,
     int limit = 15,
   }) async {
@@ -91,18 +71,17 @@ class OrderListDataSourceImpl implements OrderListDataSource {
           break;
         default:
           // Fall back to user-level filtering for unknown roles
-          // instead of failing (graceful degradation)
           query = query.where('userId', isEqualTo: uid);
       }
 
       // Apply status filter group
-      final statuses = _statusesForFilter(statusFilter);
       if (statuses != null && statuses.length == 1) {
-        // Single status — use simple equality
-        query = query.where('status', isEqualTo: statuses.first);
+        query = query.where('status', isEqualTo: statuses.first.toFirestore());
       } else if (statuses != null && statuses.length > 1) {
-        // Multiple statuses — use 'in' filter
-        query = query.where('status', whereIn: statuses);
+        query = query.where(
+          'status',
+          whereIn: statuses.map((e) => e.toFirestore()).toList(),
+        );
       }
 
       // Always sort by createdAt descending

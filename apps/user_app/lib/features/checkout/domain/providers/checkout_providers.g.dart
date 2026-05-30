@@ -100,7 +100,7 @@ final locationRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef LocationRepositoryRef = AutoDisposeProviderRef<LocationRepository>;
-String _$checkoutNotifierHash() => r'386fa6beb30f79d0992bfb588e72ee32560dc9e0';
+String _$checkoutNotifierHash() => r'38407e1961be63b18d5a16c7b6a22ebf038ca277';
 
 /// See also [CheckoutNotifier].
 @ProviderFor(CheckoutNotifier)

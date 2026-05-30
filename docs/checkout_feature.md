@@ -1,8 +1,8 @@
 # Checkout Feature Specification
 
 > **AI-Readable Documentation for Checkout Feature**  
-> **Last Updated:** 2026-05-24  
-> **Feature Status:** ✅ Implemented (OrderUserInfo removed, flat user fields)
+> **Last Updated:** 2026-05-30  
+> **Feature Status:** ✅ Implemented (OrderUserInfo removed, flat user fields, OrderStatus enum)
 
 ---
 
@@ -147,7 +147,7 @@ When the checkout screen loads, `CheckoutNotifier._loadInitialPhone()`:
    - `total = subtotal + deliveryFee`
    - `deliveryAddress` from state
    - `deliveryTimeLabel` from state (fetched from shop)
-   - `status = "Waiting Rider Confirmation"`
+    - `status = OrderStatus.waitingRiderConfirmation` (serialized to `0` in Firestore)
 3. `CheckoutRepository.createOrder(order)` → Firestore `orders.add(order.toFirestore())`
 4. On success:
    - **Update user's phone** in `users/{uid}` via `CheckoutRepository.updateUserPhone(userId, fullPhone)`
@@ -286,7 +286,7 @@ User details are now **top-level fields** (not nested) for efficient querying. T
 | `subtotal` | `double` | required | Sum of item prices |
 | `deliveryFee` | `double` | required | Shop delivery charge |
 | `total` | `double` | required | subtotal + deliveryFee |
-| `status` | `String` | `'Waiting Rider Confirmation'` | Order lifecycle status |
+| `status` | `OrderStatus` | `OrderStatus.waitingRiderConfirmation` | Order lifecycle status (stored as int `0` in Firestore) |
 | `createdAt` | `DateTime?` | `null` | Firestore server timestamp |
 
 **Methods:** `fromFirestore()`, `toFirestore()`
@@ -317,7 +317,7 @@ User details are now **top-level fields** (not nested) for efficient querying. T
   "subtotal": 12.99,
   "deliveryFee": 2.50,
   "total": 15.49,
-  "status": "Waiting Rider Confirmation",
+  "status": 0,
   "createdAt": "2026-05-23T..."
 }
 ```

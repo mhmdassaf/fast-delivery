@@ -1,7 +1,7 @@
 # Orders List Feature Specification
 
 > **AI-Readable Documentation for Orders List Feature**  
-> **Last Updated:** 2026-05-24  
+> **Last Updated:** 2026-05-30  
 > **Feature Status:** ✅ Implemented
 
 ---
@@ -33,7 +33,8 @@ packages/orders/
     │       └── order_list_repository.dart          # Wraps datasource
     ├── domain/
     │   ├── order_list_providers.dart               # OrderListNotifier + infrastructure providers
-    │   └── order_list_providers.g.dart             # Generated
+    │   ├── order_list_providers.g.dart             # Generated
+    │   └── order_status.dart                       # Typed OrderStatus enum (int serialization)
     └── presentation/
         ├── pages/
         │   └── orders_list_screen.dart             # Main orders list screen
@@ -114,6 +115,7 @@ The role is derived from `currentUserProvider` → `user?.role.name`.
 | `ordersFirestoreProvider` | `@riverpod` | Exposes `FirebaseFirestore.instance` |
 | `ordersDataSourceProvider` | `@riverpod` | Creates `OrderListDataSourceImpl` |
 | `ordersRepositoryProvider` | `@riverpod` | Creates `OrderListRepositoryImpl` |
+| `orderStatusDescriptionOverridesProvider` | `@riverpod` Future | Fetches `config/orderStatuses` for dynamic badge descriptions |
 | `orderListNotifierProvider` | `@riverpod` Notifier | **Main state manager** — `OrderListNotifier` |
 
 ### OrderListState Fields
@@ -141,12 +143,21 @@ The role is derived from `currentUserProvider` → `user?.role.name`.
 
 ### StatusFilterOption Enum
 
+Each option carries its own `List<OrderStatus>? statuses` for direct Firestore querying:
+
 | Value | Label | Filter Value | Included Statuses |
 |-------|-------|-------------|-------------------|
 | `all` | "All" | `null` | All statuses |
-| `active` | "Active" | `'Active'` | Waiting Rider Confirmation, Confirmed, Preparing, Out for Delivery |
-| `completed` | "Completed" | `'Completed'` | Delivered |
-| `cancelled` | "Cancelled" | `'Cancelled'` | Cancelled |
+| `active` | "Active" | `'Active'` | `waitingRiderConfirmation`, `confirmed`, `preparing`, `outForDelivery` |
+| `completed` | "Completed" | `'Completed'` | `delivered` |
+| `cancelled` | "Cancelled" | `'Cancelled'` | `cancelled` |
+
+**Key Methods:**
+- `String? get filterValue` — Returns `null` for "All", otherwise returns the label
+- `static StatusFilterOption fromFilterValue(String?)` — Reverse-lookup from filter value to enum (returns `StatusFilterOption.all` for unknown values)
+- `List<OrderStatus>? statuses` — The statuses in this group, used directly by `OrderListDataSource.getOrders()`
+
+The `statuses` list is converted to `List<int>` via `toFirestore()` for Firestore `whereIn` queries.
 
 ---
 
@@ -205,7 +216,7 @@ Each app has a `routerProvider` with redirect logic:
 |--------|---------|--------------|
 | `OrdersListScreen` | Main screen | Pull-to-refresh, pagination via scroll listener, loading/error/empty states |
 | `OrderCard` | Order list item | Shop name, delivery address, item count, total price, status badge, relative time |
-| `OrderStatusBadge` | Status indicator | Color-coded: Amber=Active, Green=Delivered, Red=Cancelled |
+| `OrderStatusBadge` | Status indicator | Accepts `OrderStatus` enum; shows resolved description text; color-coded: Amber=Active, Green=Delivered, Red=Cancelled |
 | `OrderStatusFilterBar` | Filter chips | Horizontal scrollable, `FilterChip` with selected state |
 | `OrderListLoading` | Skeleton | 4 shimmer cards matching `OrderCard` layout |
 | `OrderListEmptyState` | Empty state | Context-specific message (no orders vs no matching filters) |
@@ -241,7 +252,7 @@ Each dashboard shows:
 | `deliveryAddressLine` | `String` | `deliveryAddress.addressLine` | Human-readable address |
 | `total` | `double` | Top-level field | Order total |
 | `itemCount` | `int` | Computed from `items.length` | Number of items |
-| `status` | `String` | Top-level field | Order status |
+| `status` | `OrderStatus` | Top-level field (int) | Order status enum (stored as int `0`–`5` in Firestore) |
 | `createdAt` | `DateTime` | Top-level field | Order creation time |
 
 ### Flattened Order Document (`orders/{orderId}`)
@@ -263,10 +274,66 @@ Each dashboard shows:
   "subtotal": 12.99,
   "deliveryFee": 2.50,
   "total": 15.49,
-  "status": "Waiting Rider Confirmation",
+  "status": 0,
   "createdAt": Timestamp
 }
 ```
+
+Status is stored as an integer (`0`–`5`) mapped via the `OrderStatus` enum in `packages/orders/lib/domain/order_status.dart`. See the [OrderStatus Enum](#orderstatus-enum) section below for the mapping.
+
+---
+
+## 🔤 OrderStatus Enum
+
+**File:** `packages/orders/lib/domain/order_status.dart`
+
+| Enum Value | Firestore Int | Label | Default Description |
+|------------|--------------|-------|-------------------|
+| `waitingRiderConfirmation` | `0` | Pending | Waiting for a rider to accept your order |
+| `confirmed` | `1` | Confirmed | Your order has been confirmed |
+| `preparing` | `2` | Preparing | Your order is being prepared |
+| `outForDelivery` | `3` | Out for Delivery | Your order is on the way! |
+| `delivered` | `4` | Delivered | Order delivered successfully |
+| `cancelled` | `5` | Cancelled | This order has been cancelled |
+
+### Key Methods
+- `int toFirestore()` — Serializes to integer for Firestore storage
+- `static OrderStatus fromFirestore(Object? status)` — Parses both `int` and legacy `String` values
+- `String resolveDescription(Map<String, String>? overrides)` — Returns description from config overrides, falling back to default
+
+### Dynamic Descriptions
+
+Descriptions can be overridden at runtime without app updates by creating a Firestore document:
+
+**Collection:** `config`  
+**Document ID:** `orderStatuses`  
+**Field:** `descriptions` (Map)
+
+```json
+{
+  "descriptions": {
+    "waitingRiderConfirmation": "Custom description override",
+    "delivered": "Another custom description"
+  }
+}
+```
+
+The `orderStatusDescriptionOverridesProvider` (`@riverpod Future`) in `order_list_providers.dart` fetches this document. The `OrderStatusBadge` widget watches this provider and resolves descriptions accordingly.
+
+### Data Flow for Status Filtering
+
+```
+User taps "Active" filter
+  → OrderStatusFilterBar calls onFilterSelected('Active')
+  → OrderListNotifier.setStatusFilter('Active')
+  → StatusFilterOption.fromFilterValue('Active').statuses
+    → [OrderStatus.waitingRiderConfirmation, confirmed, preparing, outForDelivery]
+  → OrderListRepository.getOrders(statuses: [...])
+  → OrderListDataSource.getOrders(statuses: [...])
+  → Firestore: .where('status', whereIn: [0, 1, 2, 3])
+```
+
+The status grouping is owned by `StatusFilterOption` — the data source does **not** duplicate this mapping (no `_statusesForFilter()`).
 
 ---
 
@@ -345,7 +412,7 @@ The `OrderModel` in `apps/user_app/features/checkout/data/models/order_model.dar
 ## 📝 Conventions for Future Changes
 
 ### ✅ DO:
-1. **Add new status filters** in `_statusesForFilter()` in `order_list_datasource.dart`
+1. **Add new status filters** by adding a new entry to `StatusFilterOption` with the `List<OrderStatus>` to include
 2. **Add new fields** to `OrderListItemModel` → update `fromFirestore()`
 3. **Handle errors** using `Result<T>` pattern
 4. **Use `AppColors`/`AppDimens`** — no hardcoded values

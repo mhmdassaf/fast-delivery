@@ -8,6 +8,7 @@ import 'package:fast_delivery_auth/domain/providers/auth_providers.dart';
 import '../data/datasources/order_list_datasource.dart';
 import '../data/models/order_list_item_model.dart';
 import '../data/repositories/order_list_repository.dart';
+import 'order_status.dart';
 
 part 'order_list_providers.g.dart';
 
@@ -28,6 +29,24 @@ OrderListDataSource ordersDataSource(Ref ref) {
 OrderListRepository ordersRepository(Ref ref) {
   final dataSource = ref.watch(ordersDataSourceProvider);
   return OrderListRepositoryImpl(dataSource: dataSource);
+}
+
+/// Fetches dynamic status description overrides from Firestore config.
+///
+/// Reads `config/orderStatuses` document and returns a map of
+/// enum name → description. Falls back to [OrderStatus.description] defaults
+/// when this provider returns an empty map or is still loading.
+@riverpod
+Future<Map<String, String>> orderStatusDescriptionOverrides(Ref ref) async {
+  try {
+    final firestore = ref.watch(ordersFirestoreProvider);
+    final doc = await firestore.collection('config').doc('orderStatuses').get();
+    final data = doc.data();
+    if (data != null && data['descriptions'] is Map) {
+      return Map<String, String>.from(data['descriptions'] as Map);
+    }
+  } catch (_) {}
+  return {};
 }
 
 // ============================================================================
@@ -114,17 +133,34 @@ const _Unset = Object();
 
 /// Available status filter options.
 enum StatusFilterOption {
-  all('All'),
-  active('Active'),
-  completed('Completed'),
-  cancelled('Cancelled');
+  all('All', null),
+  active('Active', [
+    OrderStatus.waitingRiderConfirmation,
+    OrderStatus.confirmed,
+    OrderStatus.preparing,
+    OrderStatus.outForDelivery,
+  ]),
+  completed('Completed', [OrderStatus.delivered]),
+  cancelled('Cancelled', [OrderStatus.cancelled]);
 
   final String label;
-  const StatusFilterOption(this.label);
+  final List<OrderStatus>? statuses;
+
+  const StatusFilterOption(this.label, this.statuses);
 
   /// The Firestore status group key (null for "All").
   String? get filterValue =>
       this == StatusFilterOption.all ? null : label;
+
+  /// Resolves a [StatusFilterOption] from its [filterValue].
+  ///
+  /// Returns [StatusFilterOption.all] when the value is `null` or unknown.
+  static StatusFilterOption fromFilterValue(String? filterValue) {
+    return StatusFilterOption.values.firstWhere(
+      (option) => option.filterValue == filterValue,
+      orElse: () => StatusFilterOption.all,
+    );
+  }
 }
 
 /// Notifier managing the orders list state.
@@ -155,11 +191,14 @@ class OrderListNotifier extends _$OrderListNotifier {
     }
 
     final cursor = reset ? null : state.lastDocument;
+    final statuses = StatusFilterOption.fromFilterValue(
+      state.selectedStatusFilter,
+    ).statuses;
 
     final result = await _repository.getOrders(
       role: user?.role.name ?? 'user',
       uid: uid,
-      statusFilter: state.selectedStatusFilter,
+      statuses: statuses,
       cursor: cursor,
     );
 

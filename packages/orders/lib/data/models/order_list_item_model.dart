@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../domain/order_status.dart';
+
 part 'order_list_item_model.freezed.dart';
 part 'order_list_item_model.g.dart';
 
@@ -8,24 +10,6 @@ part 'order_list_item_model.g.dart';
 ///
 /// Contains only the fields needed for the orders list screen,
 /// avoiding the full cart items payload.
-///
-/// Firestore document structure (`orders/{orderId}`):
-/// ```json
-/// {
-///   "userId": "abc123",
-///   "userName": "John Doe",
-///   "userPhone": "+96170123456",
-///   "shopId": "shop_xyz",
-///   "shopName": "Pizza Palace",
-///   "deliveryAddress": { "addressLine": "123 Main St", ... },
-///   "items": [ ... ],
-///   "subtotal": 12.99,
-///   "deliveryFee": 2.50,
-///   "total": 15.49,
-///   "status": "Waiting Rider Confirmation",
-///   "createdAt": Timestamp
-/// }
-/// ```
 @freezed
 abstract class OrderListItemModel with _$OrderListItemModel {
   const factory OrderListItemModel({
@@ -37,13 +21,12 @@ abstract class OrderListItemModel with _$OrderListItemModel {
     required String deliveryAddressLine,
     required double total,
     required int itemCount,
-    required String status,
+    required OrderStatus status,
     required DateTime createdAt,
   }) = _OrderListItemModel;
 
   const OrderListItemModel._();
 
-  /// Creates from a Firestore document snapshot.
   factory OrderListItemModel.fromFirestore(DocumentSnapshot<Object?> snapshot) {
     final data = Map<String, dynamic>.from(snapshot.data() as Map);
     final addressData =
@@ -60,7 +43,7 @@ abstract class OrderListItemModel with _$OrderListItemModel {
           addressData['addressLine'] as String? ?? 'No address',
       total: (data['total'] as num?)?.toDouble() ?? 0.0,
       itemCount: itemsData.length,
-      status: data['status'] as String? ?? 'Waiting Rider Confirmation',
+      status: OrderStatus.fromFirestore(data['status']),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }

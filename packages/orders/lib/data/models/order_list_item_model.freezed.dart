@@ -22,7 +22,7 @@ mixin _$OrderListItemModel {
   String get deliveryAddressLine;
   double get total;
   int get itemCount;
-  String get status;
+  OrderStatus get status;
   DateTime get createdAt;
 
   /// Create a copy of OrderListItemModel
@@ -84,7 +84,7 @@ abstract mixin class $OrderListItemModelCopyWith<$Res> {
       String deliveryAddressLine,
       double total,
       int itemCount,
-      String status,
+      OrderStatus status,
       DateTime createdAt});
 }
 
@@ -148,7 +148,7 @@ class _$OrderListItemModelCopyWithImpl<$Res>
       status: null == status
           ? _self.status
           : status // ignore: cast_nullable_to_non_nullable
-              as String,
+              as OrderStatus,
       createdAt: null == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -259,7 +259,7 @@ extension OrderListItemModelPatterns on OrderListItemModel {
             String deliveryAddressLine,
             double total,
             int itemCount,
-            String status,
+            OrderStatus status,
             DateTime createdAt)?
         $default, {
     required TResult orElse(),
@@ -307,7 +307,7 @@ extension OrderListItemModelPatterns on OrderListItemModel {
             String deliveryAddressLine,
             double total,
             int itemCount,
-            String status,
+            OrderStatus status,
             DateTime createdAt)
         $default,
   ) {
@@ -353,7 +353,7 @@ extension OrderListItemModelPatterns on OrderListItemModel {
             String deliveryAddressLine,
             double total,
             int itemCount,
-            String status,
+            OrderStatus status,
             DateTime createdAt)?
         $default,
   ) {
@@ -412,7 +412,7 @@ class _OrderListItemModel extends OrderListItemModel {
   @override
   final int itemCount;
   @override
-  final String status;
+  final OrderStatus status;
   @override
   final DateTime createdAt;
 
@@ -481,7 +481,7 @@ abstract mixin class _$OrderListItemModelCopyWith<$Res>
       String deliveryAddressLine,
       double total,
       int itemCount,
-      String status,
+      OrderStatus status,
       DateTime createdAt});
 }
 
@@ -545,7 +545,7 @@ class __$OrderListItemModelCopyWithImpl<$Res>
       status: null == status
           ? _self.status
           : status // ignore: cast_nullable_to_non_nullable
-              as String,
+              as OrderStatus,
       createdAt: null == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable

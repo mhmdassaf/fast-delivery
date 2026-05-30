@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:fast_delivery_core/errors/failure.dart';
 import 'package:fast_delivery_core/errors/result.dart';
 import 'package:fast_delivery_auth/domain/providers/auth_providers.dart';
+import 'package:fast_delivery_orders/domain/order_status.dart';
 
 import '../../../cart/data/models/cart_item_model.dart';
 import '../../../cart/domain/providers/cart_providers.dart';
@@ -186,11 +187,12 @@ class CheckoutNotifier extends _$CheckoutNotifier {
   Future<void> _loadInitialPhone() async {
     final authUser = ref.read(currentUserProvider);
     final userId = authUser?.uid;
-    if (userId == null || userId.isEmpty) return;
+    if (authUser == null || userId == null || userId.isEmpty) return;
 
     // 1. Try phone from the current user model (Firebase Auth or Firestore)
-    if (authUser!.phoneNumber != null && authUser.phoneNumber!.isNotEmpty) {
-      final localNumber = _stripCountryCode(authUser.phoneNumber!);
+    final phone = authUser.phoneNumber;
+    if (phone != null && phone.isNotEmpty) {
+      final localNumber = _stripCountryCode(phone);
       if (localNumber.isNotEmpty) {
         state = state.copyWith(phoneNumber: localNumber);
         return;
@@ -317,7 +319,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
       subtotal: subtotal,
       deliveryFee: deliveryFee,
       total: total,
-      status: 'Waiting Rider Confirmation',
+      status: OrderStatus.waitingRiderConfirmation,
     );
 
     final result = await _checkoutRepo.createOrder(order);

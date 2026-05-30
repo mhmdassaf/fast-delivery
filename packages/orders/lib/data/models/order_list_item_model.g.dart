@@ -16,7 +16,7 @@ _OrderListItemModel _$OrderListItemModelFromJson(Map<String, dynamic> json) =>
       deliveryAddressLine: json['deliveryAddressLine'] as String,
       total: (json['total'] as num).toDouble(),
       itemCount: (json['itemCount'] as num).toInt(),
-      status: json['status'] as String,
+      status: $enumDecode(_$OrderStatusEnumMap, json['status']),
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
 
@@ -30,6 +30,15 @@ Map<String, dynamic> _$OrderListItemModelToJson(_OrderListItemModel instance) =>
       'deliveryAddressLine': instance.deliveryAddressLine,
       'total': instance.total,
       'itemCount': instance.itemCount,
-      'status': instance.status,
+      'status': _$OrderStatusEnumMap[instance.status]!,
       'createdAt': instance.createdAt.toIso8601String(),
     };
+
+const _$OrderStatusEnumMap = {
+  OrderStatus.waitingRiderConfirmation: 'waitingRiderConfirmation',
+  OrderStatus.confirmed: 'confirmed',
+  OrderStatus.preparing: 'preparing',
+  OrderStatus.outForDelivery: 'outForDelivery',
+  OrderStatus.delivered: 'delivered',
+  OrderStatus.cancelled: 'cancelled',
+};

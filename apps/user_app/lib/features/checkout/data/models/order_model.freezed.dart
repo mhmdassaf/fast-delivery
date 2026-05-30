@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OrderModel {
 
- String get id; String get userId; String get userName; String get userPhone; String get shopId; String get shopName; List<CartItemModel> get items; DeliveryAddressModel get deliveryAddress; String get deliveryTimeLabel; double get subtotal; double get deliveryFee; double get total; String get status; DateTime? get createdAt;
+ String get id; String get userId; String get userName; String get userPhone; String get shopId; String get shopName; List<CartItemModel> get items; DeliveryAddressModel get deliveryAddress; String get deliveryTimeLabel; double get subtotal; double get deliveryFee; double get total; OrderStatus get status; DateTime? get createdAt;
 /// Create a copy of OrderModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $OrderModelCopyWith<$Res>  {
   factory $OrderModelCopyWith(OrderModel value, $Res Function(OrderModel) _then) = _$OrderModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String userId, String userName, String userPhone, String shopId, String shopName, List<CartItemModel> items, DeliveryAddressModel deliveryAddress, String deliveryTimeLabel, double subtotal, double deliveryFee, double total, String status, DateTime? createdAt
+ String id, String userId, String userName, String userPhone, String shopId, String shopName, List<CartItemModel> items, DeliveryAddressModel deliveryAddress, String deliveryTimeLabel, double subtotal, double deliveryFee, double total, OrderStatus status, DateTime? createdAt
 });
 
 
@@ -80,7 +80,7 @@ as String,subtotal: null == subtotal ? _self.subtotal : subtotal // ignore: cast
 as double,deliveryFee: null == deliveryFee ? _self.deliveryFee : deliveryFee // ignore: cast_nullable_to_non_nullable
 as double,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
 as double,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as OrderStatus,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -175,7 +175,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  String userName,  String userPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  String status,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  String userName,  String userPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  OrderStatus status,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OrderModel() when $default != null:
 return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopId,_that.shopName,_that.items,_that.deliveryAddress,_that.deliveryTimeLabel,_that.subtotal,_that.deliveryFee,_that.total,_that.status,_that.createdAt);case _:
@@ -196,7 +196,7 @@ return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopI
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  String userName,  String userPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  String status,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  String userName,  String userPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  OrderStatus status,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _OrderModel():
 return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopId,_that.shopName,_that.items,_that.deliveryAddress,_that.deliveryTimeLabel,_that.subtotal,_that.deliveryFee,_that.total,_that.status,_that.createdAt);case _:
@@ -216,7 +216,7 @@ return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopI
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  String userName,  String userPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  String status,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  String userName,  String userPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  OrderStatus status,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _OrderModel() when $default != null:
 return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopId,_that.shopName,_that.items,_that.deliveryAddress,_that.deliveryTimeLabel,_that.subtotal,_that.deliveryFee,_that.total,_that.status,_that.createdAt);case _:
@@ -231,7 +231,7 @@ return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopI
 @JsonSerializable()
 
 class _OrderModel extends OrderModel {
-  const _OrderModel({required this.id, required this.userId, required this.userName, required this.userPhone, required this.shopId, required this.shopName, required final  List<CartItemModel> items, required this.deliveryAddress, required this.deliveryTimeLabel, required this.subtotal, required this.deliveryFee, required this.total, this.status = 'Waiting Rider Confirmation', this.createdAt}): _items = items,super._();
+  const _OrderModel({required this.id, required this.userId, required this.userName, required this.userPhone, required this.shopId, required this.shopName, required final  List<CartItemModel> items, required this.deliveryAddress, required this.deliveryTimeLabel, required this.subtotal, required this.deliveryFee, required this.total, this.status = OrderStatus.waitingRiderConfirmation, this.createdAt}): _items = items,super._();
   factory _OrderModel.fromJson(Map<String, dynamic> json) => _$OrderModelFromJson(json);
 
 @override final  String id;
@@ -252,7 +252,7 @@ class _OrderModel extends OrderModel {
 @override final  double subtotal;
 @override final  double deliveryFee;
 @override final  double total;
-@override@JsonKey() final  String status;
+@override@JsonKey() final  OrderStatus status;
 @override final  DateTime? createdAt;
 
 /// Create a copy of OrderModel
@@ -288,7 +288,7 @@ abstract mixin class _$OrderModelCopyWith<$Res> implements $OrderModelCopyWith<$
   factory _$OrderModelCopyWith(_OrderModel value, $Res Function(_OrderModel) _then) = __$OrderModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String userId, String userName, String userPhone, String shopId, String shopName, List<CartItemModel> items, DeliveryAddressModel deliveryAddress, String deliveryTimeLabel, double subtotal, double deliveryFee, double total, String status, DateTime? createdAt
+ String id, String userId, String userName, String userPhone, String shopId, String shopName, List<CartItemModel> items, DeliveryAddressModel deliveryAddress, String deliveryTimeLabel, double subtotal, double deliveryFee, double total, OrderStatus status, DateTime? createdAt
 });
 
 
@@ -320,7 +320,7 @@ as String,subtotal: null == subtotal ? _self.subtotal : subtotal // ignore: cast
 as double,deliveryFee: null == deliveryFee ? _self.deliveryFee : deliveryFee // ignore: cast_nullable_to_non_nullable
 as double,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
 as double,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as OrderStatus,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }

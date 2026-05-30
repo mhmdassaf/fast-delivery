@@ -59,7 +59,33 @@ final ordersRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef OrdersRepositoryRef = AutoDisposeProviderRef<OrderListRepository>;
-String _$orderListNotifierHash() => r'5ce4144189db1b4365810952c71fb100b6e29892';
+String _$orderStatusDescriptionOverridesHash() =>
+    r'a1cb34d204d2ae5f21c39da8ce04bbe794ba0235';
+
+/// Fetches dynamic status description overrides from Firestore config.
+///
+/// Reads `config/orderStatuses` document and returns a map of
+/// enum name → description. Falls back to [OrderStatus.description] defaults
+/// when this provider returns an empty map or is still loading.
+///
+/// Copied from [orderStatusDescriptionOverrides].
+@ProviderFor(orderStatusDescriptionOverrides)
+final orderStatusDescriptionOverridesProvider =
+    AutoDisposeFutureProvider<Map<String, String>>.internal(
+  orderStatusDescriptionOverrides,
+  name: r'orderStatusDescriptionOverridesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$orderStatusDescriptionOverridesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef OrderStatusDescriptionOverridesRef
+    = AutoDisposeFutureProviderRef<Map<String, String>>;
+String _$orderListNotifierHash() => r'8cad4c6e5dd4fc77b8ff5be3cec6bc533c8a2545';
 
 /// Notifier managing the orders list state.
 ///

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:fast_delivery_orders/domain/order_status.dart';
 
 import '../../../cart/data/models/cart_item_model.dart';
 import 'delivery_address_model.dart';
@@ -26,7 +27,7 @@ abstract class OrderModel with _$OrderModel {
     required double subtotal,
     required double deliveryFee,
     required double total,
-    @Default('Waiting Rider Confirmation') String status,
+    @Default(OrderStatus.waitingRiderConfirmation) OrderStatus status,
     DateTime? createdAt,
   }) = _OrderModel;
 
@@ -52,7 +53,7 @@ abstract class OrderModel with _$OrderModel {
       subtotal: (data['subtotal'] as num?)?.toDouble() ?? 0.0,
       deliveryFee: (data['deliveryFee'] as num?)?.toDouble() ?? 0.0,
       total: (data['total'] as num?)?.toDouble() ?? 0.0,
-      status: data['status'] as String? ?? 'Waiting Rider Confirmation',
+      status: OrderStatus.fromFirestore(data['status']),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
     );
   }
@@ -71,7 +72,7 @@ abstract class OrderModel with _$OrderModel {
       'subtotal': subtotal,
       'deliveryFee': deliveryFee,
       'total': total,
-      'status': status,
+      'status': status.toFirestore(),
       'createdAt': createdAt ?? FieldValue.serverTimestamp(),
     };
   }
