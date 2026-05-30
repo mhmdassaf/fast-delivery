@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:fast_delivery_core/errors/failure.dart';
 import 'package:fast_delivery_core/errors/result.dart';
 import 'package:fast_delivery_auth/domain/providers/auth_providers.dart';
+import 'package:fast_delivery_orders/data/models/status_history_entry.dart';
 import 'package:fast_delivery_orders/domain/order_status.dart';
 
 import '../../../cart/data/models/cart_item_model.dart';
@@ -306,6 +307,13 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     final deliveryFee = state.deliveryFee;
     final total = subtotal + deliveryFee;
 
+    // Create the initial status history entry — status = 0 (waitingRiderConfirmation)
+    final initialStatusEntry = StatusHistoryEntry(
+      status: OrderStatus.waitingRiderConfirmation.toFirestore(),
+      timestamp: DateTime.now(),
+      actionTakenBy: userId,
+    );
+
     final order = OrderModel(
       id: '', // Will be assigned by Firestore
       userId: userId,
@@ -320,6 +328,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
       deliveryFee: deliveryFee,
       total: total,
       status: OrderStatus.waitingRiderConfirmation,
+      statusHistory: [initialStatusEntry],
     );
 
     final result = await _checkoutRepo.createOrder(order);

@@ -1,7 +1,7 @@
 # Orders List Feature Specification
 
 > **AI-Readable Documentation for Orders List Feature**  
-> **Last Updated:** 2026-05-30  
+> **Last Updated:** 2026-05-30 (updated with StatusHistoryEntry model)  
 > **Feature Status:** ✅ Implemented (Filters redesigned to match Dashboard's CategoriesBar visual style)
 
 ---
@@ -28,7 +28,10 @@ packages/orders/
     │   ├── models/
     │   │   ├── order_list_item_model.dart          # Freezed — lightweight list model
     │   │   ├── order_list_item_model.freezed.dart  # Generated
-    │   │   └── order_list_item_model.g.dart        # Generated
+    │   │   ├── order_list_item_model.g.dart        # Generated
+    │   │   ├── status_history_entry.dart            # Freezed — status timeline entry (reusable)
+    │   │   ├── status_history_entry.freezed.dart    # Generated
+    │   │   └── status_history_entry.g.dart          # Generated
     │   └── repositories/
     │       └── order_list_repository.dart          # Wraps datasource
     ├── domain/
@@ -58,6 +61,26 @@ apps/rider_app/      → uses fast_delivery_orders → /orders route
 apps/seller_app/     → uses fast_delivery_orders → /orders route
 apps/admin_panel/    → uses fast_delivery_orders → /orders route
 ```
+
+---
+
+## 📦 Shared Data Models
+
+### `StatusHistoryEntry` (`data/models/status_history_entry.dart`)
+
+A Freezed model representing a single entry in an order's status timeline.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `int` | `OrderStatus` integer value (`0`–`5`) |
+| `timestamp` | `DateTime` | When the status change occurred |
+| `actionTakenBy` | `String` | UID of the user/system who performed the action |
+
+**Key Methods:**
+- `fromMap(Map<String, dynamic>)` — Firestore deserialization
+- `toMap()` — Firestore serialization (Map)
+
+Stored as an array of maps in `orders/{orderId}/statusHistory`.
 
 ---
 

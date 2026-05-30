@@ -26,6 +26,11 @@ _OrderModel _$OrderModelFromJson(Map<String, dynamic> json) => _OrderModel(
   status:
       $enumDecodeNullable(_$OrderStatusEnumMap, json['status']) ??
       OrderStatus.waitingRiderConfirmation,
+  statusHistory:
+      (json['statusHistory'] as List<dynamic>?)
+          ?.map((e) => StatusHistoryEntry.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
@@ -46,6 +51,7 @@ Map<String, dynamic> _$OrderModelToJson(_OrderModel instance) =>
       'deliveryFee': instance.deliveryFee,
       'total': instance.total,
       'status': _$OrderStatusEnumMap[instance.status]!,
+      'statusHistory': instance.statusHistory,
       'createdAt': instance.createdAt?.toIso8601String(),
     };
 

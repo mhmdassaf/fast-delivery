@@ -148,6 +148,7 @@ When the checkout screen loads, `CheckoutNotifier._loadInitialPhone()`:
    - `deliveryAddress` from state
    - `deliveryTimeLabel` from state (fetched from shop)
     - `status = OrderStatus.waitingRiderConfirmation` (serialized to `0` in Firestore)
+   - `statusHistory` = `[StatusHistoryEntry(status: 0, timestamp: now, actionTakenBy: userId)]` — initial entry recording the order placement
 3. `CheckoutRepository.createOrder(order)` → Firestore `orders.add(order.toFirestore())`
 4. On success:
    - **Update user's phone** in `users/{uid}` via `CheckoutRepository.updateUserPhone(userId, fullPhone)`
@@ -287,6 +288,7 @@ User details are now **top-level fields** (not nested) for efficient querying. T
 | `deliveryFee` | `double` | required | Shop delivery charge |
 | `total` | `double` | required | subtotal + deliveryFee |
 | `status` | `OrderStatus` | `OrderStatus.waitingRiderConfirmation` | Order lifecycle status (stored as int `0` in Firestore) |
+| `statusHistory` | `List<StatusHistoryEntry>` | `[]` | Array of status timeline entries — each with `status`, `timestamp`, `actionTakenBy` |
 | `createdAt` | `DateTime?` | `null` | Firestore server timestamp |
 
 **Methods:** `fromFirestore()`, `toFirestore()`
@@ -318,6 +320,13 @@ User details are now **top-level fields** (not nested) for efficient querying. T
   "deliveryFee": 2.50,
   "total": 15.49,
   "status": 0,
+  "statusHistory": [
+    {
+      "status": 0,
+      "timestamp": "2026-05-30T10:30:00Z",
+      "actionTakenBy": "abc123_user_uid"
+    }
+  ],
   "createdAt": "2026-05-23T..."
 }
 ```

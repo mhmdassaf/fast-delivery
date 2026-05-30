@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:fast_delivery_orders/data/models/status_history_entry.dart';
 import 'package:fast_delivery_orders/domain/order_status.dart';
 
 import '../../../cart/data/models/cart_item_model.dart';
@@ -28,6 +29,7 @@ abstract class OrderModel with _$OrderModel {
     required double deliveryFee,
     required double total,
     @Default(OrderStatus.waitingRiderConfirmation) OrderStatus status,
+    @Default([]) List<StatusHistoryEntry> statusHistory,
     DateTime? createdAt,
   }) = _OrderModel;
 
@@ -54,8 +56,21 @@ abstract class OrderModel with _$OrderModel {
       deliveryFee: (data['deliveryFee'] as num?)?.toDouble() ?? 0.0,
       total: (data['total'] as num?)?.toDouble() ?? 0.0,
       status: OrderStatus.fromFirestore(data['status']),
+      statusHistory: _parseStatusHistory(data['statusHistory']),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
     );
+  }
+
+  /// Parses the `statusHistory` array from the Firestore document.
+  ///
+  /// Returns an empty list if the field is missing, null, or contains
+  /// unparseable entries (individual bad entries are skipped).
+  static List<StatusHistoryEntry> _parseStatusHistory(dynamic raw) {
+    if (raw is! List) return [];
+    return raw
+        .whereType<Map<String, dynamic>>()
+        .map((e) => StatusHistoryEntry.fromMap(e))
+        .toList();
   }
 
   /// Converts to a Firestore document.
@@ -73,6 +88,7 @@ abstract class OrderModel with _$OrderModel {
       'deliveryFee': deliveryFee,
       'total': total,
       'status': status.toFirestore(),
+      'statusHistory': statusHistory.map((e) => e.toMap()).toList(),
       'createdAt': createdAt ?? FieldValue.serverTimestamp(),
     };
   }
