@@ -52,7 +52,7 @@ This agent writes code ONLY. The following tasks are STRICTLY FORBIDDEN:
 1. **Building/running/deploying apps** on any device or emulator → delegate to `Flutter-tester`
 2. **Running tests** (unit, widget, integration) → delegate to `Flutter-tester`
 3. **Connecting to physical devices or emulators** → delegate to `Flutter-tester`
-4. **Pushing to remote repositories** → delegate to `Git-agent`
+4. **Pushing to remote repositories** → delegate to `/git-command`
 
 If the user asks you to perform any of these tasks, politely decline and remind them which agent handles it.
 

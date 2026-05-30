@@ -31,7 +31,6 @@ Agents are defined in `.opencode/agents/`:
 - `Architect.md` - Design full system structure(use for planning)
 - `Flutter-developer.md` - Build Flutter features (no device testing)
 - `Flutter-tester.md` - Build, run, and test on Android physical devices (unit, widget, integration tests)
-- `Git-agent.md` - Commit and push tested changes cleanly (manual trigger via /git-agent after Flutter-tester, auto-triggers feature-doc)
 - `Firebase-developer.md` - Firestore schema & Cloud Functions (Backend)
 - `Code-reviewer.md` - Optimize existing code (no longer handles git operations)
 - `Designer.md` - UI/UX suggestions only
@@ -41,12 +40,13 @@ Agents are defined in `.opencode/agents/`:
 Commands are defined in `.opencode/commands/`:
 
 - `plan` - `/plan` Scan all existing docs in `docs/`, summarize existing features, then produce a well-informed implementation plan for a new feature
+- `git-command` - `/git-command` Commit and push tested changes cleanly (auto-triggers feature-doc)
 
 ## Skill Configuration
 
 Skills are defined in `.opencode/skills/`:
 
-- `feature-doc` - Auto-create/update AI-readable feature documentation in docs/ folder (triggered automatically by Git-agent in Phase 2.5)
+- `feature-doc` - Auto-create/update AI-readable feature documentation in docs/ folder (triggered automatically by `/git-command` in Phase 2.5)
 
 ## Workflow Order
 
@@ -55,9 +55,7 @@ The recommended workflow for implementing features:
 1. **Flutter-developer** - Build features and screens
 2. **Code-reviewer** - Optimize existing code (no longer handles git operations)
 3. **Flutter-tester** - Build, run, and test on Android physical devices
-4. **Git-agent** (manual trigger via `/git-agent`) - Commit and push tested changes cleanly (auto-triggers feature-doc to update docs)
-
-Note: Git-agent replaces all git commit/push functionality previously in Code-reviewer. Git-agent now automatically triggers the `feature-doc` skill in Phase 2.5 to update feature documentation before staging files.
+4. **`/git-command`** (manual trigger) - Commit and push tested changes cleanly (auto-triggers feature-doc to update docs)
 
 ## Key Conventions
 

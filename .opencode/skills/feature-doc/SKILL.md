@@ -4,7 +4,7 @@ description: Auto-create/update AI-readable feature documentation in docs/ folde
 license: MIT
 compatibility: opencode
 metadata:
-  audience: git-agent
+  audience: git-command
   workflow: flutter
 ---
 
@@ -22,11 +22,11 @@ metadata:
 
 ## When to use me
 
-Triggered automatically by Git-agent in Phase 2.5 (after feature file detection, before staging). Can also be triggered manually via `/feature-doc`.
+Triggered automatically by `/git-command` in Phase 2.5 (after feature file detection, before staging). Can also be triggered manually via `/feature-doc`.
 
 ## Workflow
 
-1. Receive list of modified files from Git-agent (output of Phase 2)
+1. Receive list of modified files from `/git-command` (output of Phase 2)
 2. Infer feature name(s) from file paths:
    - Match `packages/<feature>/` → feature = <feature>
    - Match `apps/<app>/lib/features/<feature>/` → feature = <feature>
@@ -36,4 +36,4 @@ Triggered automatically by Git-agent in Phase 2.5 (after feature file detection,
    b. If not: Create new doc using `docs/auth_feature.md` as template, replace auth-specific content with new feature's details
    c. If exists: Analyze modified files for the feature and update relevant sections (Navigation, State Management, etc.)
 4. Write updated content to `docs/<feature>_feature.md`
-5. Return list of updated doc files to Git-agent for inclusion in staging
+5. Return list of updated doc files to `/git-command` for inclusion in staging

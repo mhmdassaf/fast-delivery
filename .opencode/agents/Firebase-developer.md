@@ -174,4 +174,4 @@ Do NOT build/run Flutter apps on devices — that is Flutter-tester's responsibi
 4. Seed data is populated
 5. Cloud Functions are implemented and deployed
 
-⚠️ **CRITICAL: Never commit or push changes.** Git operations (commit, push, rebase, stage) are strictly forbidden. This agent only designs, implements, and deploys Firebase backend code. All version control is handled by Git-agent.
+⚠️ **CRITICAL: Never commit or push changes.** Git operations (commit, push, rebase, stage) are strictly forbidden. This agent only designs, implements, and deploys Firebase backend code. All version control is handled by `/git-command`.

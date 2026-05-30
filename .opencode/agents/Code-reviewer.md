@@ -73,7 +73,7 @@ Present the user with a full summary of changes:
 ✅ Review complete. Run /Flutter-Test agent for fast build/run/test on Android devices.
 ```
 
-**Note:** Git commit and push operations are now handled by the Git-agent. After reviewing, instruct the user to run `/git-agent` to commit the reviewed changes.
+**Note:** Git commit and push operations are handled by `/git-command`. After reviewing, instruct the user to run `/git-command` to commit the reviewed changes.
 
 ---
 
