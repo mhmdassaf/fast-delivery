@@ -22,7 +22,7 @@ class OrdersQueryResult {
 /// Data source for fetching orders from Firestore.
 ///
 /// Queries are role-aware:
-/// - customer → filter by `userId`
+/// - customer → filter by `customerId`
 /// - rider    → filter by `riderId`
 /// - seller   → filter by `sellerId`
 /// - admin    → no filter (all orders)
@@ -55,15 +55,15 @@ class OrderListDataSourceImpl implements OrderListDataSource {
 
   /// Applies the role-based Firestore filter to [query].
   ///
-  /// - `customer` → `userId == uid`
+  /// - `customer` → `customerId == uid`
   /// - `rider`    → `riderId == uid`
   /// - `seller`   → `sellerId == uid`
   /// - `admin`    → no filter (all orders)
-  /// - unknown    → falls back to `userId == uid`
+  /// - unknown    → falls back to `customerId == uid`
   Query _applyRoleFilter(Query query, String role, String uid) {
     switch (role) {
       case 'customer':
-        return query.where('userId', isEqualTo: uid);
+        return query.where('customerId', isEqualTo: uid);
       case 'rider':
         return query.where('riderId', isEqualTo: uid);
       case 'seller':
@@ -71,7 +71,7 @@ class OrderListDataSourceImpl implements OrderListDataSource {
       case 'admin':
         return query;
       default:
-        return query.where('userId', isEqualTo: uid);
+        return query.where('customerId', isEqualTo: uid);
     }
   }
 

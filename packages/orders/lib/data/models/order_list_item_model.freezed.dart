@@ -15,8 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OrderListItemModel {
   String get id;
-  String get userId;
-  String get userName;
+  String get customerId;
+  String get customerName;
   String get shopId;
   String get shopName;
   String get deliveryAddressLine;
@@ -42,9 +42,10 @@ mixin _$OrderListItemModel {
         (other.runtimeType == runtimeType &&
             other is OrderListItemModel &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.userName, userName) ||
-                other.userName == userName) &&
+            (identical(other.customerId, customerId) ||
+                other.customerId == customerId) &&
+            (identical(other.customerName, customerName) ||
+                other.customerName == customerName) &&
             (identical(other.shopId, shopId) || other.shopId == shopId) &&
             (identical(other.shopName, shopName) ||
                 other.shopName == shopName) &&
@@ -60,12 +61,22 @@ mixin _$OrderListItemModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, userId, userName, shopId,
-      shopName, deliveryAddressLine, total, itemCount, status, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      customerId,
+      customerName,
+      shopId,
+      shopName,
+      deliveryAddressLine,
+      total,
+      itemCount,
+      status,
+      createdAt);
 
   @override
   String toString() {
-    return 'OrderListItemModel(id: $id, userId: $userId, userName: $userName, shopId: $shopId, shopName: $shopName, deliveryAddressLine: $deliveryAddressLine, total: $total, itemCount: $itemCount, status: $status, createdAt: $createdAt)';
+    return 'OrderListItemModel(id: $id, customerId: $customerId, customerName: $customerName, shopId: $shopId, shopName: $shopName, deliveryAddressLine: $deliveryAddressLine, total: $total, itemCount: $itemCount, status: $status, createdAt: $createdAt)';
   }
 }
 
@@ -77,8 +88,8 @@ abstract mixin class $OrderListItemModelCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      String userId,
-      String userName,
+      String customerId,
+      String customerName,
       String shopId,
       String shopName,
       String deliveryAddressLine,
@@ -102,8 +113,8 @@ class _$OrderListItemModelCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? userId = null,
-    Object? userName = null,
+    Object? customerId = null,
+    Object? customerName = null,
     Object? shopId = null,
     Object? shopName = null,
     Object? deliveryAddressLine = null,
@@ -117,13 +128,13 @@ class _$OrderListItemModelCopyWithImpl<$Res>
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      userId: null == userId
-          ? _self.userId
-          : userId // ignore: cast_nullable_to_non_nullable
+      customerId: null == customerId
+          ? _self.customerId
+          : customerId // ignore: cast_nullable_to_non_nullable
               as String,
-      userName: null == userName
-          ? _self.userName
-          : userName // ignore: cast_nullable_to_non_nullable
+      customerName: null == customerName
+          ? _self.customerName
+          : customerName // ignore: cast_nullable_to_non_nullable
               as String,
       shopId: null == shopId
           ? _self.shopId
@@ -252,8 +263,8 @@ extension OrderListItemModelPatterns on OrderListItemModel {
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
             String id,
-            String userId,
-            String userName,
+            String customerId,
+            String customerName,
             String shopId,
             String shopName,
             String deliveryAddressLine,
@@ -269,8 +280,8 @@ extension OrderListItemModelPatterns on OrderListItemModel {
       case _OrderListItemModel() when $default != null:
         return $default(
             _that.id,
-            _that.userId,
-            _that.userName,
+            _that.customerId,
+            _that.customerName,
             _that.shopId,
             _that.shopName,
             _that.deliveryAddressLine,
@@ -300,8 +311,8 @@ extension OrderListItemModelPatterns on OrderListItemModel {
   TResult when<TResult extends Object?>(
     TResult Function(
             String id,
-            String userId,
-            String userName,
+            String customerId,
+            String customerName,
             String shopId,
             String shopName,
             String deliveryAddressLine,
@@ -316,8 +327,8 @@ extension OrderListItemModelPatterns on OrderListItemModel {
       case _OrderListItemModel():
         return $default(
             _that.id,
-            _that.userId,
-            _that.userName,
+            _that.customerId,
+            _that.customerName,
             _that.shopId,
             _that.shopName,
             _that.deliveryAddressLine,
@@ -346,8 +357,8 @@ extension OrderListItemModelPatterns on OrderListItemModel {
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
             String id,
-            String userId,
-            String userName,
+            String customerId,
+            String customerName,
             String shopId,
             String shopName,
             String deliveryAddressLine,
@@ -362,8 +373,8 @@ extension OrderListItemModelPatterns on OrderListItemModel {
       case _OrderListItemModel() when $default != null:
         return $default(
             _that.id,
-            _that.userId,
-            _that.userName,
+            _that.customerId,
+            _that.customerName,
             _that.shopId,
             _that.shopName,
             _that.deliveryAddressLine,
@@ -382,8 +393,8 @@ extension OrderListItemModelPatterns on OrderListItemModel {
 class _OrderListItemModel extends OrderListItemModel {
   const _OrderListItemModel(
       {required this.id,
-      required this.userId,
-      required this.userName,
+      required this.customerId,
+      required this.customerName,
       required this.shopId,
       required this.shopName,
       required this.deliveryAddressLine,
@@ -398,9 +409,9 @@ class _OrderListItemModel extends OrderListItemModel {
   @override
   final String id;
   @override
-  final String userId;
+  final String customerId;
   @override
-  final String userName;
+  final String customerName;
   @override
   final String shopId;
   @override
@@ -437,9 +448,10 @@ class _OrderListItemModel extends OrderListItemModel {
         (other.runtimeType == runtimeType &&
             other is _OrderListItemModel &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.userName, userName) ||
-                other.userName == userName) &&
+            (identical(other.customerId, customerId) ||
+                other.customerId == customerId) &&
+            (identical(other.customerName, customerName) ||
+                other.customerName == customerName) &&
             (identical(other.shopId, shopId) || other.shopId == shopId) &&
             (identical(other.shopName, shopName) ||
                 other.shopName == shopName) &&
@@ -455,12 +467,22 @@ class _OrderListItemModel extends OrderListItemModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, userId, userName, shopId,
-      shopName, deliveryAddressLine, total, itemCount, status, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      customerId,
+      customerName,
+      shopId,
+      shopName,
+      deliveryAddressLine,
+      total,
+      itemCount,
+      status,
+      createdAt);
 
   @override
   String toString() {
-    return 'OrderListItemModel(id: $id, userId: $userId, userName: $userName, shopId: $shopId, shopName: $shopName, deliveryAddressLine: $deliveryAddressLine, total: $total, itemCount: $itemCount, status: $status, createdAt: $createdAt)';
+    return 'OrderListItemModel(id: $id, customerId: $customerId, customerName: $customerName, shopId: $shopId, shopName: $shopName, deliveryAddressLine: $deliveryAddressLine, total: $total, itemCount: $itemCount, status: $status, createdAt: $createdAt)';
   }
 }
 
@@ -474,8 +496,8 @@ abstract mixin class _$OrderListItemModelCopyWith<$Res>
   @useResult
   $Res call(
       {String id,
-      String userId,
-      String userName,
+      String customerId,
+      String customerName,
       String shopId,
       String shopName,
       String deliveryAddressLine,
@@ -499,8 +521,8 @@ class __$OrderListItemModelCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   $Res call({
     Object? id = null,
-    Object? userId = null,
-    Object? userName = null,
+    Object? customerId = null,
+    Object? customerName = null,
     Object? shopId = null,
     Object? shopName = null,
     Object? deliveryAddressLine = null,
@@ -514,13 +536,13 @@ class __$OrderListItemModelCopyWithImpl<$Res>
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      userId: null == userId
-          ? _self.userId
-          : userId // ignore: cast_nullable_to_non_nullable
+      customerId: null == customerId
+          ? _self.customerId
+          : customerId // ignore: cast_nullable_to_non_nullable
               as String,
-      userName: null == userName
-          ? _self.userName
-          : userName // ignore: cast_nullable_to_non_nullable
+      customerName: null == customerName
+          ? _self.customerName
+          : customerName // ignore: cast_nullable_to_non_nullable
               as String,
       shopId: null == shopId
           ? _self.shopId

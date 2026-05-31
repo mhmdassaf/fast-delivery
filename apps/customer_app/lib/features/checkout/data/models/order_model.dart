@@ -12,14 +12,14 @@ part 'order_model.g.dart';
 /// Represents a customer order placed from the shopping cart.
 ///
 /// Stored in Firestore under `orders/{orderId}`. User details are stored as
-/// top-level fields (`userId`, `userName`, `userPhone`) for simple querying.
+/// top-level fields (`customerId`, `customerName`, `customerPhone`) for simple querying.
 @freezed
 abstract class OrderModel with _$OrderModel {
   const factory OrderModel({
     required String id,
-    required String userId,
-    required String userName,
-    required String userPhone,
+    required String customerId,
+    required String customerName,
+    required String customerPhone,
     required String shopId,
     required String shopName,
     required List<CartItemModel> items,
@@ -44,9 +44,9 @@ abstract class OrderModel with _$OrderModel {
 
     return OrderModel(
       id: snapshot.id,
-      userId: data['userId'] as String? ?? '',
-      userName: data['userName'] as String? ?? '',
-      userPhone: data['userPhone'] as String? ?? '',
+      customerId: data['customerId'] as String? ?? '',
+      customerName: data['customerName'] as String? ?? '',
+      customerPhone: data['customerPhone'] as String? ?? '',
       shopId: data['shopId'] as String? ?? '',
       shopName: data['shopName'] as String? ?? '',
       items: itemsData.map((e) => CartItemModel.fromJson(e)).toList(),
@@ -76,9 +76,9 @@ abstract class OrderModel with _$OrderModel {
   /// Converts to a Firestore document.
   Map<String, dynamic> toFirestore() {
     return {
-      'userId': userId,
-      'userName': userName,
-      'userPhone': userPhone,
+      'customerId': customerId,
+      'customerName': customerName,
+      'customerPhone': customerPhone,
       'shopId': shopId,
       'shopName': shopName,
       'items': items.map((e) => e.toJson()).toList(),

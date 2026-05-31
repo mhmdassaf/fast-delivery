@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OrderModel {
 
- String get id; String get userId; String get userName; String get userPhone; String get shopId; String get shopName; List<CartItemModel> get items; DeliveryAddressModel get deliveryAddress; String get deliveryTimeLabel; double get subtotal; double get deliveryFee; double get total; OrderStatus get status; List<StatusHistoryEntry> get statusHistory; DateTime? get createdAt;
+ String get id; String get customerId; String get customerName; String get customerPhone; String get shopId; String get shopName; List<CartItemModel> get items; DeliveryAddressModel get deliveryAddress; String get deliveryTimeLabel; double get subtotal; double get deliveryFee; double get total; OrderStatus get status; List<StatusHistoryEntry> get statusHistory; DateTime? get createdAt;
 /// Create a copy of OrderModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $OrderModelCopyWith<OrderModel> get copyWith => _$OrderModelCopyWithImpl<OrderMo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrderModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.userPhone, userPhone) || other.userPhone == userPhone)&&(identical(other.shopId, shopId) || other.shopId == shopId)&&(identical(other.shopName, shopName) || other.shopName == shopName)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.deliveryAddress, deliveryAddress) || other.deliveryAddress == deliveryAddress)&&(identical(other.deliveryTimeLabel, deliveryTimeLabel) || other.deliveryTimeLabel == deliveryTimeLabel)&&(identical(other.subtotal, subtotal) || other.subtotal == subtotal)&&(identical(other.deliveryFee, deliveryFee) || other.deliveryFee == deliveryFee)&&(identical(other.total, total) || other.total == total)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.statusHistory, statusHistory)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrderModel&&(identical(other.id, id) || other.id == id)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.customerPhone, customerPhone) || other.customerPhone == customerPhone)&&(identical(other.shopId, shopId) || other.shopId == shopId)&&(identical(other.shopName, shopName) || other.shopName == shopName)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.deliveryAddress, deliveryAddress) || other.deliveryAddress == deliveryAddress)&&(identical(other.deliveryTimeLabel, deliveryTimeLabel) || other.deliveryTimeLabel == deliveryTimeLabel)&&(identical(other.subtotal, subtotal) || other.subtotal == subtotal)&&(identical(other.deliveryFee, deliveryFee) || other.deliveryFee == deliveryFee)&&(identical(other.total, total) || other.total == total)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.statusHistory, statusHistory)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,userName,userPhone,shopId,shopName,const DeepCollectionEquality().hash(items),deliveryAddress,deliveryTimeLabel,subtotal,deliveryFee,total,status,const DeepCollectionEquality().hash(statusHistory),createdAt);
+int get hashCode => Object.hash(runtimeType,id,customerId,customerName,customerPhone,shopId,shopName,const DeepCollectionEquality().hash(items),deliveryAddress,deliveryTimeLabel,subtotal,deliveryFee,total,status,const DeepCollectionEquality().hash(statusHistory),createdAt);
 
 @override
 String toString() {
-  return 'OrderModel(id: $id, userId: $userId, userName: $userName, userPhone: $userPhone, shopId: $shopId, shopName: $shopName, items: $items, deliveryAddress: $deliveryAddress, deliveryTimeLabel: $deliveryTimeLabel, subtotal: $subtotal, deliveryFee: $deliveryFee, total: $total, status: $status, statusHistory: $statusHistory, createdAt: $createdAt)';
+  return 'OrderModel(id: $id, customerId: $customerId, customerName: $customerName, customerPhone: $customerPhone, shopId: $shopId, shopName: $shopName, items: $items, deliveryAddress: $deliveryAddress, deliveryTimeLabel: $deliveryTimeLabel, subtotal: $subtotal, deliveryFee: $deliveryFee, total: $total, status: $status, statusHistory: $statusHistory, createdAt: $createdAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $OrderModelCopyWith<$Res>  {
   factory $OrderModelCopyWith(OrderModel value, $Res Function(OrderModel) _then) = _$OrderModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String userId, String userName, String userPhone, String shopId, String shopName, List<CartItemModel> items, DeliveryAddressModel deliveryAddress, String deliveryTimeLabel, double subtotal, double deliveryFee, double total, OrderStatus status, List<StatusHistoryEntry> statusHistory, DateTime? createdAt
+ String id, String customerId, String customerName, String customerPhone, String shopId, String shopName, List<CartItemModel> items, DeliveryAddressModel deliveryAddress, String deliveryTimeLabel, double subtotal, double deliveryFee, double total, OrderStatus status, List<StatusHistoryEntry> statusHistory, DateTime? createdAt
 });
 
 
@@ -65,12 +65,12 @@ class _$OrderModelCopyWithImpl<$Res>
 
 /// Create a copy of OrderModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? userName = null,Object? userPhone = null,Object? shopId = null,Object? shopName = null,Object? items = null,Object? deliveryAddress = null,Object? deliveryTimeLabel = null,Object? subtotal = null,Object? deliveryFee = null,Object? total = null,Object? status = null,Object? statusHistory = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? customerId = null,Object? customerName = null,Object? customerPhone = null,Object? shopId = null,Object? shopName = null,Object? items = null,Object? deliveryAddress = null,Object? deliveryTimeLabel = null,Object? subtotal = null,Object? deliveryFee = null,Object? total = null,Object? status = null,Object? statusHistory = null,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String,userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
-as String,userPhone: null == userPhone ? _self.userPhone : userPhone // ignore: cast_nullable_to_non_nullable
+as String,customerId: null == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
+as String,customerName: null == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String,customerPhone: null == customerPhone ? _self.customerPhone : customerPhone // ignore: cast_nullable_to_non_nullable
 as String,shopId: null == shopId ? _self.shopId : shopId // ignore: cast_nullable_to_non_nullable
 as String,shopName: null == shopName ? _self.shopName : shopName // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
@@ -176,10 +176,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  String userName,  String userPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  OrderStatus status,  List<StatusHistoryEntry> statusHistory,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String customerId,  String customerName,  String customerPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  OrderStatus status,  List<StatusHistoryEntry> statusHistory,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OrderModel() when $default != null:
-return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopId,_that.shopName,_that.items,_that.deliveryAddress,_that.deliveryTimeLabel,_that.subtotal,_that.deliveryFee,_that.total,_that.status,_that.statusHistory,_that.createdAt);case _:
+return $default(_that.id,_that.customerId,_that.customerName,_that.customerPhone,_that.shopId,_that.shopName,_that.items,_that.deliveryAddress,_that.deliveryTimeLabel,_that.subtotal,_that.deliveryFee,_that.total,_that.status,_that.statusHistory,_that.createdAt);case _:
   return orElse();
 
 }
@@ -197,10 +197,10 @@ return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopI
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  String userName,  String userPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  OrderStatus status,  List<StatusHistoryEntry> statusHistory,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String customerId,  String customerName,  String customerPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  OrderStatus status,  List<StatusHistoryEntry> statusHistory,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _OrderModel():
-return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopId,_that.shopName,_that.items,_that.deliveryAddress,_that.deliveryTimeLabel,_that.subtotal,_that.deliveryFee,_that.total,_that.status,_that.statusHistory,_that.createdAt);case _:
+return $default(_that.id,_that.customerId,_that.customerName,_that.customerPhone,_that.shopId,_that.shopName,_that.items,_that.deliveryAddress,_that.deliveryTimeLabel,_that.subtotal,_that.deliveryFee,_that.total,_that.status,_that.statusHistory,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -217,10 +217,10 @@ return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopI
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  String userName,  String userPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  OrderStatus status,  List<StatusHistoryEntry> statusHistory,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String customerId,  String customerName,  String customerPhone,  String shopId,  String shopName,  List<CartItemModel> items,  DeliveryAddressModel deliveryAddress,  String deliveryTimeLabel,  double subtotal,  double deliveryFee,  double total,  OrderStatus status,  List<StatusHistoryEntry> statusHistory,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _OrderModel() when $default != null:
-return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopId,_that.shopName,_that.items,_that.deliveryAddress,_that.deliveryTimeLabel,_that.subtotal,_that.deliveryFee,_that.total,_that.status,_that.statusHistory,_that.createdAt);case _:
+return $default(_that.id,_that.customerId,_that.customerName,_that.customerPhone,_that.shopId,_that.shopName,_that.items,_that.deliveryAddress,_that.deliveryTimeLabel,_that.subtotal,_that.deliveryFee,_that.total,_that.status,_that.statusHistory,_that.createdAt);case _:
   return null;
 
 }
@@ -232,13 +232,13 @@ return $default(_that.id,_that.userId,_that.userName,_that.userPhone,_that.shopI
 @JsonSerializable()
 
 class _OrderModel extends OrderModel {
-  const _OrderModel({required this.id, required this.userId, required this.userName, required this.userPhone, required this.shopId, required this.shopName, required final  List<CartItemModel> items, required this.deliveryAddress, required this.deliveryTimeLabel, required this.subtotal, required this.deliveryFee, required this.total, this.status = OrderStatus.waitingRiderConfirmation, final  List<StatusHistoryEntry> statusHistory = const [], this.createdAt}): _items = items,_statusHistory = statusHistory,super._();
+  const _OrderModel({required this.id, required this.customerId, required this.customerName, required this.customerPhone, required this.shopId, required this.shopName, required final  List<CartItemModel> items, required this.deliveryAddress, required this.deliveryTimeLabel, required this.subtotal, required this.deliveryFee, required this.total, this.status = OrderStatus.waitingRiderConfirmation, final  List<StatusHistoryEntry> statusHistory = const [], this.createdAt}): _items = items,_statusHistory = statusHistory,super._();
   factory _OrderModel.fromJson(Map<String, dynamic> json) => _$OrderModelFromJson(json);
 
 @override final  String id;
-@override final  String userId;
-@override final  String userName;
-@override final  String userPhone;
+@override final  String customerId;
+@override final  String customerName;
+@override final  String customerPhone;
 @override final  String shopId;
 @override final  String shopName;
  final  List<CartItemModel> _items;
@@ -276,16 +276,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrderModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.userPhone, userPhone) || other.userPhone == userPhone)&&(identical(other.shopId, shopId) || other.shopId == shopId)&&(identical(other.shopName, shopName) || other.shopName == shopName)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.deliveryAddress, deliveryAddress) || other.deliveryAddress == deliveryAddress)&&(identical(other.deliveryTimeLabel, deliveryTimeLabel) || other.deliveryTimeLabel == deliveryTimeLabel)&&(identical(other.subtotal, subtotal) || other.subtotal == subtotal)&&(identical(other.deliveryFee, deliveryFee) || other.deliveryFee == deliveryFee)&&(identical(other.total, total) || other.total == total)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._statusHistory, _statusHistory)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrderModel&&(identical(other.id, id) || other.id == id)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.customerPhone, customerPhone) || other.customerPhone == customerPhone)&&(identical(other.shopId, shopId) || other.shopId == shopId)&&(identical(other.shopName, shopName) || other.shopName == shopName)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.deliveryAddress, deliveryAddress) || other.deliveryAddress == deliveryAddress)&&(identical(other.deliveryTimeLabel, deliveryTimeLabel) || other.deliveryTimeLabel == deliveryTimeLabel)&&(identical(other.subtotal, subtotal) || other.subtotal == subtotal)&&(identical(other.deliveryFee, deliveryFee) || other.deliveryFee == deliveryFee)&&(identical(other.total, total) || other.total == total)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._statusHistory, _statusHistory)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,userName,userPhone,shopId,shopName,const DeepCollectionEquality().hash(_items),deliveryAddress,deliveryTimeLabel,subtotal,deliveryFee,total,status,const DeepCollectionEquality().hash(_statusHistory),createdAt);
+int get hashCode => Object.hash(runtimeType,id,customerId,customerName,customerPhone,shopId,shopName,const DeepCollectionEquality().hash(_items),deliveryAddress,deliveryTimeLabel,subtotal,deliveryFee,total,status,const DeepCollectionEquality().hash(_statusHistory),createdAt);
 
 @override
 String toString() {
-  return 'OrderModel(id: $id, userId: $userId, userName: $userName, userPhone: $userPhone, shopId: $shopId, shopName: $shopName, items: $items, deliveryAddress: $deliveryAddress, deliveryTimeLabel: $deliveryTimeLabel, subtotal: $subtotal, deliveryFee: $deliveryFee, total: $total, status: $status, statusHistory: $statusHistory, createdAt: $createdAt)';
+  return 'OrderModel(id: $id, customerId: $customerId, customerName: $customerName, customerPhone: $customerPhone, shopId: $shopId, shopName: $shopName, items: $items, deliveryAddress: $deliveryAddress, deliveryTimeLabel: $deliveryTimeLabel, subtotal: $subtotal, deliveryFee: $deliveryFee, total: $total, status: $status, statusHistory: $statusHistory, createdAt: $createdAt)';
 }
 
 
@@ -296,7 +296,7 @@ abstract mixin class _$OrderModelCopyWith<$Res> implements $OrderModelCopyWith<$
   factory _$OrderModelCopyWith(_OrderModel value, $Res Function(_OrderModel) _then) = __$OrderModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String userId, String userName, String userPhone, String shopId, String shopName, List<CartItemModel> items, DeliveryAddressModel deliveryAddress, String deliveryTimeLabel, double subtotal, double deliveryFee, double total, OrderStatus status, List<StatusHistoryEntry> statusHistory, DateTime? createdAt
+ String id, String customerId, String customerName, String customerPhone, String shopId, String shopName, List<CartItemModel> items, DeliveryAddressModel deliveryAddress, String deliveryTimeLabel, double subtotal, double deliveryFee, double total, OrderStatus status, List<StatusHistoryEntry> statusHistory, DateTime? createdAt
 });
 
 
@@ -313,12 +313,12 @@ class __$OrderModelCopyWithImpl<$Res>
 
 /// Create a copy of OrderModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? userName = null,Object? userPhone = null,Object? shopId = null,Object? shopName = null,Object? items = null,Object? deliveryAddress = null,Object? deliveryTimeLabel = null,Object? subtotal = null,Object? deliveryFee = null,Object? total = null,Object? status = null,Object? statusHistory = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? customerId = null,Object? customerName = null,Object? customerPhone = null,Object? shopId = null,Object? shopName = null,Object? items = null,Object? deliveryAddress = null,Object? deliveryTimeLabel = null,Object? subtotal = null,Object? deliveryFee = null,Object? total = null,Object? status = null,Object? statusHistory = null,Object? createdAt = freezed,}) {
   return _then(_OrderModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String,userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
-as String,userPhone: null == userPhone ? _self.userPhone : userPhone // ignore: cast_nullable_to_non_nullable
+as String,customerId: null == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
+as String,customerName: null == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String,customerPhone: null == customerPhone ? _self.customerPhone : customerPhone // ignore: cast_nullable_to_non_nullable
 as String,shopId: null == shopId ? _self.shopId : shopId // ignore: cast_nullable_to_non_nullable
 as String,shopName: null == shopName ? _self.shopName : shopName // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable

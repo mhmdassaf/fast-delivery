@@ -5,7 +5,7 @@
       "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "userId", "order": "ascending" },
+        { "fieldPath": "customerId", "order": "ascending" },
         { "fieldPath": "createdAt", "order": "descending" }
       ]
     },
@@ -33,12 +33,12 @@
         { "fieldPath": "createdAt", "order": "descending" }
       ]
     },
-    // Orders: userId + status (active order count — user role)
+    // Orders: customerId + status (active order count — user role)
     {
       "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "userId", "order": "ascending" },
+        { "fieldPath": "customerId", "order": "ascending" },
         { "fieldPath": "status", "order": "ascending" }
       ]
     },

@@ -137,9 +137,9 @@ When the checkout screen loads, `CheckoutNotifier._loadInitialPhone()`:
 **Order Creation:**
 1. Set `isPlacingOrder = true` (button shows loading spinner, becomes disabled)
 2. Build `OrderModel` (flat fields — no nested `user` object):
-   - `userId` from `currentUserProvider.uid`
-   - `userName` from `currentUserProvider.displayName`
-   - `userPhone` = `'+961$phone'` (entered phone with Lebanon country code)
+   - `customerId` from `currentUserProvider.uid`
+   - `customerName` from `currentUserProvider.displayName`
+   - `customerPhone` = `'+961$phone'` (entered phone with Lebanon country code)
    - `shopId`, `shopName` from cart providers
    - `items` snapshot from `cartNotifierProvider`
    - `subtotal` from `cartTotalProvider`
@@ -277,9 +277,9 @@ User details are now **top-level fields** (not nested) for efficient querying. T
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `id` | `String` | required | Firestore document ID |
-| `userId` | `String` | required | Auth user UID |
-| `userName` | `String` | required | User's display name (from auth profile) |
-| `userPhone` | `String` | required | User's phone (with country code, e.g. `+96170123456`) |
+| `customerId` | `String` | required | Auth user UID |
+| `customerName` | `String` | required | User's display name (from auth profile) |
+| `customerPhone` | `String` | required | User's phone (with country code, e.g. `+96170123456`) |
 | `shopId` | `String` | required | Shop being ordered from |
 | `shopName` | `String` | required | Shop display name |
 | `items` | `List<CartItemModel>` | required | Snapshot of cart items |
@@ -297,9 +297,9 @@ User details are now **top-level fields** (not nested) for efficient querying. T
 ### Firestore Document Structure (`orders/{orderId}`)
 ```json
 {
-  "userId": "abc123...",
-  "userName": "John Doe",
-  "userPhone": "+96170123456",
+  "customerId": "abc123...",
+  "customerName": "John Doe",
+  "customerPhone": "+96170123456",
   "shopId": "shop_xyz",
   "shopName": "Pizza Palace",
   "items": [
@@ -379,7 +379,7 @@ Uses existing `AppColors` and `AppDimens` from `packages/core/lib/constants/app_
 ### Phone Number Flow Summary
 1. **On checkout load**: `CheckoutNotifier._loadInitialPhone()` fetches `phoneNumber` from Firestore `users/{uid}` and pre-fills the phone input
 2. **User input**: `PhoneNumberSection` widget strips non-digits, stores local number (e.g. `71234567`) in `state.phoneNumber`
-3. **On place order**: `OrderModel.userPhone` = `'$kLebanonCountryCode$phone'` = `'+96171234567'` (full number with country code from shared constant `kLebanonCountryCode`)
+3. **On place order**: `OrderModel.customerPhone` = `'$kLebanonCountryCode$phone'` = `'+96171234567'` (full number with country code from shared constant `kLebanonCountryCode`)
 4. **After order created**: `updateUserPhone()` saves the full number back to Firestore `users/{uid}.phoneNumber` so it persists for future orders
 
 ---

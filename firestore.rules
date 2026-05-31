@@ -136,7 +136,7 @@ service cloud.firestore {
     match /orders/{orderId} {
       /// Users can read their own orders
       allow read: if isAuthenticated() && 
-        resource.data.userId == request.auth.uid;
+        resource.data.customerId == request.auth.uid;
       
       /// Riders can read orders assigned to them
       allow read: if hasRole('rider') && 
@@ -167,7 +167,7 @@ service cloud.firestore {
       
       /// Users can cancel their own orders (only from 'Waiting Rider Confirmation' or 'pending')
       allow update: if hasRole('customer') && 
-        isOwner(resource.data.userId) && 
+        isOwner(resource.data.customerId) && 
         resource.data.status in ['Waiting Rider Confirmation', 'pending'] &&
         request.resource.data.status == 'cancelled';
       

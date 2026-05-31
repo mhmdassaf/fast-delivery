@@ -8,9 +8,9 @@ part of 'order_model.dart';
 
 _OrderModel _$OrderModelFromJson(Map<String, dynamic> json) => _OrderModel(
   id: json['id'] as String,
-  userId: json['userId'] as String,
-  userName: json['userName'] as String,
-  userPhone: json['userPhone'] as String,
+  customerId: json['customerId'] as String,
+  customerName: json['customerName'] as String,
+  customerPhone: json['customerPhone'] as String,
   shopId: json['shopId'] as String,
   shopName: json['shopName'] as String,
   items: (json['items'] as List<dynamic>)
@@ -39,9 +39,9 @@ _OrderModel _$OrderModelFromJson(Map<String, dynamic> json) => _OrderModel(
 Map<String, dynamic> _$OrderModelToJson(_OrderModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'userId': instance.userId,
-      'userName': instance.userName,
-      'userPhone': instance.userPhone,
+      'customerId': instance.customerId,
+      'customerName': instance.customerName,
+      'customerPhone': instance.customerPhone,
       'shopId': instance.shopId,
       'shopName': instance.shopName,
       'items': instance.items,

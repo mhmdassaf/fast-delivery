@@ -108,7 +108,7 @@ final activeOrdersCountProvider = AutoDisposeFutureProvider<int>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ActiveOrdersCountRef = AutoDisposeFutureProviderRef<int>;
-String _$orderListNotifierHash() => r'8cad4c6e5dd4fc77b8ff5be3cec6bc533c8a2545';
+String _$orderListNotifierHash() => r'dff780c7108526114007f635e1780a02c67b9c9c';
 
 /// Notifier managing the orders list state.
 ///

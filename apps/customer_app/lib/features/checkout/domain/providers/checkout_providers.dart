@@ -290,8 +290,8 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     // Use currentUserProvider (sync) instead of authNotifierProvider (async)
     // to avoid empty user data when authNotifierProvider is auto-disposed.
     final authUser = ref.read(currentUserProvider);
-    final userId = authUser?.uid ?? '';
-    final userName = authUser?.displayName ?? '';
+    final customerId = authUser?.uid ?? '';
+    final customerName = authUser?.displayName ?? '';
     // Use the phone number the user entered (with Lebanon country code)
     final fullPhone = '$kLebanonCountryCode$phone';
 
@@ -311,14 +311,14 @@ class CheckoutNotifier extends _$CheckoutNotifier {
     final initialStatusEntry = StatusHistoryEntry(
       status: OrderStatus.waitingRiderConfirmation.toFirestore(),
       timestamp: DateTime.now(),
-      actionTakenBy: userId,
+      actionTakenBy: customerId,
     );
 
     final order = OrderModel(
       id: '', // Will be assigned by Firestore
-      userId: userId,
-      userName: userName,
-      userPhone: fullPhone,
+      customerId: customerId,
+      customerName: customerName,
+      customerPhone: fullPhone,
       shopId: shopId,
       shopName: shopName ?? '',
       items: List.from(items),
@@ -337,7 +337,7 @@ class CheckoutNotifier extends _$CheckoutNotifier {
       onSuccess: (orderId) async {
         // Save the phone number back to the user's Firestore document
         // (best-effort — order was already created successfully)
-        await _checkoutRepo.updateUserPhone(userId, fullPhone);
+        await _checkoutRepo.updateUserPhone(customerId, fullPhone);
 
         // Clear the cart on successful order placement
         ref.read(cartNotifierProvider.notifier).clearCart();

@@ -102,7 +102,7 @@ lib/
 ```
 
 ### Key Principles
-- **Data Layer:** Role-aware Firestore queries based on `userId`, `riderId`, `sellerId`, or no filter for admin
+- **Data Layer:** Role-aware Firestore queries based on `customerId`, `riderId`, `sellerId`, or no filter for admin
 - **Domain Layer:** `OrderListNotifier` manages state, pagination, status filtering, pull-to-refresh
 - **Presentation Layer:** `ConsumerStatefulWidget` with scroll listener for pagination
 - **Shared Package:** Single source of truth used by all 4 apps
@@ -120,7 +120,7 @@ User sees UI ← Widget rebuild ← State update ← OrderListNotifier ← Order
 
 | Role | Firestore Filter | Source |
 |------|-----------------|--------|
-| `customer` | `.where('userId', isEqualTo: uid)` | Current user's own orders |
+| `customer` | `.where('customerId', isEqualTo: uid)` | Current user's own orders |
 | `rider` | `.where('riderId', isEqualTo: uid)` | Orders assigned to rider |
 | `seller` | `.where('sellerId', isEqualTo: uid)` | Orders for seller's shop |
 | `admin` | No filter (all orders) | Full access |
@@ -292,8 +292,8 @@ Each dashboard shows:
 | Field | Type | Source | Description |
 |-------|------|--------|-------------|
 | `id` | `String` | Document ID | Firestore order ID |
-| `userId` | `String` | Top-level field | User's UID |
-| `userName` | `String` | Top-level field | User's display name |
+| `customerId` | `String` | Top-level field | User's UID |
+| `customerName` | `String` | Top-level field | User's display name |
 | `shopId` | `String` | Top-level field | Shop reference |
 | `shopName` | `String` | Top-level field | Shop display name |
 | `deliveryAddressLine` | `String` | `deliveryAddress.addressLine` | Human-readable address |
@@ -306,9 +306,9 @@ Each dashboard shows:
 
 ```json
 {
-  "userId": "abc123",
-  "userName": "John Doe",
-  "userPhone": "+96170123456",
+  "customerId": "abc123",
+  "customerName": "John Doe",
+  "customerPhone": "+96170123456",
   "shopId": "shop_xyz",
   "shopName": "Pizza Palace",
   "items": [ ... ],
@@ -427,11 +427,11 @@ All widgets use:
 
 ### Firestore Security Rules (`firestore.rules`)
 
-The orders collection rules are updated to use the flattened `userId` field instead of the previous nested `user.Id`:
+The orders collection rules are updated to use the flattened `customerId` field instead of the previous nested `user.Id`:
 
 ```javascript
 match /orders/{orderId} {
-  allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+  allow read: if isAuthenticated() && resource.data.customerId == request.auth.uid;
   allow read: if hasRole('rider') && resource.data.riderId == request.auth.uid;
   allow read: if hasRole('seller') && resource.data.sellerId == request.auth.uid;
   allow read: if isAdmin();
@@ -446,11 +446,11 @@ The existing orders indexes are used:
 
 | Index | Fields | Used For |
 |-------|--------|----------|
-| 1 | `userId ASC`, `createdAt DESC` | User role query + default ordering |
+| 1 | `customerId ASC`, `createdAt DESC` | User role query + default ordering |
 | 2 | `riderId ASC`, `status ASC` | Rider role query + active order count |
 | 3 | `sellerId ASC`, `createdAt DESC` | Seller role query |
 | 4 | `status ASC`, `createdAt DESC` | Admin with status filter |
-| 5 | `userId ASC`, `status ASC` | **User role active order count** (`whereIn` on active statuses) |
+| 5 | `customerId ASC`, `status ASC` | **User role active order count** (`whereIn` on active statuses) |
 | 6 | `sellerId ASC`, `status ASC` | **Seller role active order count** (`whereIn` on active statuses) |
 
 Indexes 5 and 6 were added for the `activeOrdersCountProvider` which uses Firestore's `count()` aggregation with `whereIn` on statuses `[0,1,2,3]`. Index 2 already covers the rider role.
@@ -462,7 +462,7 @@ Indexes 5 and 6 were added for the `activeOrdersCountProvider` which uses Firest
 ### Checkout Feature Integration
 The `OrderModel` in `apps/customer_app/features/checkout/data/models/order_model.dart` was refactored:
 - Removed nested `user` object (`OrderUserInfo`)
-- Added top-level fields: `userId`, `userName`, `userPhone`
+- Added top-level fields: `customerId`, `customerName`, `customerPhone`
 - Removed `userEmail` (not needed)
 - Updated `CheckoutNotifier.placeOrder()` to use flat fields
 

@@ -14,8 +14,8 @@ part 'order_list_item_model.g.dart';
 abstract class OrderListItemModel with _$OrderListItemModel {
   const factory OrderListItemModel({
     required String id,
-    required String userId,
-    required String userName,
+    required String customerId,
+    required String customerName,
     required String shopId,
     required String shopName,
     required String deliveryAddressLine,
@@ -35,8 +35,8 @@ abstract class OrderListItemModel with _$OrderListItemModel {
 
     return OrderListItemModel(
       id: snapshot.id,
-      userId: data['userId'] as String? ?? '',
-      userName: data['userName'] as String? ?? '',
+      customerId: data['customerId'] as String? ?? '',
+      customerName: data['customerName'] as String? ?? '',
       shopId: data['shopId'] as String? ?? '',
       shopName: data['shopName'] as String? ?? '',
       deliveryAddressLine:
