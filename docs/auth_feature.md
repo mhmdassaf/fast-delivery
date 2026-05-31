@@ -1,7 +1,7 @@
 # Auth Feature Specification
 
 > **AI-Readable Documentation for Auth Feature**  
-> **Last Updated:** 2026-05-06  
+> **Last Updated:** 2026-05-31  
 > **Feature Status:** ✅ Implemented  
 > **Commit:** `b556f35` - refactor(customer_app): restructure app with Clean Architecture and Firebase authentication
 
@@ -170,26 +170,42 @@ await ref.read(authNotifierProvider.notifier).signInWithEmailAndPassword(
 
 ### 2. Email/Password Registration
 **Entry Point:** `packages/auth/lib/presentation/screens/register_screen.dart` → `_handleSignUp()`
+
+Each app passes its own role via the `RegisterScreen.initialRole` parameter:
 ```dart
+// In each app's main.dart route builder:
+GoRoute(
+  path: '/register',
+  builder: (context, state) => const RegisterScreen(
+    initialRole: UserRole.rider, // rider_app, seller_app, admin_panel pass their role
+  ),
+);
+
+// The notifier call now includes the role:
 await ref.read(authNotifierProvider.notifier).signUpWithEmailAndPassword(
   email: emailController.text,
   password: passwordController.text,
   displayName: nameController.text,
+  role: widget.initialRole, // passed from the screen
 );
 ```
 **Flow:**
 1. Validate form (email, password strength, matching passwords)
-2. Call `AuthNotifier.signUpWithEmailAndPassword()`
+2. Call `AuthNotifier.signUpWithEmailAndPassword(role: ...)`
 3. Firebase `createUserWithEmailAndPassword()`
 4. Update display name in Firebase Auth
-5. **Poll Firestore** (up to 5 seconds) for Cloud Function to create user document
-6. Fallback: Manually create user document if CF hasn't run
-7. Return `UserModel`
+5. **Create Firestore document immediately** with the correct `role` passed from the app (not polling for Cloud Function)
+6. The Cloud Function (`auth.user().onCreate()`) fires asynchronously but skips creation because the document already exists (idempotency guard)
+7. Return `UserModel` with the correct role
 
 ### 3. Google Sign-In
 **Entry Point:** `packages/auth/lib/presentation/screens/login_screen.dart` or `register_screen.dart` → `_handleGoogleSignIn()`
+
+Each app passes its own role so new Google users get the correct role:
 ```dart
-await ref.read(authNotifierProvider.notifier).signInWithGoogle();
+await ref.read(authNotifierProvider.notifier).signInWithGoogle(
+  role: widget.initialRole, // passed from the screen's initialRole
+);
 ```
 **Flow:**
 1. `GoogleSignIn().signIn()` → Get Google account
@@ -197,7 +213,7 @@ await ref.read(authNotifierProvider.notifier).signInWithGoogle();
 3. Create Firebase `GoogleAuthProvider.credential()`
 4. Firebase `signInWithCredential()`
 5. Check if user exists in Firestore `users/{uid}`
-6. If new: Create user document with defaults
+6. If new: Create user document with the app-specific role (e.g. `rider`, `seller`, `admin`)
 7. If existing: Update `lastLoginAt`
 8. Return `UserModel`
 
@@ -240,8 +256,10 @@ class AuthState {
 
 ### AuthNotifier Methods
 - `signInWithEmailAndPassword()` → Returns `bool` (success/failure)
-- `signUpWithEmailAndPassword()` → Returns `bool`
-- `signInWithGoogle()` → Returns `bool`
+- `signUpWithEmailAndPassword({UserRole role = UserRole.customer})` → Returns `bool`
+  - `role` parameter determines the user's Firestore document role (passed from each app)
+- `signInWithGoogle({UserRole role = UserRole.customer})` → Returns `bool`
+  - `role` is used when creating a new user document via Google Sign-In
 - `signOut()` → Returns `bool`
 - `sendPasswordResetEmail()` → Returns `bool`
 - `updateProfile()` → Returns `bool`
@@ -402,17 +420,59 @@ Firebase `FirebaseAuthException` codes are mapped to `AuthFailure` types via `_m
 
 ---
 
+## 🏷️ Role-Aware Registration (Per-App)
+
+Each Fast Delivery app configures its own role during registration by passing `initialRole` to the shared `RegisterScreen` and `LoginScreen`. The role is written to the Firestore `users/{uid}` document immediately when the user creates an account.
+
+### App-to-Role Mapping
+
+| App | Route Builder | Role |
+|-----|---------------|------|
+| `apps/customer_app/lib/main.dart` | `RegisterScreen(initialRole: UserRole.customer)` | `customer` (default) |
+| `apps/rider_app/lib/main.dart` | `RegisterScreen(initialRole: UserRole.rider)` | `rider` |
+| `apps/seller_app/lib/main.dart` | `RegisterScreen(initialRole: UserRole.seller)` | `seller` |
+| `apps/admin_panel/lib/main.dart` | `RegisterScreen(initialRole: UserRole.admin)` | `admin` |
+
+### Document Creation Strategy
+
+1. **Client-side creation** (immediate): After Firebase Auth creates the user, the app immediately writes the Firestore document with the correct role — no polling, no delay.
+2. **Cloud Function idempotency**: The existing Cloud Function (`functions.auth.user().onCreate()`) also fires, but its idempotency guard (`if snapshot.exists return null`) prevents overwriting the client-created document with a default `customer` role.
+3. **Google Sign-In**: The same `initialRole` is passed through `handleGoogleSignIn()` → `AuthNotifier.signInWithGoogle(role:)` → `AuthDataSource.signInWithGoogle(role:)`, so new Google users also get the correct role.
+
+### Flow Summary
+
+```
+User opens Rider App → taps "Create Account"
+  → RegisterScreen(initialRole: UserRole.rider)
+  → AuthNotifier.signUpWithEmailAndPassword(role: UserRole.rider)
+  → Firebase Auth: createUserWithEmailAndPassword()
+  → AuthDataSource creates users/{uid} with role: "rider" (immediate)
+  → Cloud Function fires but skips (doc already exists)
+  → UserModel returned with role: rider
+```
+
+---
+
 ## 🔒 Security Rules (Reference)
 
 **File:** `firestore.rules` (root of repo)
 
 ```javascript
-// Users can read/write their own document
+// Helper to validate any of the 4 supported roles
+function isValidRole(role) {
+  return role in ['customer', 'rider', 'seller', 'admin'];
+}
+
+// Users can create their own document with any valid role
 match /users/{userId} {
-  allow read: if request.auth != null && request.auth.uid == userId;
-  allow write: if request.auth != null && request.auth.uid == userId;
+  allow create: if isOwner(userId) && 
+    request.resource.data.uid == request.auth.uid &&
+    isValidRole(request.resource.data.role) &&
+    request.resource.data.keys().hasAll(['uid', 'email', 'role', 'createdAt']);
 }
 ```
+
+> **⚠️ Critical:** The `create` rule **must** allow all four roles (`customer`, `rider`, `seller`, `admin`), not just `customer`. Otherwise, rider/seller/admin registrations will create the Auth user but fail to write the Firestore document due to a permission denied error.
 
 **Storage Rules:** `storage.rules`
 - Authenticated users can upload files to `users/{uid}/` path
@@ -468,6 +528,19 @@ match /users/{userId} {
 3. Update Firestore mapping in `AuthDataSourceImpl` (in `packages/auth/`)
 4. Update Cloud Function if needed
 5. **Update this doc** with new fields
+
+### Changing the Default Role for an App
+Each app's registration role is set in its `main.dart` route builder:
+```dart
+// Example: Change rider_app registration to use a different role
+GoRoute(
+  path: '/register',
+  builder: (context, state) => const RegisterScreen(
+    initialRole: UserRole.rider, // ← Change this value
+  ),
+);
+```
+The same change must be applied to both the `/login` route (for Google Sign-In) and the `/register` route (for email/password sign-up).
 
 ---
 
@@ -553,6 +626,7 @@ dependencies:
 - Hardcoding colors instead of using `AppColors` from `packages/core/`
 - Forgetting to update `pubspec.yaml` in packages when adding dependencies
 - Not importing from packages correctly (`package:fast_delivery_core/...` vs local paths)
+- **Firestore rules blocking non-customer roles:** The `users/{userId}` create rule must allow `rider`, `seller`, and `admin` roles — not just `customer`. Otherwise, the doc silently fails to write (permission denied) even though the Auth account is created successfully. Always keep `isValidRole()` in sync with the `UserRole` enum.
 
 ---
 

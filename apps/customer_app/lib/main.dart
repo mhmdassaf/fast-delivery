@@ -7,6 +7,7 @@ import 'package:fast_delivery_core/firebase/firebase_options.dart';
 import 'package:fast_delivery_core/theme/app_theme.dart';
 import 'package:fast_delivery_core/widgets/main_shell.dart';
 import 'package:fast_delivery_core/widgets/not_found_page.dart';
+import 'package:fast_delivery_auth/data/models/user_model.dart';
 import 'package:fast_delivery_auth/domain/providers/auth_providers.dart';
 import 'package:fast_delivery_auth/presentation/screens/login_screen.dart';
 import 'package:fast_delivery_auth/presentation/screens/register_screen.dart';
@@ -88,11 +89,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       // ── Auth routes (no bottom nav, no cart banner) ─────────────────
       GoRoute(
         path: '/login',
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) => const LoginScreen(
+          initialRole: UserRole.customer,
+        ),
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) => const RegisterScreen(),
+        builder: (context, state) => const RegisterScreen(
+          initialRole: UserRole.customer,
+        ),
       ),
 
       // ── Main shell with bottom navigation (Home / Orders / Account) ─

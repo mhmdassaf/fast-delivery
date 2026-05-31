@@ -9,14 +9,27 @@ import 'package:fast_delivery_auth/shared/widgets/primary_button.dart';
 import 'package:fast_delivery_auth/shared/widgets/loading_overlay.dart';
 import 'package:fast_delivery_auth/shared/widgets/social_login_button.dart';
 import 'package:fast_delivery_auth/shared/widgets/auth_error_message.dart';
+import '../../data/models/user_model.dart';
 import '../../domain/providers/auth_providers.dart';
 import '../widgets/auth_header.dart';
 import '../widgets/password_strength_indicator.dart';
 import '../helpers/auth_helpers.dart';
 
 /// Register screen for new user registration
+///
+/// [initialRole] determines the role assigned to the user's Firestore document
+/// upon successful registration. Each app passes its own role:
+/// - Customer App → [UserRole.customer] (default)
+/// - Rider App → [UserRole.rider]
+/// - Seller App → [UserRole.seller]
+/// - Admin Panel → [UserRole.admin]
 class RegisterScreen extends ConsumerStatefulWidget {
-  const RegisterScreen({super.key});
+  final UserRole initialRole;
+
+  const RegisterScreen({
+    super.key,
+    this.initialRole = UserRole.customer,
+  });
 
   @override
   ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
@@ -71,6 +84,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text,
           displayName: _nameController.text.trim(),
+          role: widget.initialRole,
         );
 
     if (success && mounted) {
@@ -79,7 +93,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _handleGoogleSignUp() async {
-    await handleGoogleSignIn(ref, (loading) => setState(() => _isGoogleLoading = loading));
+    await handleGoogleSignIn(
+      ref,
+      (loading) => setState(() => _isGoogleLoading = loading),
+      role: widget.initialRole,
+    );
   }
 
   @override

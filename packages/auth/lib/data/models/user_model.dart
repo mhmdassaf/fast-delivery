@@ -46,13 +46,14 @@ abstract class UserModel with _$UserModel {
     String? photoURL,
     bool emailVerified = false,
     String? phoneNumber,
+    UserRole role = UserRole.customer,
   }) {
     return UserModel(
       uid: uid,
       email: email,
       displayName: displayName ?? '',
       photoURL: photoURL,
-      role: UserRole.customer, // Default role
+      role: role,
       isEmailVerified: emailVerified,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),

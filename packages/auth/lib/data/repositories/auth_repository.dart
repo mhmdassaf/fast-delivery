@@ -21,10 +21,13 @@ abstract class AuthRepository {
     required String email,
     required String password,
     String? displayName,
+    UserRole role = UserRole.customer,
   });
 
   /// Signs in with Google
-  Future<Result<UserModel>> signInWithGoogle();
+  Future<Result<UserModel>> signInWithGoogle({
+    UserRole role = UserRole.customer,
+  });
 
   /// Signs out the current user
   Future<Result<void>> signOut();
@@ -74,17 +77,21 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     String? displayName,
+    UserRole role = UserRole.customer,
   }) {
     return _dataSource.signUpWithEmailAndPassword(
       email: email,
       password: password,
       displayName: displayName,
+      role: role,
     );
   }
 
   @override
-  Future<Result<UserModel>> signInWithGoogle() {
-    return _dataSource.signInWithGoogle();
+  Future<Result<UserModel>> signInWithGoogle({
+    UserRole role = UserRole.customer,
+  }) {
+    return _dataSource.signInWithGoogle(role: role);
   }
 
   @override

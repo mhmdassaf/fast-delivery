@@ -50,6 +50,11 @@ service cloud.firestore {
         getUserData().isActive == true;
     }
     
+    /// All valid user roles
+    function isValidRole(role) {
+      return role in ['customer', 'rider', 'seller', 'admin'];
+    }
+    
     // =========================================================================
     // USERS COLLECTION
     // =========================================================================
@@ -60,10 +65,10 @@ service cloud.firestore {
       /// Users can only read their own full profile, admins can read all
       allow get: if isOwner(userId) || isAdmin();
       
-      /// Users can only create their own document
+      /// Users can only create their own document with a valid role
       allow create: if isOwner(userId) && 
         request.resource.data.uid == request.auth.uid &&
-        request.resource.data.role == 'customer' &&
+        isValidRole(request.resource.data.role) &&
         request.resource.data.keys().hasAll(['uid', 'email', 'role', 'createdAt']);
       
       /// Users can update their own document (any fields except role/isActive)

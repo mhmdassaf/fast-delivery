@@ -158,6 +158,7 @@ class AuthNotifier extends _$AuthNotifier {
     required String email,
     required String password,
     String? displayName,
+    UserRole role = UserRole.customer,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
@@ -165,6 +166,7 @@ class AuthNotifier extends _$AuthNotifier {
       email: email,
       password: password,
       displayName: displayName,
+      role: role,
     );
 
     return result.fold(
@@ -183,10 +185,12 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   /// Sign in with Google
-  Future<bool> signInWithGoogle() async {
+  Future<bool> signInWithGoogle({
+    UserRole role = UserRole.customer,
+  }) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
-    final result = await _repository.signInWithGoogle();
+    final result = await _repository.signInWithGoogle(role: role);
 
     return result.fold(
       onSuccess: (user) {

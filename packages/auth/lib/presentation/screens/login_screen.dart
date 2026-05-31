@@ -9,13 +9,22 @@ import 'package:fast_delivery_auth/shared/widgets/primary_button.dart';
 import 'package:fast_delivery_auth/shared/widgets/loading_overlay.dart';
 import 'package:fast_delivery_auth/shared/widgets/social_login_button.dart';
 import 'package:fast_delivery_auth/shared/widgets/auth_error_message.dart';
+import '../../data/models/user_model.dart';
 import '../../domain/providers/auth_providers.dart';
 import '../widgets/auth_header.dart';
 import '../helpers/auth_helpers.dart';
 
 /// Login screen for user authentication
+///
+/// [initialRole] is used when creating a new user document via Google Sign-In.
+/// Each app passes its own role so that new Google users get the correct role.
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  final UserRole initialRole;
+
+  const LoginScreen({
+    super.key,
+    this.initialRole = UserRole.customer,
+  });
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -55,7 +64,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _handleGoogleSignIn() async {
-    await handleGoogleSignIn(ref, (loading) => setState(() => _isGoogleLoading = loading));
+    await handleGoogleSignIn(
+      ref,
+      (loading) => setState(() => _isGoogleLoading = loading),
+      role: widget.initialRole,
+    );
   }
 
   void _handleForgotPassword() {

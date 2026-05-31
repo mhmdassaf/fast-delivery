@@ -25,10 +25,13 @@ abstract class AuthDataSource {
     required String email,
     required String password,
     String? displayName,
+    UserRole role = UserRole.customer,
   });
 
   /// Signs in with Google
-  Future<Result<UserModel>> signInWithGoogle();
+  Future<Result<UserModel>> signInWithGoogle({
+    UserRole role = UserRole.customer,
+  });
 
   /// Signs out the current user
   Future<Result<void>> signOut();
@@ -160,6 +163,7 @@ class AuthDataSourceImpl implements AuthDataSource {
     required String email,
     required String password,
     String? displayName,
+    UserRole role = UserRole.customer,
   }) async {
     try {
       final credential = await _auth.createUserWithEmailAndPassword(
@@ -176,54 +180,26 @@ class AuthDataSourceImpl implements AuthDataSource {
         await credential.user!.updateDisplayName(displayName);
       }
 
-      // Fetch the created user document from Firestore
-      // Poll for up to 5 seconds for the Cloud Function to complete
-      UserModel? userModel;
-      for (int i = 0; i < 10; i++) {
-        final userDoc = await _firestore
-            .collection('users')
-            .doc(credential.user!.uid)
-            .get();
-
-        if (userDoc.exists) {
-          final userData = userDoc.data()!;
-          userModel = UserModel(
-            uid: credential.user!.uid,
-            email: userData['email'] ?? email,
-            displayName: userData['displayName'] ?? displayName ?? '',
-            phoneNumber: userData['phoneNumber'],
-            photoURL: userData['photoURL'],
-            role: _parseRole(userData['role']),
-            isEmailVerified: userData['emailVerified'] ?? false,
-            createdAt: _parseDateTime(userData['createdAt']) ?? DateTime.now(),
-            updatedAt: _parseDateTime(userData['updatedAt']),
-            lastLoginAt: _parseDateTime(userData['lastLoginAt']),
-            isActive: userData['isActive'] ?? true,
-            fcmTokens: List<String>.from(userData['fcmTokens'] ?? []),
-          );
-          break;
-        }
-        await Future.delayed(const Duration(milliseconds: 500));
-      }
-
-      // Fallback: Create document manually if CF hasn't run yet
-      if (userModel == null) {
-        userModel = UserModel(
-          uid: credential.user!.uid,
-          email: email,
-          displayName: displayName ?? '',
-          photoURL: null,
-          role: UserRole.customer,
-          isEmailVerified: credential.user!.emailVerified,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          lastLoginAt: DateTime.now(),
-          isActive: true,
-          phoneNumber: null,
-          fcmTokens: const [],
-        );
-        await _createUserDocument(userModel);
-      }
+      // Create the user document immediately with the correct role.
+      // The Cloud Function (auth.user().onCreate()) also fires asynchronously,
+      // but it already has an idempotency guard — if the doc exists, it skips.
+      // This ensures the correct role is always set, regardless of which app
+      // the user registered from.
+      final userModel = UserModel(
+        uid: credential.user!.uid,
+        email: email,
+        displayName: displayName ?? '',
+        photoURL: null,
+        role: role,
+        isEmailVerified: credential.user!.emailVerified,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        lastLoginAt: DateTime.now(),
+        isActive: true,
+        phoneNumber: null,
+        fcmTokens: const [],
+      );
+      await _createUserDocument(userModel);
 
       return Result.success(userModel);
     } on firebase_auth.FirebaseAuthException catch (e) {
@@ -234,7 +210,9 @@ class AuthDataSourceImpl implements AuthDataSource {
   }
 
   @override
-  Future<Result<UserModel>> signInWithGoogle() async {
+  Future<Result<UserModel>> signInWithGoogle({
+    UserRole role = UserRole.customer,
+  }) async {
     try {
       final googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
@@ -254,7 +232,7 @@ class AuthDataSourceImpl implements AuthDataSource {
         return Result.failure(AuthFailure.unknown('Google sign-in failed'));
       }
 
-      // Check if user exists in Firestore, if not create
+      // Check if user exists in Firestore, if not create with the correct role
       final userExists = await _checkUserExists(credentialResult.user!.uid);
       if (!userExists) {
         final userModel = UserModel.fromFirebaseAuth(
@@ -263,6 +241,7 @@ class AuthDataSourceImpl implements AuthDataSource {
           displayName: credentialResult.user!.displayName,
           photoURL: credentialResult.user!.photoURL,
           emailVerified: credentialResult.user!.emailVerified,
+          role: role,
         );
         await _createUserDocument(userModel);
       } else {
